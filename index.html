@@ -1,0 +1,2482 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Flipradar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0e1217;
+    --panel: #151a21;
+    --panel-2: #1b212a;
+    --line: #262e39;
+    --line-strong: #333d4a;
+    --text: #e3e7ec;
+    --muted: #8b95a3;
+    --faint: #5c6673;
+    --accent: #d9a84e;
+    --accent-ink: #1a1408;
+    --bull: #1fbf8a;
+    --bull-bg: rgba(31, 191, 138, 0.14);
+    --bear: #ef5670;
+    --bear-bg: rgba(239, 86, 112, 0.14);
+    --warn: #f2a33a;
+    --warn-bg: rgba(242, 163, 58, 0.14);
+    --series2: #7aa7ff;
+    --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-cond: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+    --font-num: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.45;
+    padding-inline: 16px;
+    padding-block: 20px 40px;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 16px; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Header */
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .brand h1 {
+    margin: 0;
+    font-family: var(--font-cond);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .brand h1 span { color: var(--accent); }
+  .brand p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  .brand code { font-family: var(--font-num); font-size: 12px; color: var(--text); }
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+    background: var(--panel);
+  }
+  .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+  .status.live .dot { background: var(--bull); box-shadow: 0 0 0 3px var(--bull-bg); }
+  .status.demo .dot { background: var(--warn); box-shadow: 0 0 0 3px var(--warn-bg); }
+  .status.loading .dot { background: var(--accent); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+
+  /* Banner */
+  .banner {
+    border: 1px solid rgba(242, 163, 58, 0.35);
+    background: var(--warn-bg);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: grid; gap: 4px;
+  }
+  .banner strong { font-family: var(--font-cond); font-size: 15px; font-weight: 600; letter-spacing: 0.02em; color: var(--warn); }
+  .banner p { margin: 0; color: var(--text); max-width: 80ch; }
+  .banner.info { border-color: var(--line-strong); background: var(--panel); }
+  .banner.info strong { color: var(--accent); }
+
+  /* Summary tiles */
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .tile {
+    text-align: left;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: grid; gap: 2px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .tile:hover { border-color: var(--line-strong); }
+  .tile[aria-pressed="true"] { border-color: var(--accent); background: var(--panel-2); }
+  .tile .lbl { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .tile .val { font-family: var(--font-num); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .tile .sub { font-size: 12px; color: var(--faint); }
+  .tile.bull .val { color: var(--bull); }
+  .tile.bear .val { color: var(--bear); }
+  .tile.fresh .val { color: var(--accent); }
+  .tile.near .val { color: var(--warn); }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Controls */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .seg {
+    display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel); overflow: hidden;
+  }
+  .seg button {
+    border: 0; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--muted);
+    border-right: 1px solid var(--line);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--panel-2); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+  .search {
+    flex: 1 1 180px; min-width: 0; max-width: 280px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 7px 10px;
+  }
+  .search::placeholder { color: var(--faint); }
+  .btn {
+    border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius);
+    padding: 7px 12px; font-size: 13px;
+  }
+  .btn:hover { border-color: var(--line-strong); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+  .btn:disabled:hover { border-color: var(--line); }
+  .btn.clear:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .select {
+    appearance: none; -webkit-appearance: none;
+    background: var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238b95a3' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 7px 30px 7px 10px; font-size: 13px; max-width: 100%;
+  }
+  .select.is-active, .search.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .select option { background: var(--panel); color: var(--text); }
+
+  /* Bevakning */
+  .star {
+    border: 0; background: none; padding: 2px; margin: -2px 0 -2px -4px; line-height: 1;
+    font-size: 15px; color: var(--faint); border-radius: 4px;
+  }
+  .star:hover { color: var(--text); }
+  .star[aria-pressed="true"] { color: var(--accent); }
+  .watchbtn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: rgba(217, 168, 78, 0.08); }
+  .watchbtn .n { font-family: var(--font-num); font-size: 12px; color: var(--muted); margin-left: 2px; }
+  .pill.prelim { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+  .pill.prelim::after { content: "?"; font-size: 10px; opacity: 0.8; }
+  .toasts {
+    position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+    display: grid; gap: 8px; width: min(360px, calc(100vw - 32px));
+  }
+  .toast {
+    background: var(--panel-2); border: 1px solid var(--line-strong); border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); padding: 10px 12px 10px 14px;
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; position: relative; overflow: hidden;
+    animation: toastIn 0.2s ease-out;
+  }
+  .toast::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+  .toast.bull::before { background: var(--bull); }
+  .toast.bear::before { background: var(--bear); }
+  .toast strong { font-family: var(--font-cond); font-weight: 600; font-size: 15px; }
+  .toast.bull strong { color: var(--bull); }
+  .toast.bear strong { color: var(--bear); }
+  .toast p { margin: 0; grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+  .toast .acts { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+  .toast .close { border: 0; background: none; color: var(--muted); font-size: 16px; line-height: 1; padding: 0 2px; }
+  .toast .close:hover { color: var(--text); }
+  @keyframes toastIn { from { transform: translateY(8px); opacity: 0; } }
+  .field label.check { font-family: var(--font-ui); text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 400; color: var(--text); padding-block: 2px; }
+  .field .checks { display: flex; gap: 16px; }
+  .notify-status { margin: 0; font-size: 13px; color: var(--muted); max-width: 80ch; }
+  .notify-status b { color: var(--text); font-weight: 600; }
+  .events { display: grid; gap: 6px; }
+  .events h3 { margin: 0; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .events ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .events li button {
+    width: 100%; display: grid; grid-template-columns: 7.5em 4.5em 1fr auto; gap: 10px; align-items: baseline; text-align: left;
+    border: 0; background: var(--bg); border-radius: 4px; padding: 6px 10px; font-size: 13px;
+  }
+  .events li button:hover { background: var(--panel-2); }
+  .events .t { font-family: var(--font-num); font-size: 12px; color: var(--faint); }
+  .events .s { font-family: var(--font-num); font-weight: 500; }
+  .events .empty-ev { font-size: 13px; color: var(--faint); }
+
+  /* Aktiva filter */
+  .active-filters {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    padding: 8px 10px; border: 1px dashed rgba(217, 168, 78, 0.45); border-radius: var(--radius);
+    background: rgba(217, 168, 78, 0.06);
+  }
+  .active-filters .af-lbl { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; font-weight: 600; color: var(--accent); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--line-strong); background: var(--panel-2); border-radius: 999px;
+    padding: 3px 6px 3px 10px; font-size: 12px; color: var(--text);
+  }
+  .chip span { color: var(--muted); }
+  .chip:hover { border-color: var(--accent); }
+  .chip .x { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 12px; line-height: 1; color: var(--muted); background: var(--panel); }
+  .chip:hover .x { color: var(--accent-ink); background: var(--accent); }
+  .linkbtn { border: 0; background: none; color: var(--accent); font-size: 12px; padding: 3px 4px; text-decoration: underline; text-underline-offset: 2px; }
+  .spacer { flex: 1; }
+  .count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* Avancerade inställningar */
+  .settings { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+  .settings > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; font-family: var(--font-cond); font-weight: 600; font-size: 14px; letter-spacing: 0.02em; color: var(--muted);
+  }
+  .settings > summary::-webkit-details-marker { display: none; }
+  .settings > summary::before {
+    content: ""; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg); transition: transform 0.15s; margin-right: 2px;
+  }
+  .settings[open] > summary::before { transform: rotate(45deg); }
+  .settings > summary:hover, .settings[open] > summary { color: var(--text); }
+  .settings > summary .sum-meta { margin-left: auto; font-family: var(--font-ui); font-weight: 400; font-size: 12px; color: var(--faint); letter-spacing: 0; }
+  .settings-body { display: grid; gap: 18px; padding: 4px 14px 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .settings-body h2 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .settings-group { display: grid; gap: 10px; }
+  .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .field { display: grid; gap: 4px; }
+  .field label { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: var(--muted); font-weight: 600; }
+  .field input {
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 7px 9px;
+    font-family: var(--font-num); font-size: 13px; width: 100%;
+  }
+  .field .hint { font-size: 12px; color: var(--faint); }
+  .field .flabel { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: var(--muted); font-weight: 600; }
+  .keyrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; }
+  .keyrow .field { flex: 1 1 240px; }
+  .src { font-size: 12px; color: var(--muted); }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding-block: 7px; }
+  .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+  .src a { color: var(--accent); }
+
+  /* Table */
+  .table-wrap {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 960px; }
+  th, td { padding: 8px 10px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  thead th {
+    position: sticky; top: 0; background: var(--panel-2); z-index: 2;
+    font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; font-weight: 600; color: var(--muted);
+    padding: 0;
+  }
+  thead th button {
+    display: flex; align-items: center; gap: 4px; width: 100%;
+    background: transparent; border: 0; padding: 10px 10px; text-transform: inherit; letter-spacing: inherit; font: inherit; color: inherit;
+  }
+  thead th.num button { justify-content: flex-end; }
+  thead th button:hover { color: var(--text); }
+  thead th[aria-sort] button { color: var(--text); }
+  thead th .arrow { font-size: 10px; color: var(--accent); }
+  thead th.static { padding: 10px 12px; }
+  td.num { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 13px; }
+  tbody tr.row { cursor: pointer; }
+  tbody tr.row:hover td { background: rgba(255, 255, 255, 0.025); }
+  tbody tr.row.is-open td { background: var(--panel-2); }
+  td.asset, th.asset { position: sticky; left: 0; background: var(--panel); z-index: 1; }
+  thead th.asset { background: var(--panel-2); z-index: 3; }
+  tbody tr.row.is-open td.asset { background: var(--panel-2); }
+  .asset-cell { display: flex; align-items: baseline; gap: 8px; }
+  .sym { font-family: var(--font-num); font-weight: 500; font-size: 13px; min-width: 3.2em; }
+  .nm { color: var(--muted); font-size: 13px; }
+  .tag {
+    font-family: var(--font-cond); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--faint); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; line-height: 16px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-cond); font-weight: 600; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    border-radius: 999px; padding: 2px 10px 2px 8px;
+  }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pill.bull { color: var(--bull); background: var(--bull-bg); }
+  .pill.bear { color: var(--bear); background: var(--bear-bg); }
+  .up { color: var(--bull); }
+  .down { color: var(--bear); }
+  .warn { color: var(--warn); }
+  .muted { color: var(--muted); }
+  .new {
+    margin-left: 6px; font-family: var(--font-cond); font-weight: 700; font-size: 10px; letter-spacing: 0.08em;
+    color: var(--accent-ink); background: var(--accent); border-radius: 3px; padding: 1px 4px; vertical-align: 1px;
+  }
+  .vd { display: flex; gap: 6px; }
+  .vd span {
+    font-family: var(--font-cond); font-weight: 600; font-size: 11px; width: 22px; height: 20px; border-radius: 4px;
+    display: inline-grid; place-items: center;
+  }
+  .vd .b { color: var(--bull); background: var(--bull-bg); }
+  .vd .r { color: var(--bear); background: var(--bear-bg); }
+  .vd .n { color: var(--faint); background: var(--panel-2); }
+  canvas.spark { width: 120px; height: 30px; display: block; }
+  td.msg { color: var(--faint); font-size: 13px; }
+  .empty { padding: 28px; text-align: center; color: var(--muted); }
+
+  /* Dagbok */
+  .journal { margin-top: 14px; display: grid; gap: 10px; }
+  .journal h4 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .jform { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .jform input[type="number"], .jform input[type="date"], .jform input[type="text"] {
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 7px 9px; font-size: 13px; color: var(--text);
+  }
+  .jform input[type="number"] { width: 9em; font-family: var(--font-num); }
+  .jform input[type="text"] { flex: 1 1 220px; min-width: 0; }
+  .jlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .jlist li {
+    display: grid; grid-template-columns: 6.5em 3.5em minmax(5em, auto) minmax(0, 1fr) auto auto; gap: 10px; align-items: baseline;
+    background: var(--bg); border-radius: 4px; padding: 6px 10px; font-size: 13px;
+  }
+  .jlist .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+  .jlist .note { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .jlist .del { border: 0; background: none; color: var(--faint); font-size: 15px; padding: 0 2px; }
+  .jlist .del:hover { color: var(--bear); }
+  .tagok { font-family: var(--font-cond); font-weight: 600; font-size: 11px; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .tagok.yes { color: var(--bull); background: var(--bull-bg); }
+  .tagok.no { color: var(--warn); background: var(--warn-bg); }
+  .jstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .jstat { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 2px; }
+  .jstat .lbl { font-size: 12px; color: var(--muted); }
+  .jstat .v { font-family: var(--font-num); font-size: 20px; font-variant-numeric: tabular-nums; }
+  .jstat .sub { font-size: 12px; color: var(--faint); }
+  .codeout { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); font-family: var(--font-num); font-size: 12px; padding: 8px; resize: vertical; }
+  label.btn { cursor: pointer; display: inline-flex; align-items: center; }
+  @media (max-width: 640px) {
+    .jlist li { grid-template-columns: 6em 3em 1fr auto; }
+    .jlist li .note, .jlist li .res { grid-column: 1 / -1; }
+  }
+
+  /* Mobil */
+  @media (max-width: 760px) {
+    table { min-width: 0; }
+    th.opt, td.opt, th.opt-m, td.opt-m { display: none; }
+    .asset-cell .tag, .asset-cell .nm { display: none; }
+    .pill { padding: 2px 7px 2px 6px; font-size: 11px; letter-spacing: 0.02em; gap: 4px; }
+    th, td { padding: 7px 5px; }
+    thead th button { padding: 9px 5px; }
+    .star { margin-left: -2px; }
+    thead th { font-size: 10px; letter-spacing: 0.03em; }
+    .sym { min-width: 0; }
+    .asset-cell { gap: 4px; }
+    canvas.big { height: 220px; }
+    .search { max-width: none; flex-basis: 100%; }
+    .brand h1 { font-size: 24px; }
+    .tile .val { font-size: 22px; }
+  }
+
+  /* Marknaden */
+  .market { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 10px; }
+  @media (max-width: 860px) { .market { grid-template-columns: 1fr; } }
+  .market .card { background: var(--panel); }
+  .mhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .bstats { display: flex; flex-wrap: wrap; gap: 18px; }
+  .bstat { display: grid; gap: 0; }
+  .bstat .lbl { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .bstat .lbl i { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+  .bstat .v { font-family: var(--font-num); font-size: 22px; font-variant-numeric: tabular-nums; }
+  .bstat .ch { font-family: var(--font-num); font-size: 12px; }
+  canvas.breadth { width: 100%; height: 130px; display: block; }
+  .sectors { display: grid; gap: 3px; max-height: 214px; overflow-y: auto; padding-right: 2px; }
+  .sectors .grp { font-family: var(--font-cond); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); padding: 6px 2px 2px; }
+  .sec {
+    display: grid; grid-template-columns: minmax(0, 11em) 1fr 5.5em; gap: 10px; align-items: center;
+    border: 0; background: none; padding: 4px 6px; border-radius: 4px; text-align: left; font-size: 12px; color: var(--text);
+  }
+  .sec:hover { background: var(--panel-2); }
+  .sec[aria-pressed="true"] { background: var(--panel-2); box-shadow: inset 2px 0 0 var(--accent); }
+  .sec .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 12px; }
+  .sec .sbar { height: 8px; background: var(--bear-bg); border-radius: 4px; overflow: hidden; }
+  .sec .sbar i { display: block; height: 100%; background: var(--bull); opacity: 0.85; }
+  .sec .pc { font-family: var(--font-num); font-size: 12px; text-align: right; color: var(--muted); }
+
+  /* Betyg, relativ styrka, mönster */
+  .score {
+    display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 6px; border-radius: 5px;
+    font-family: var(--font-num); font-weight: 500; font-size: 13px;
+  }
+  .score.s-hi { color: var(--bull); background: var(--bull-bg); }
+  .score.s-mid { color: var(--accent); background: rgba(217, 168, 78, 0.14); }
+  .score.s-lo { color: var(--bear); background: var(--bear-bg); }
+  .score.s-na { color: var(--faint); }
+  .score.big { min-width: 48px; height: 44px; font-size: 26px; border-radius: 8px; }
+  .volwarn {
+    display: inline-grid; place-items: center; width: 15px; height: 15px; margin-right: 6px; border-radius: 50%;
+    background: var(--warn-bg); color: var(--warn); font-family: var(--font-cond); font-weight: 700; font-size: 11px; vertical-align: 1px;
+  }
+  .rs { font-family: var(--font-cond); font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
+  .rschg { font-family: var(--font-num); font-size: 12px; color: var(--muted); }
+  .patname { font-family: var(--font-cond); font-weight: 600; font-size: 13px; }
+  td .patname { display: inline-block; max-width: 10.5em; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+  @media (max-width: 1400px) { th.opt-wide, td.opt-wide { display: none; } }
+  .small { font-size: 12px; }
+  .insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+  .card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
+  .card h4 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .card p { margin: 0; }
+  .bigscore { display: flex; align-items: center; gap: 12px; line-height: 1.3; }
+  .parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .parts li { display: grid; grid-template-columns: 1fr 70px 44px; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+  .parts b { font-family: var(--font-num); font-weight: 500; color: var(--text); text-align: right; font-size: 12px; }
+  .mbar { display: block; height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+  .mbar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  .kv { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+  .kv span { color: var(--muted); }
+  .kv b { font-weight: 600; text-align: right; }
+  .patlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .patlist li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .patlist li .small { grid-column: 1; }
+  .patlist .oc { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+  .oc { font-family: var(--font-cond); font-weight: 600; font-size: 11px; letter-spacing: 0.04em; border-radius: 4px; padding: 1px 6px; }
+  .oc-hit { color: var(--bull); background: var(--bull-bg); }
+  .oc-fail { color: var(--bear); background: var(--bear-bg); }
+  .oc-open { color: var(--muted); background: var(--panel-2); }
+
+  /* Detail row */
+  tr.detail td { background: var(--panel-2); padding: 14px 16px 18px; white-space: normal; }
+  .detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 18px; }
+  @media (max-width: 860px) { .detail-grid { grid-template-columns: 1fr; } }
+  .chart-box { display: grid; gap: 8px; min-width: 0; }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .chart-head h3 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 18px; }
+  .chart-head .muted { font-size: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+  .legend b { font-family: var(--font-num); font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .legend i { display: inline-block; width: 16px; height: 0; vertical-align: middle; margin-right: 6px; border-top: 2px solid var(--text); }
+  .legend i.flip { border-top-style: dashed; }
+  .legend i.flip.bull { border-top-color: var(--bull); }
+  .legend i.flip.bear { border-top-color: var(--bear); }
+  canvas.big { width: 100%; height: 280px; display: block; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); }
+  .facts { display: grid; gap: 0; align-content: start; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+  .facts div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .facts div:last-child { border-bottom: 0; }
+  .facts dt { color: var(--muted); font-size: 13px; }
+  .facts dd { margin: 0; font-family: var(--font-num); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
+  .detail-links { font-size: 12px; color: var(--muted); }
+  .detail-links a { color: var(--accent); }
+
+  footer { color: var(--faint); font-size: 12px; display: grid; gap: 4px; }
+  footer p { margin: 0; max-width: 90ch; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Flip<span>radar</span></h1>
+      <p>Trendlinjen på krypto och aktier · <code id="paramsTxt">ATR 10 × 3,2</code></p>
+    </div>
+    <div class="status loading" id="status"><span class="dot"></span><span id="statusTxt">Hämtar kurser…</span></div>
+  </header>
+
+  <div id="banners"></div>
+
+  <section class="tiles" aria-label="Sammanfattning">
+    <button class="tile bull" id="tBull" data-quick="bull" aria-pressed="false"><span class="lbl">Bullish</span><span class="val" id="nBull">–</span><span class="sub">över linjen</span></button>
+    <button class="tile bear" id="tBear" data-quick="bear" aria-pressed="false"><span class="lbl">Bearish</span><span class="val" id="nBear">–</span><span class="sub">under linjen</span></button>
+    <button class="tile fresh" id="tFresh" data-quick="fresh" aria-pressed="false"><span class="lbl">Nyss flippade</span><span class="val" id="nFresh">–</span><span class="sub" id="freshSub">inom 3 staplar</span></button>
+    <button class="tile near" id="tNear" data-quick="near" aria-pressed="false"><span class="lbl">Nära flip</span><span class="val" id="nNear">–</span><span class="sub" id="nearSub">inom 3 % från linjen</span></button>
+  </section>
+
+  <section class="market" aria-label="Marknaden">
+    <div class="card">
+      <div class="mhead"><h4>Marknadsbredd</h4><span class="muted small" id="bSub">Andel tillgångar där trendlinjen är bullish</span></div>
+      <div class="bstats" id="bStats"></div>
+      <canvas id="breadthCanvas" class="breadth" aria-label="Andel bullish tillgångar över tid"></canvas>
+    </div>
+    <div class="card">
+      <div class="mhead"><h4>Sektorer</h4><span class="muted small">Andel bullish per kategori · klicka för att filtrera</span></div>
+      <div class="sectors" id="sectors"></div>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Filter">
+    <div class="seg" role="group" aria-label="Tidsram" id="segTf">
+      <button data-v="w" aria-pressed="true">Vecka</button>
+      <button data-v="d" aria-pressed="false">Dag</button>
+    </div>
+    <div class="seg" role="group" aria-label="Marknad" id="segMarket">
+      <button data-v="alla" aria-pressed="true">Alla</button>
+      <button data-v="krypto" aria-pressed="false">Krypto</button>
+      <button data-v="aktier" aria-pressed="false">Aktier</button>
+      <button data-v="sverige" aria-pressed="false">Sverige</button>
+    </div>
+    <div class="seg" role="group" aria-label="Trend" id="segTrend">
+      <button data-v="alla" aria-pressed="true">Alla</button>
+      <button data-v="bull" aria-pressed="false">Bull</button>
+      <button data-v="bear" aria-pressed="false">Bear</button>
+      <button data-v="aligned" aria-pressed="false">V+D samstämmiga</button>
+    </div>
+    <div class="seg" role="group" aria-label="Relativ styrka mot BTC eller SPY" id="segRs" title="Relativ styrka: krypto jämförs med BTC, amerikanska aktier med S&P 500 (SPY)">
+      <button data-v="alla" aria-pressed="true">Alla</button>
+      <button data-v="strong" aria-pressed="false">Starkare än BTC/SPY</button>
+      <button data-v="weak" aria-pressed="false">Svagare</button>
+    </div>
+    <select class="select" id="selCat" aria-label="Kategori"></select>
+    <select class="select" id="selScore" aria-label="Minsta signalbetyg">
+      <option value="0">Alla betyg</option><option value="5">Betyg 5+</option><option value="7">Betyg 7+</option><option value="8">Betyg 8+</option>
+    </select>
+    <input class="search" id="search" type="search" placeholder="Sök symbol eller namn" aria-label="Sök">
+    <span class="count" id="countTxt"></span>
+    <span class="spacer"></span>
+    <button class="btn watchbtn" id="btnWatch" aria-pressed="false" title="Visa bara bevakade">★ Bevakade <span class="n" id="nWatch">0</span></button>
+    <button class="btn clear" id="btnClear" disabled>Rensa filter</button>
+    <button class="btn primary" id="btnRefresh">Uppdatera</button>
+  </section>
+
+  <div class="active-filters" id="activeFilters" hidden aria-live="polite"></div>
+
+  <details class="settings" id="settings">
+    <summary>Avancerade inställningar <span class="sum-meta" id="sumMeta"></span></summary>
+    <div class="settings-body">
+      <div class="settings-group">
+        <h2>Indikator</h2>
+        <div class="settings-grid">
+          <div class="field"><label for="inAtr">ATR-längd</label><input id="inAtr" type="number" min="1" max="100" step="1"><span class="hint">Standard 10</span></div>
+          <div class="field"><label for="inMult">ATR-multiplikator</label><input id="inMult" type="number" min="0.5" max="10" step="0.1"><span class="hint">Standard 3,2</span></div>
+          <div class="field"><label for="inFresh">Nyss flippad, max staplar</label><input id="inFresh" type="number" min="1" max="52" step="1"><span class="hint">Standard 3</span></div>
+          <div class="field"><label for="inNear">Nära flip, max %</label><input id="inNear" type="number" min="0.5" max="30" step="0.5"><span class="hint">Standard 3</span></div>
+        </div>
+        <div><button class="btn" id="btnReset">Återställ standard</button></div>
+      </div>
+      <div class="settings-group">
+        <h2>Bevakning och notiser</h2>
+        <p class="notify-status" id="notifyStatus"></p>
+        <div class="keyrow">
+          <button class="btn" id="btnPerm">Tillåt datornotiser</button>
+          <button class="btn" id="btnTest">Skicka testnotis</button>
+        </div>
+        <div class="settings-grid">
+          <div class="field"><label for="inMode">Meddela när</label>
+            <select class="select" id="inMode">
+              <option value="closed">Flippen är bekräftad (stapeln har stängt)</option>
+              <option value="live">Priset korsar linjen (kan ändras innan stapeln stänger)</option>
+            </select></div>
+          <div class="field"><label for="inAuto">Uppdatera automatiskt</label>
+            <select class="select" id="inAuto">
+              <option value="0">Av</option><option value="5">Var 5:e minut</option><option value="15">Var 15:e minut</option>
+              <option value="30">Var 30:e minut</option><option value="60">Varje timme</option>
+            </select></div>
+          <div class="field"><span class="flabel">Tidsramar</span>
+            <div class="checks"><label class="check" for="inNW"><input id="inNW" type="checkbox"> Vecka</label><label class="check" for="inND"><input id="inND" type="checkbox"> Dag</label></div></div>
+        </div>
+        <div class="events"><h3>Senaste flippar bland dina bevakade</h3><ol id="eventList"></ol></div>
+      </div>
+      <div class="settings-group">
+        <h2>Datakälla för aktier</h2>
+        <div class="keyrow">
+          <div class="field">
+            <label for="inKey">API-nyckel (Twelve Data)</label>
+            <input id="inKey" type="password" autocomplete="off" placeholder="Klistra in din nyckel">
+            <span class="hint">Gratis på <a href="https://twelvedata.com/pricing" target="_blank" rel="noopener">twelvedata.com</a>. Nycklar från andra tjänster, till exempel Databento, fungerar inte. Nyckeln sparas bara i din webbläsare.</span>
+          </div>
+          <button class="btn" id="btnSaveKey">Spara nyckel</button>
+        </div>
+        <label class="check" for="inSe"><input id="inSe" type="checkbox"> Mitt Twelve Data-konto har Stockholmsbörsen (Pro)</label>
+        <div class="src" id="srcTxt">Krypto från Binance, aktier från Twelve Data.</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="settings" id="journalPanel">
+    <summary>Handelsdagbok och dina data <span class="sum-meta" id="journalMeta"></span></summary>
+    <div class="settings-body">
+      <div class="settings-group">
+        <h2>Sammanställning</h2>
+        <div class="jstats" id="jStats"></div>
+        <p class="hint">Logga köp och sälj i detaljvyn för en tillgång (klicka på raden). Dagboken visar om besluten följde trendlinjen och hur det gick. Allt sparas bara i din webbläsare.</p>
+      </div>
+      <div class="settings-group">
+        <h2>Alla loggade beslut</h2>
+        <div id="jAll"></div>
+      </div>
+      <div class="settings-group">
+        <h2>Dina data</h2>
+        <p class="hint">Bevakningar, dagbok och inställningar sparas i den här webbläsaren. Exportera dem för att flytta till en annan dator eller till webbversionen av Flipradar. API-nyckeln följer inte med.</p>
+        <div class="keyrow">
+          <button class="btn" id="btnExport">Exportera data</button>
+          <label class="btn" for="inImport">Importera data</label>
+          <input id="inImport" type="file" accept="application/json,.json" hidden>
+          <button class="btn" id="btnCopyWatch">Kopiera bevakningslista för mobilnotiser</button>
+        </div>
+        <textarea id="watchOut" class="codeout" rows="3" readonly hidden aria-label="Bevakningslista som JSON"></textarea>
+      </div>
+    </div>
+  </details>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr id="thead">
+          <th class="asset" data-key="sym"><button>Tillgång <span class="arrow"></span></button></th>
+          <th class="num" data-key="close"><button>Pris <span class="arrow"></span></button></th>
+          <th data-key="dir"><button>Trend <span class="arrow"></span></button></th>
+          <th class="num" data-key="scoreN" title="Signalbetyg 1–10: hur väl trendlinjen har fungerat historiskt på tillgången"><button>Betyg <span class="arrow"></span></button></th>
+          <th class="num" data-key="line"><button>Nästa flip <span class="arrow"></span></button></th>
+          <th class="num opt" data-key="dist"><button>Avstånd <span class="arrow"></span></button></th>
+          <th class="num opt-m" data-key="barsSince"><button>Tid sedan flip <span class="arrow"></span></button></th>
+          <th class="num opt" data-key="sinceFlip"><button>Sedan flip <span class="arrow"></span></button></th>
+          <th class="opt" data-key="rsChg" title="Krypto mot BTC, amerikanska aktier mot SPY"><button>Mot BTC/SPY <span class="arrow"></span></button></th>
+          <th class="static opt">Senaste mönster</th>
+          <th class="opt opt-wide" data-key="conf"><button>V · D <span class="arrow"></span></button></th>
+          <th class="static opt opt-wide">Senaste året</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <footer>
+    <p>Trendlinjen är en ATR-baserad trailinglinje på (högsta+lägsta)/2. Trenden byter när en stapel stänger på andra sidan linjen. Den pågående stapeln räknas med, som på ett TradingView-diagram, så en flip är inte bekräftad förrän stapeln stängt.</p>
+    <p>Veckostaplar börjar på måndag (UTC). Inte finansiell rådgivning.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Tillgångar ----------
+  // Krypto: [symbol, namn]. Handlas mot USDT på Binance. Par som inte finns döljs automatiskt.
+  const CRYPTO = [
+    ["BTC","Bitcoin"],["ETH","Ethereum"],["XRP","XRP"],["BNB","BNB"],["SOL","Solana"],["DOGE","Dogecoin"],
+    ["ADA","Cardano"],["TRX","Tron"],["LINK","Chainlink"],["AVAX","Avalanche"],["SUI","Sui"],["XLM","Stellar"],
+    ["TON","Toncoin"],["HBAR","Hedera"],["BCH","Bitcoin Cash"],["LTC","Litecoin"],["DOT","Polkadot"],["UNI","Uniswap"],
+    ["NEAR","Near"],["AAVE","Aave"],["SHIB","Shiba Inu"],["PEPE","Pepe"],["APT","Aptos"],["ICP","Internet Computer"],
+    ["ETC","Ethereum Classic"],["POL","Polygon"],["ARB","Arbitrum"],["OP","Optimism"],["ATOM","Cosmos"],["FIL","Filecoin"],
+    ["RENDER","Render"],["INJ","Injective"],["TIA","Celestia"],["SEI","Sei"],["STX","Stacks"],["IMX","Immutable"],
+    ["GRT","The Graph"],["ALGO","Algorand"],["VET","VeChain"],["FET","Artificial Superintelligence"],["TAO","Bittensor"],["WLD","Worldcoin"],
+    ["ENA","Ethena"],["ONDO","Ondo"],["JUP","Jupiter"],["BONK","Bonk"],["WIF","dogwifhat"],["FLOKI","Floki"],
+    ["CRV","Curve"],["LDO","Lido"],["RUNE","THORChain"],["SAND","The Sandbox"],["MANA","Decentraland"],["AXS","Axie Infinity"],
+    ["GALA","Gala"],["APE","ApeCoin"],["CHZ","Chiliz"],["EGLD","MultiversX"],["THETA","Theta"],["XTZ","Tezos"],
+    ["IOTA","IOTA"],["NEO","Neo"],["QNT","Quant"],["FLOW","Flow"],["KAVA","Kava"],["ZEC","Zcash"],
+    ["DASH","Dash"],["COMP","Compound"],["SNX","Synthetix"],["1INCH","1inch"],["CAKE","PancakeSwap"],["JASMY","JasmyCoin"],
+    ["PENDLE","Pendle"],["PYTH","Pyth"],["JTO","Jito"],["STRK","Starknet"],["ZK","ZKsync"],["W","Wormhole"],
+    ["ENS","ENS"],["BAT","Basic Attention"],["ZRO","LayerZero"],["ORDI","Ordi"],["NOT","Notcoin"],["PENGU","Pudgy Penguins"],
+    ["VIRTUAL","Virtuals"],["S","Sonic"],["EIGEN","EigenLayer"],["ETHFI","ether.fi"],["AR","Arweave"],["ROSE","Oasis"],
+    ["MINA","Mina"],["GMX","GMX"],["DYDX","dYdX"],["SUSHI","SushiSwap"],["YFI","yearn.finance"],["ZIL","Zilliqa"],
+    ["KSM","Kusama"],["CFX","Conflux"],["AXL","Axelar"],["ARKM","Arkham"],["TWT","Trust Wallet"],["BERA","Berachain"],
+    ["LPT","Livepeer"],["TRUMP","Official Trump"],["KAITO","Kaito"],["RAY","Raydium"],
+    ["PAXG","PAX Gold"],["MKR","Maker"],["FXS","Frax"],["CVX","Convex"],["BAL","Balancer"],["UMA","UMA"],
+    ["KNC","Kyber"],["LRC","Loopring"],["RPL","Rocket Pool"],["SSV","SSV Network"],["LQTY","Liquity"],["RSR","Reserve Rights"],
+    ["TRB","Tellor"],["BAND","Band Protocol"],["API3","API3"],["ANKR","Ankr"],["CELO","Celo"],["ONE","Harmony"],
+    ["IOTX","IoTeX"],["HOT","Holo"],["ZRX","0x"],["STORJ","Storj"],["SKL","SKALE"],["OGN","Origin"],
+    ["MASK","Mask Network"],["COTI","COTI"],["ICX","ICON"],["ONT","Ontology"],["QTUM","Qtum"],["ZEN","Horizen"],
+    ["RVN","Ravencoin"],["DGB","DigiByte"],["SC","Siacoin"],["XEC","eCash"],["ACH","Alchemy Pay"],["CKB","Nervos"],
+    ["GLM","Golem"],["BLUR","Blur"],["ID","Space ID"],["MAGIC","Treasure"],["YGG","Yield Guild"],["ILV","Illuvium"],
+    ["ENJ","Enjin"],["ALICE","My Neighbor Alice"],["PIXEL","Pixels"],["PORTAL","Portal"],["XAI","Xai"],["GMT","STEPN"],
+    ["MANTA","Manta"],["ALT","AltLayer"],["DYM","Dymension"],["SAGA","Saga"],["TNSR","Tensor"],["OMNI","Omni"],
+    ["REZ","Renzo"],["BB","BounceBit"],["IO","io.net"],["LISTA","Lista DAO"],["BANANA","Banana Gun"],["DOGS","Dogs"],
+    ["HMSTR","Hamster Kombat"],["CATI","Catizen"],["NEIRO","Neiro"],["TURBO","Turbo"],["BOME","Book of Meme"],["MEME","Memecoin"],
+    ["PNUT","Peanut the Squirrel"],["ACT","Act I"],["MOVE","Movement"],["ME","Magic Eden"],["USUAL","Usual"],["VANA","Vana"],
+    ["BIO","Bio Protocol"],["COOKIE","Cookie DAO"],["SOLV","Solv"],["ANIME","Animecoin"],["LAYER","Solayer"],["IP","Story"],
+    ["SHELL","MyShell"],["RED","RedStone"],["HYPER","Hyperlane"],["INIT","Initia"],["NIL","Nillion"],["SXT","Space and Time"],
+    ["HAEDAL","Haedal"],["HUMA","Huma Finance"],["SOPH","Sophon"],["RESOLV","Resolv"],["SAHARA","Sahara AI"],["LA","Lagrange"],
+    ["ERA","Caldera"],["WCT","WalletConnect"],["PUMP","Pump.fun"],["XPL","Plasma"],["WLFI","World Liberty Financial"],["ASTER","Aster"],
+    ["LINEA","Linea"],["OM","MANTRA"],["AEVO","Aevo"],["NMR","Numeraire"],["AUDIO","Audius"],["JST","JUST"],
+    ["SUN","Sun"],["BTT","BitTorrent"],["WIN","WINkLink"],["POLYX","Polymesh"],["HIVE","Hive"],["STEEM","Steem"],
+    ["LUNA","Terra"],["LUNC","Terra Classic"],["ARPA","ARPA"],["CTSI","Cartesi"],["DENT","Dent"],["TFUEL","Theta Fuel"],
+    ["NKN","NKN"],["SPELL","Spell"],["PEOPLE","ConstitutionDAO"],["SUPER","SuperVerse"],["C98","Coin98"],["ASTR","Astar"],
+    ["GAS","Gas"],["AGLD","Adventure Gold"],["CYBER","Cyber"],["ARK","Ark"],["NTRN","Neutron"],["WOO","WOO"],
+    ["EDU","Open Campus"],["RDNT","Radiant"],["PHB","Phoenix"],["CHR","Chromia"],["AI","Sleepless AI"],["NFP","NFPrompt"],
+    ["ACE","Fusionist"],["HOOK","Hooked"],["HIGH","Highstreet"],["FIDA","Bonfida"],["IQ","IQ"],["A","Vaulta"]
+  ];
+  // Kategorier för aktier. Nyckel → namn i menyn, i den ordning de visas.
+  const CATEGORIES = [
+    ["bigtech", "Big Tech"], ["ai", "AI"], ["semi", "Halvledare"], ["mjuk", "Mjukvara & moln"],
+    ["infra", "Infrastruktur"], ["green", "Greentech"], ["energi", "Energi"], ["verkstad", "Verkstad & industri"],
+    ["forsvar", "Försvar"], ["finans", "Finans"], ["krypto", "Kryptonära"], ["halsa", "Hälsa"],
+    ["konsument", "Konsument"], ["ravaror", "Råvaror"], ["index", "Index & ETF"]
+  ];
+  // Aktier och ETF:er: [symbol, namn, kategorier, etf?]. Amerikanska börser (ingår i Twelve Datas gratisnivå).
+  const STOCKS = [
+    ["AAPL","Apple","bigtech,konsument"],["MSFT","Microsoft","bigtech,ai,mjuk"],["NVDA","Nvidia","bigtech,ai,semi"],
+    ["AMZN","Amazon","bigtech,ai,mjuk,konsument"],["GOOGL","Alphabet","bigtech,ai,mjuk"],["META","Meta","bigtech,ai"],
+    ["TSLA","Tesla","bigtech,green,konsument"],["AVGO","Broadcom","ai,semi"],["ORCL","Oracle","ai,mjuk"],
+    ["ADBE","Adobe","mjuk"],["CRM","Salesforce","mjuk,ai"],["AMD","AMD","ai,semi"],
+    ["INTC","Intel","semi"],["QCOM","Qualcomm","semi"],["TXN","Texas Instruments","semi"],
+    ["MU","Micron","ai,semi"],["AMAT","Applied Materials","semi"],["LRCX","Lam Research","semi"],
+    ["KLAC","KLA","semi"],["ARM","Arm","ai,semi"],["ASML","ASML","semi"],
+    ["TSM","TSMC","ai,semi"],["SMCI","Super Micro","ai,infra"],["MRVL","Marvell","ai,semi"],
+    ["CSCO","Cisco","infra,mjuk"],["IBM","IBM","ai,mjuk"],["NOW","ServiceNow","mjuk,ai"],
+    ["INTU","Intuit","mjuk"],["PANW","Palo Alto Networks","mjuk"],["CRWD","CrowdStrike","mjuk"],
+    ["SNOW","Snowflake","mjuk,ai"],["PLTR","Palantir","ai,mjuk,forsvar"],["NET","Cloudflare","mjuk,infra"],
+    ["DDOG","Datadog","mjuk"],["SHOP","Shopify","mjuk,konsument"],["APP","AppLovin","ai,mjuk"],
+    ["VRT","Vertiv","ai,infra"],["ETN","Eaton","infra,green"],["PWR","Quanta Services","infra,green"],
+    ["FLEX","Flex (Flextronics)","verkstad,infra"],
+    ["UBER","Uber","konsument"],["ABNB","Airbnb","konsument"],["NFLX","Netflix","konsument"],
+    ["SPOT","Spotify","konsument"],["DIS","Disney","konsument"],["RDDT","Reddit","ai,konsument"],
+    ["COIN","Coinbase","krypto,finans"],["MSTR","Strategy","krypto"],["HOOD","Robinhood","krypto,finans"],
+    ["MARA","MARA Holdings","krypto"],["RIOT","Riot Platforms","krypto"],["CLSK","CleanSpark","krypto"],
+    ["IREN","IREN","krypto,ai,infra"],["HUT","Hut 8","krypto"],["CRCL","Circle","krypto,finans"],
+    ["SOFI","SoFi","finans"],["RKLB","Rocket Lab","forsvar"],["IONQ","IonQ","ai"],
+    ["JPM","JPMorgan","finans"],["BAC","Bank of America","finans"],["GS","Goldman Sachs","finans"],
+    ["MS","Morgan Stanley","finans"],["WFC","Wells Fargo","finans"],["BRK.B","Berkshire Hathaway","finans"],
+    ["V","Visa","finans"],["MA","Mastercard","finans"],["PYPL","PayPal","finans"],
+    ["AXP","American Express","finans"],["BLK","BlackRock","finans"],["SCHW","Charles Schwab","finans"],
+    ["LLY","Eli Lilly","halsa"],["UNH","UnitedHealth","halsa"],["JNJ","Johnson & Johnson","halsa"],
+    ["NVO","Novo Nordisk","halsa"],["AZN","AstraZeneca (USA)","halsa"],["ABBV","AbbVie","halsa"],["MRK","Merck","halsa"],
+    ["PFE","Pfizer","halsa"],["ISRG","Intuitive Surgical","halsa"],["TMO","Thermo Fisher","halsa"],
+    ["WMT","Walmart","konsument"],["COST","Costco","konsument"],["HD","Home Depot","konsument"],
+    ["MCD","McDonald's","konsument"],["KO","Coca-Cola","konsument"],["PEP","PepsiCo","konsument"],
+    ["NKE","Nike","konsument"],["SBUX","Starbucks","konsument"],["PG","Procter & Gamble","konsument"],
+    ["XOM","ExxonMobil","energi"],["CVX","Chevron","energi"],["NEE","NextEra Energy","green,energi"],
+    ["FSLR","First Solar","green,energi"],["ENPH","Enphase Energy","green,energi"],
+    ["CAT","Caterpillar","verkstad,infra"],["BA","Boeing","forsvar,verkstad"],["GE","GE Aerospace","verkstad,forsvar"],
+    ["LMT","Lockheed Martin","forsvar"],["RTX","RTX","forsvar"],["DE","Deere","verkstad"],
+    ["SPY","S&P 500","index",1],["QQQ","Nasdaq 100","index",1],["IWM","Russell 2000","index",1],["DIA","Dow Jones","index",1],
+    ["GLD","Guld","ravaror,index",1],["SLV","Silver","ravaror,index",1],["TLT","Långa US-räntor","index",1],
+    ["SMH","Halvledare","semi,index",1],["ARKK","ARK Innovation","index",1],["IBIT","iShares Bitcoin","krypto,index",1]
+  ];
+  // Stockholmsbörsen: [symbol, namn, kategorier, etp?]. Kräver Twelve Data Pro eller högre.
+  const SWEDEN = [
+    ["SWEC.B","Sweco","infra"],["VOLV.B","Volvo","verkstad"],["ATCO.A","Atlas Copco","verkstad"],
+    ["SAND","Sandvik","verkstad"],["SKF.B","SKF","verkstad"],["ALFA","Alfa Laval","verkstad,green"],
+    ["ABB","ABB","verkstad,infra,green"],["ASSA.B","Assa Abloy","verkstad"],["HEXA.B","Hexagon","mjuk,verkstad"],
+    ["INVE.B","Investor","finans"],["EQT","EQT","finans"],["SEB.A","SEB","finans"],
+    ["SHB.A","Handelsbanken","finans"],["SWED.A","Swedbank","finans"],["AZA","Avanza","finans"],["SAVE","Nordnet","finans"],
+    ["ERIC.B","Ericsson","infra"],["SINCH","Sinch","mjuk"],["AZN","AstraZeneca","halsa"],
+    ["HM.B","H&M","konsument"],["EVO","Evolution","konsument"],["SAAB.B","Saab","forsvar"],
+    ["NIBE.B","NIBE","green"],["BOL","Boliden","ravaror,green"],["VIR10SEK","Virtune Crypto Top 10","krypto",1]
+  ];
+  // Kategorier för krypto (en tillgång kan ha flera)
+  const CRYPTO_CATEGORIES = [
+    ["k-l1", "Layer 1"], ["k-l2", "Layer 2 & skalning"], ["k-defi", "DeFi"], ["k-ai", "AI & data"],
+    ["k-infra", "Orakel & infrastruktur"], ["k-compute", "Lagring & datorkraft"], ["k-rwa", "RWA & betalningar"],
+    ["k-gaming", "Gaming, NFT & metaverse"], ["k-meme", "Memecoins"], ["k-plattform", "Börs- & plattformstokens"]
+  ];
+  const CRYPTO_CAT_MAP = {
+    "k-l1": "BTC ETH XRP BNB SOL ADA TRX AVAX SUI XLM TON HBAR BCH LTC DOT NEAR APT ICP ETC ATOM ALGO VET EGLD XTZ IOTA NEO FLOW KAVA SEI INJ MINA KSM CFX ZIL ONE CELO ROSE ICX ONT QTUM RVN DGB XEC CKB BERA S LUNA LUNC ASTR NTRN HIVE STEEM A SC ZEN",
+    "k-l2": "LAYER ORDI POL ARB OP IMX STRK ZK MANTA ALT TIA DYM SAGA STX SKL LRC CYBER LINEA OMNI INIT BB XPL SOPH ERA MOVE",
+    "k-defi": "UNI AAVE CRV LDO RUNE COMP SNX 1INCH CAKE PENDLE JUP JTO GMX DYDX SUSHI YFI MKR FXS CVX BAL UMA KNC RPL SSV LQTY RSR RAY ETHFI EIGEN ENA LISTA REZ SOLV USUAL HAEDAL HUMA RESOLV AEVO RDNT WOO JST SUN C98 SPELL ASTER BANANA WLFI OM",
+    "k-ai": "JASMY FET TAO RENDER WLD VIRTUAL AI NFP ARKM IO GRT IQ PHB SAHARA NIL SXT COOKIE KAITO SHELL VANA BIO NMR ACT",
+    "k-infra": "ZRX FIDA ARK LINK PYTH API3 BAND TRB RED W ZRO AXL QNT ANKR IOTX ENS LA HYPER WCT MASK ID ARPA CTSI NKN GAS CHR SSV",
+    "k-compute": "FIL AR STORJ GLM THETA TFUEL LPT RENDER IO SC AUDIO BTT",
+    "k-rwa": "IP ONDO PAXG XRP XLM LTC BCH DASH ZEC XEC ACH COTI POLYX OM USUAL HOT DENT",
+    "k-gaming": "SAND MANA AXS GALA APE CHZ ILV ENJ ALICE PIXEL PORTAL XAI YGG MAGIC BLUR ME TNSR HIGH HOOK ACE AGLD SUPER NOT HMSTR CATI DOGS ANIME GMT IMX OGN EDU WIN",
+    "k-meme": "DOGE SHIB PEPE BONK WIF FLOKI TURBO BOME MEME PNUT NEIRO TRUMP PENGU PEOPLE ACT DOGS",
+    "k-plattform": "BAT BNB TWT WOO ASTER PUMP CAKE JUP ME BB OKB"
+  };
+  const CRYPTO_CATS_BY_SYM = {};
+  Object.entries(CRYPTO_CAT_MAP).forEach(([k, list]) => list.split(/\s+/).forEach(sym => {
+    (CRYPTO_CATS_BY_SYM[sym] = CRYPTO_CATS_BY_SYM[sym] || []).includes(k) || CRYPTO_CATS_BY_SYM[sym].push(k);
+  }));
+
+  const ALL_CATEGORIES = [...CATEGORIES, ...CRYPTO_CATEGORIES];
+  const ASSETS = [
+    ...CRYPTO.map(([sym, name]) => ({ sym, name, type: "krypto", pair: sym + "USDT", cats: CRYPTO_CATS_BY_SYM[sym] || [] })),
+    ...STOCKS.map(([sym, name, cats, etf]) => ({ sym, name, type: "aktie", cats: cats.split(","), etf: !!etf })),
+    ...SWEDEN.map(([sym, name, cats, etf]) => ({ sym, name, type: "aktie", cats: cats.split(","), etf: !!etf, se: true, mic: "XSTO" }))
+  ].map(a => Object.assign(a, { key: a.type === "krypto" ? "c:" + a.sym : a.se ? a.sym + "@XSTO" : a.sym }));
+
+  const DEFAULTS = { atrLen: 10, mult: 3.2, freshN: 3, nearPct: 3, sePlan: false, notifyMode: "closed", notifyW: true, notifyD: true, autoMin: 15 };
+  const DAY = 86400000;
+
+  // ---------- Lagring (tål att localStorage saknas) ----------
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+
+  let settings = Object.assign({}, DEFAULTS, store.get("fr:settings", {}));
+  let apiKey = String(store.get("fr:tdkey", "") || "").replace(/\s+/g, "");
+
+  const state = {
+    tf: "w", market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, quick: null, q: "", watchOnly: false,
+    sortKey: "barsSince", sortDir: 1, open: null,
+    mode: "loading", stockProgress: null, updated: null
+  };
+  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false });
+
+  // data[sym] = { status: 'loading'|'ok'|'err'|'nokey', msg, w:[], d:[], res:{w,d} }
+  const data = {};
+  ASSETS.forEach(a => { data[a.key] = { status: "loading", msg: "" }; });
+
+  // ---------- Motorn: Trendlinjen ----------
+  function atrRma(bars, len) {
+    const out = new Array(bars.length).fill(null);
+    let sum = 0, rma = null;
+    for (let i = 0; i < bars.length; i++) {
+      const b = bars[i];
+      const tr = i === 0 ? b.h - b.l
+        : Math.max(b.h - b.l, Math.abs(b.h - bars[i - 1].c), Math.abs(b.l - bars[i - 1].c));
+      if (i < len - 1) { sum += tr; continue; }
+      if (i === len - 1) { sum += tr; rma = sum / len; }
+      else rma = (rma * (len - 1) + tr) / len;
+      out[i] = rma;
+    }
+    return out;
+  }
+
+  function trendLine(bars, atrLen, mult) {
+    const atr = atrRma(bars, atrLen);
+    const line = new Array(bars.length).fill(null);
+    const dirs = new Array(bars.length).fill(null);
+    let upT = null, dnT = null, dir = 1;
+    for (let i = 0; i < bars.length; i++) {
+      if (atr[i] == null) continue;
+      const b = bars[i];
+      const src = (b.h + b.l) / 2;
+      const up = src - mult * atr[i];
+      const dn = src + mult * atr[i];
+      const upPrev = upT == null ? up : upT;
+      const dnPrev = dnT == null ? dn : dnT;
+      const pc = i > 0 ? bars[i - 1].c : NaN;
+      upT = pc > upPrev ? Math.max(up, upPrev) : up;
+      dnT = pc < dnPrev ? Math.min(dn, dnPrev) : dn;
+      if (dir === -1 && b.c > dnPrev) dir = 1;
+      else if (dir === 1 && b.c < upPrev) dir = -1;
+      line[i] = dir === 1 ? upT : dnT;
+      dirs[i] = dir;
+    }
+    return { line, dirs, atr };
+  }
+
+  // Är stapeln som började vid t stängd? Krypto stänger 00:00 UTC. Aktier räknas som stängda
+  // efter 22:00 UTC (efter börsstängning i både USA och Sverige), veckan efter fredagens stängning.
+  function barClosed(t, tf, a, now) {
+    if (a.type === "krypto") return now >= t + (tf === "w" ? 7 : 1) * DAY;
+    return now >= t + (tf === "w" ? 4 * DAY : 0) + 22 * 3600000;
+  }
+
+  // ---------- Analys: signalbetyg, volatilitet, mönster, relativ styrka ----------
+  const mean = xs => xs.length ? xs.reduce((sum, x) => sum + x, 0) / xs.length : null;
+
+  // Perioder från en flip till nästa. Den pågående perioden räknas inte.
+  function periodsOf(bars, dirs) {
+    const P = [];
+    let st = -1;
+    for (let i = 1; i < bars.length; i++) {
+      if (dirs[i] == null || dirs[i - 1] == null || dirs[i] === dirs[i - 1]) continue;
+      if (st >= 0) {
+        const dir = dirs[st], entry = bars[st].c, exit = bars[i].c;
+        let ext = dir === 1 ? -Infinity : Infinity;
+        for (let j = st; j <= i; j++) ext = dir === 1 ? Math.max(ext, bars[j].h) : Math.min(ext, bars[j].l);
+        P.push({ dir, a: st, b: i, len: i - st, ret: exit / entry - 1, give: dir === 1 ? 1 - exit / ext : null });
+      }
+      st = i;
+    }
+    return P;
+  }
+
+  // Signalbetyg 1–10: hur väl trendlinjen har fungerat historiskt på just den här tillgången.
+  //   30 % träffsäkerhet i bull-perioder (steg priset från flip till flip?)
+  //   30 % vinstfaktor i bull-perioder (summa vinster / summa förluster, tak 4)
+  //   20 % träffsäkerhet i bear-perioder (föll priset?)
+  //   20 % stabilitet (andel perioder som inte var falska flippar på högst 2 staplar)
+  // Kräver minst 3 avslutade bull-perioder och 2 bear-perioder.
+  function scoreOf(P, bars) {
+    const bull = P.filter(p => p.dir === 1), bear = P.filter(p => p.dir === -1);
+    if (bull.length < 3 || bear.length < 2) return null;
+    const win = bull.filter(p => p.ret > 0).length / bull.length;
+    const gains = bull.filter(p => p.ret > 0).reduce((sum, p) => sum + p.ret, 0);
+    const losses = -bull.filter(p => p.ret <= 0).reduce((sum, p) => sum + p.ret, 0);
+    const pf = losses > 0 ? gains / losses : gains > 0 ? 4 : 0;
+    const bearOk = bear.filter(p => p.ret < 0).length / bear.length;
+    const falseRate = P.filter(p => p.len <= 2).length / P.length;
+    const parts = { win, pf: Math.min(pf, 4) / 4, bearOk, stable: 1 - falseRate };
+    const raw = 0.3 * parts.win + 0.3 * parts.pf + 0.2 * parts.bearOk + 0.2 * parts.stable;
+    return {
+      score: Math.max(1, Math.min(10, Math.round(1 + 9 * raw))),
+      parts, pfRaw: pf, falseRate,
+      nBull: bull.length, nBear: bear.length,
+      avgBull: mean(bull.map(p => p.ret)), avgBear: mean(bear.map(p => p.ret)),
+      avgGive: mean(bull.map(p => p.give)),
+      years: (bars[bars.length - 1].t - bars[P[0].a].t) / (365.25 * DAY)
+    };
+  }
+  const scoreLabel = n => n >= 8 ? "Hög" : n >= 5 ? "Medel" : "Låg";
+  const scoreCls = n => n >= 8 ? "s-hi" : n >= 5 ? "s-mid" : "s-lo";
+
+  // Volatilitetsläge: hur brett bandet är i procent av priset. Ett brett band gör att linjen reagerar sent.
+  // Nivåerna bygger på den absoluta bredden; jämförelsen med tillgångens historik visas som extra information.
+  const VOL_NAMES = [null, "Smalt band", "Normalt band", "Brett band", "Mycket brett band"];
+  function volOf(bars, atr, mult) {
+    const L = bars.length - 1;
+    const bw = i => atr[i] == null ? null : mult * atr[i] / bars[i].c * 100;
+    const cur = bw(L);
+    if (cur == null) return null;
+    const hist = [];
+    for (let i = Math.max(0, L - 260); i < L; i++) { const v = bw(i); if (v != null) hist.push(v); }
+    const level = cur >= 35 ? 4 : cur >= 22 ? 3 : cur >= 12 ? 2 : 1;
+    const pct = hist.length >= 20 ? hist.filter(x => x < cur).length / hist.length * 100 : null;
+    return { bw: cur, pct, level };
+  }
+
+  // Mönster: samma regler som i Pine-skriptet.
+  // Diagrammönster (Edwards & Magee, Bulkowski) räknas när priset stänger bortom halslinjen.
+  // Ljusstakemönster (Nison) räknas bara efter en rörelse i motsatt riktning.
+  const PAT = { piv: 5, tol: 0.6, wait: 30, horizon: 52, candleN: 5 };
+  function detectPatterns(bars) {
+    const n = bars.length, atr = atrRma(bars, 14), out = [];
+    const H = i => bars[i].h, Lo = i => bars[i].l, C = i => bars[i].c, O = i => bars[i].o;
+    const body = i => Math.abs(C(i) - O(i));
+    const P = PAT.piv;
+    let phs = [], pls = [], dt = null, db = null, hs = null, ihs = null;
+    const between = (list, b1, b2, low) => {
+      let best = null;
+      for (const [p, b] of list) if (b > b1 && b < b2 && (best == null || (low ? p < best[0] : p > best[0]))) best = [p, b];
+      return best;
+    };
+    const add = (i, name, side, kind, extra) => out.push(Object.assign({ i, t: bars[i].t, name, side, kind,
+      ref: kind === "chart" ? "Edwards & Magee / Bulkowski" : "Steve Nison" }, extra || {}));
+    for (let i = 0; i < n; i++) {
+      const a = atr[i];
+      if (a == null) continue;
+      const j = i - P;
+      if (j >= P) {
+        let isPH = true, isPL = true;
+        for (let k = j - P; k <= j + P; k++) {
+          if (k === j) continue;
+          if (H(k) > H(j) || (k < j && H(k) === H(j))) isPH = false;
+          if (Lo(k) < Lo(j) || (k < j && Lo(k) === Lo(j))) isPL = false;
+        }
+        if (isPH) {
+          const ph = H(j), tol = PAT.tol * a;
+          if (phs.length) {
+            const [h1, b1] = phs[phs.length - 1];
+            const t = between(pls, b1, j, true);
+            if (t && Math.abs(ph - h1) <= tol && j - b1 >= 2 * P && Math.min(ph, h1) - t[0] >= a)
+              dt = { neck: t[0], top: Math.max(ph, h1), st: i };
+            if (phs.length >= 2) {
+              const [h0, b0] = phs[phs.length - 2];
+              const t1 = between(pls, b0, b1, true);
+              if (t1 && t && h1 > h0 && h1 > ph && Math.abs(ph - h0) <= tol * 1.5 && h1 - Math.max(h0, ph) >= 0.5 * a)
+                hs = { t1: t1[0], t1b: t1[1], slope: (t[0] - t1[0]) / (t[1] - t1[1]), head: h1, hb: b1, st: i };
+            }
+          }
+          phs.push([ph, j]); if (phs.length > 8) phs.shift();
+        }
+        if (isPL) {
+          const pl = Lo(j), tol = PAT.tol * a;
+          if (pls.length) {
+            const [l1, b1] = pls[pls.length - 1];
+            const p = between(phs, b1, j, false);
+            if (p && Math.abs(pl - l1) <= tol && j - b1 >= 2 * P && p[0] - Math.max(pl, l1) >= a)
+              db = { neck: p[0], bot: Math.min(pl, l1), st: i };
+            if (pls.length >= 2) {
+              const [l0, b0] = pls[pls.length - 2];
+              const p1 = between(phs, b0, b1, false);
+              if (p1 && p && l1 < l0 && l1 < pl && Math.abs(pl - l0) <= tol * 1.5 && Math.min(l0, pl) - l1 >= 0.5 * a)
+                ihs = { p1: p1[0], p1b: p1[1], slope: (p[0] - p1[0]) / (p[1] - p1[1]), head: l1, hb: b1, st: i };
+            }
+          }
+          pls.push([pl, j]); if (pls.length > 8) pls.shift();
+        }
+      }
+      if (dt) {
+        if (C(i) > dt.top || i - dt.st > PAT.wait) dt = null;
+        else if (C(i) < dt.neck) { add(i, "Dubbeltopp", -1, "chart", { neck: dt.neck, target: dt.neck - (dt.top - dt.neck), invalid: dt.top }); dt = null; }
+      }
+      if (db) {
+        if (C(i) < db.bot || i - db.st > PAT.wait) db = null;
+        else if (C(i) > db.neck) { add(i, "Dubbelbotten", 1, "chart", { neck: db.neck, target: db.neck + (db.neck - db.bot), invalid: db.bot }); db = null; }
+      }
+      if (hs) {
+        const nn = hs.t1 + hs.slope * (i - hs.t1b), nh = hs.t1 + hs.slope * (hs.hb - hs.t1b);
+        if (C(i) > hs.head || i - hs.st > PAT.wait) hs = null;
+        else if (C(i) < nn) { add(i, "Huvud & skuldror", -1, "chart", { neck: nn, target: nn - (hs.head - nh), invalid: hs.head }); hs = null; }
+      }
+      if (ihs) {
+        const nn = ihs.p1 + ihs.slope * (i - ihs.p1b), nh = ihs.p1 + ihs.slope * (ihs.hb - ihs.p1b);
+        if (C(i) < ihs.head || i - ihs.st > PAT.wait) ihs = null;
+        else if (C(i) > nn) { add(i, "Omv. huvud & skuldror", 1, "chart", { neck: nn, target: nn + (nh - ihs.head), invalid: ihs.head }); ihs = null; }
+      }
+      if (i < 8) continue;
+      const rng = H(i) - Lo(i), up = H(i) - Math.max(O(i), C(i)), dn = Math.min(O(i), C(i)) - Lo(i);
+      const fall = C(i - 1) < C(i - 6), rise = C(i - 1) > C(i - 6);
+      const bE = C(i) > O(i) && C(i - 1) < O(i - 1) && C(i) >= O(i - 1) && O(i) <= C(i - 1) && body(i) > body(i - 1) && fall;
+      const sE = C(i) < O(i) && C(i - 1) > O(i - 1) && C(i) <= O(i - 1) && O(i) >= C(i - 1) && body(i) > body(i - 1) && rise;
+      const hm = rng > 0.5 * a && dn >= 2 * body(i) && up <= 0.25 * rng && fall;
+      const ss = rng > 0.5 * a && up >= 2 * body(i) && dn <= 0.25 * rng && rise;
+      const ms = C(i - 2) < O(i - 2) && body(i - 2) > 0.6 * a && body(i - 1) < 0.35 * body(i - 2) && Math.max(O(i - 1), C(i - 1)) <= C(i - 2) + 0.1 * a && C(i) > O(i) && C(i) > (O(i - 2) + C(i - 2)) / 2 && C(i - 3) < C(i - 8);
+      const es = C(i - 2) > O(i - 2) && body(i - 2) > 0.6 * a && body(i - 1) < 0.35 * body(i - 2) && Math.min(O(i - 1), C(i - 1)) >= C(i - 2) - 0.1 * a && C(i) < O(i) && C(i) < (O(i - 2) + C(i - 2)) / 2 && C(i - 3) > C(i - 8);
+      const cands = [[ms, "Morgonstjärna", 1], [es, "Kvällsstjärna", -1], [bE, "Bullish engulfing", 1], [sE, "Bearish engulfing", -1], [hm, "Hammare", 1], [ss, "Stjärnfall", -1]];
+      for (const [cond, name, side] of cands) if (cond) { add(i, name, side, "candle"); break; }
+    }
+    return out;
+  }
+  // Utfall: diagrammönster = nådde mätt mål innan priset stängde bortom mönstrets topp/botten (inom 52 staplar).
+  // Ljusstakemönster = priset hade rört sig i signalens riktning 5 staplar senare.
+  function patternOutcome(p, bars) {
+    const L = bars.length - 1;
+    if (p.kind === "candle") {
+      if (L - p.i < PAT.candleN) return "open";
+      return (bars[p.i + PAT.candleN].c - bars[p.i].c) * p.side > 0 ? "hit" : "fail";
+    }
+    for (let j = p.i + 1; j <= Math.min(L, p.i + PAT.horizon); j++) {
+      const b = bars[j];
+      if (p.side === 1 ? b.h >= p.target : b.l <= p.target) return "hit";
+      if (p.side === 1 ? b.c < p.invalid : b.c > p.invalid) return "fail";
+    }
+    return L - p.i >= PAT.horizon ? "fail" : "open";
+  }
+  const OUTCOME_NAMES = { hit: "Fungerade", fail: "Misslyckades", open: "Pågår" };
+
+  // Relativ styrka: trendlinjen på kvoten mellan tillgången och referensen (BTC eller SPY)
+  function ratioBars(bars, ref) {
+    const m = new Map(ref.map(b => [b.t, b]));
+    const out = [];
+    for (const b of bars) {
+      const r = m.get(b.t);
+      if (!r || !(r.o > 0 && r.h > 0 && r.l > 0 && r.c > 0)) continue;
+      const vals = [b.o / r.o, b.h / r.h, b.l / r.l, b.c / r.c];
+      out.push({ t: b.t, o: vals[0], h: Math.max(...vals), l: Math.min(...vals), c: vals[3] });
+    }
+    return out;
+  }
+  function rsOf(bars, refBars, tf) {
+    if (!bars || !refBars) return null;
+    const rb = ratioBars(bars, refBars);
+    if (rb.length < settings.atrLen + 20) return null;
+    const { dirs } = trendLine(rb, settings.atrLen, settings.mult);
+    const L = rb.length - 1, back = tf === "w" ? 13 : 20;
+    return { dir: dirs[L], chg: L >= back ? (rb[L].c / rb[L - back].c - 1) * 100 : null, back };
+  }
+  function refKeyOf(a) {
+    if (a.type === "krypto") return a.sym === "BTC" ? null : "c:BTC";
+    if (a.se || a.sym === "SPY") return null;
+    return "SPY";
+  }
+
+  function summarize(bars, tf, a) {
+    if (!bars || bars.length < settings.atrLen + 2) return null;
+    const { line, dirs, atr } = trendLine(bars, settings.atrLen, settings.mult);
+    const L = bars.length - 1;
+    if (dirs[L] == null) return null;
+    const score = scoreOf(periodsOf(bars, dirs), bars);
+    const allPats = detectPatterns(bars).map(p => Object.assign(p, { outcome: patternOutcome(p, bars) }));
+    const resolved = allPats.filter(p => p.outcome !== "open");
+    const pats = allPats.slice(-3);
+    const patBull = pats.filter(p => p.side === 1).length, patBear = pats.length - patBull;
+    let f = -1;
+    for (let i = L; i > 0; i--) {
+      if (dirs[i] != null && dirs[i - 1] != null && dirs[i] !== dirs[i - 1]) { f = i; break; }
+    }
+    const close = bars[L].c;
+    const lastFlipLevel = f > 0 ? line[f - 1] : null;
+    const ci = barClosed(bars[L].t, tf, a, Date.now()) ? L : L - 1;
+    return {
+      line: line[L], dir: dirs[L], close,
+      cdir: dirs[ci] == null ? dirs[L] : dirs[ci], cline: line[ci] == null ? line[L] : line[ci],
+      dist: Math.abs(close - line[L]) / close * 100,
+      flipIdx: f,
+      flipTime: f > 0 ? bars[f].t : null,
+      barsSince: f > 0 ? L - f : null,
+      lastFlipLevel,
+      sinceFlip: lastFlipLevel ? (close - lastFlipLevel) / lastFlipLevel * 100 : null,
+      score, scoreN: score ? score.score : null,
+      vol: volOf(bars, atr, settings.mult),
+      pats, lastPat: pats.length ? pats[pats.length - 1] : null, L,
+      patDir: !pats.length ? 0 : patBull > patBear ? 1 : patBear > patBull ? -1 : 0, patBull, patBear,
+      patStats: { n: resolved.length, hit: resolved.filter(p => p.outcome === "hit").length },
+      rs: null, rsChg: null, rsRef: refKeyOf(a) ? (a.type === "krypto" ? "BTC" : "SPY") : null,
+      series: { line, dirs }
+    };
+  }
+
+  let suppressWatch = false;
+  function computeAll() {
+    ASSETS.forEach(a => {
+      const d = data[a.key];
+      if (d.status !== "ok") { d.res = null; return; }
+      d.res = { w: summarize(d.w, "w", a), d: summarize(d.d, "d", a) };
+    });
+    // Relativ styrka mot BTC (krypto) och SPY (amerikanska aktier)
+    ASSETS.forEach(a => {
+      const d = data[a.key];
+      if (!d.res) return;
+      const rk = refKeyOf(a), ref = rk && data[rk];
+      ["w", "d"].forEach(tf => {
+        const s = d.res[tf];
+        if (!s) return;
+        s.rs = ref && ref.status === "ok" ? rsOf(d[tf], ref[tf], tf) : null;
+        s.rsChg = s.rs ? s.rs.chg : null;
+      });
+    });
+    if (!suppressWatch) checkWatch();
+  }
+  // Räkna om utan att det ger notiser (t.ex. när indikatorinställningarna ändras)
+  function recomputeQuiet() {
+    suppressWatch = true; computeAll(); suppressWatch = false;
+    rebaselineWatch();
+  }
+
+  // ---------- Datainhämtning ----------
+  async function getJSON(url) {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }
+
+  const BINANCE_HOSTS = ["https://data-api.binance.vision", "https://api.binance.com"];
+  async function binanceKlines(pair, interval, limit) {
+    let err;
+    for (const h of BINANCE_HOSTS) {
+      try {
+        const j = await getJSON(`${h}/api/v3/klines?symbol=${pair}&interval=${interval}&limit=${limit}`);
+        if (!Array.isArray(j)) throw new Error(j && j.msg ? j.msg : "Oväntat svar");
+        return j.map(k => ({ t: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4] }));
+      } catch (e) { err = e; }
+    }
+    throw err;
+  }
+
+  async function twelveDaily(a) {
+    const url = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(a.sym)}${a.mic ? "&mic_code=" + a.mic : ""}&interval=1day&outputsize=900&apikey=${encodeURIComponent(apiKey)}`;
+    const r = await fetch(url, { cache: "no-store" });
+    let j = null;
+    try { j = await r.json(); } catch (err) { /* svaret var inte JSON */ }
+    if (!r.ok || !j || j.status === "error" || !Array.isArray(j.values)) {
+      const e = new Error((j && j.message) || ("HTTP " + r.status));
+      e.code = (j && j.code) || r.status;
+      throw e;
+    }
+    return j.values
+      .map(v => ({ t: Date.parse(v.datetime.slice(0, 10) + "T00:00:00Z"), o: +v.open, h: +v.high, l: +v.low, c: +v.close }))
+      .reverse();
+  }
+
+  function toWeekly(daily) {
+    const out = [];
+    let cur = null;
+    for (const b of daily) {
+      const dow = (new Date(b.t).getUTCDay() + 6) % 7;
+      const wk = b.t - dow * DAY;
+      if (!cur || cur.t !== wk) { cur = { t: wk, o: b.o, h: b.h, l: b.l, c: b.c }; out.push(cur); }
+      else { cur.h = Math.max(cur.h, b.h); cur.l = Math.min(cur.l, b.l); cur.c = b.c; }
+    }
+    return out;
+  }
+
+  // ---------- Cache i IndexedDB (rymmer mycket mer än localStorage) ----------
+  const idb = (() => {
+    let dbp = null;
+    function open() {
+      if (dbp) return dbp;
+      dbp = new Promise((res, rej) => {
+        try {
+          const r = indexedDB.open("flipradar", 1);
+          r.onupgradeneeded = () => r.result.createObjectStore("bars");
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        } catch (e) { rej(e); }
+      });
+      return dbp;
+    }
+    return {
+      async get(k) {
+        try {
+          const db = await open();
+          return await new Promise(res => {
+            const q = db.transaction("bars").objectStore("bars").get(k);
+            q.onsuccess = () => res(q.result == null ? null : q.result);
+            q.onerror = () => res(null);
+          });
+        } catch (e) { return null; }
+      },
+      async set(k, v) {
+        try {
+          const db = await open();
+          await new Promise(res => {
+            const t = db.transaction("bars", "readwrite");
+            t.objectStore("bars").put(v, k);
+            t.oncomplete = res; t.onerror = res; t.onabort = res;
+          });
+        } catch (e) { /* ingen cache i den här webbläsaren */ }
+      }
+    };
+  })();
+
+  const pack = bars => bars.map(b => [b.t, +b.o.toPrecision(7), +b.h.toPrecision(7), +b.l.toPrecision(7), +b.c.toPrecision(7)]);
+  const unpack = arr => arr.map(x => ({ t: x[0], o: x[1], h: x[2], l: x[3], c: x[4] }));
+  async function readStockCache(sym) {
+    const c = await idb.get("d:" + sym);
+    return c && Array.isArray(c.d) ? { ts: c.ts, d: unpack(c.d) } : null;
+  }
+  function writeStockCache(sym, d) { return idb.set("d:" + sym, { ts: Date.now(), d: pack(d) }); }
+  function setStock(sym, daily, ts) {
+    Object.assign(data[sym], { status: "ok", d: daily.slice(-400), w: toWeekly(daily), ts, msg: "" });
+  }
+
+  async function binanceListed() {
+    for (const h of BINANCE_HOSTS) {
+      try {
+        const j = await getJSON(`${h}/api/v3/ticker/price`);
+        if (Array.isArray(j)) return new Set(j.map(x => x.symbol));
+      } catch (e) { /* prova nästa värd */ }
+    }
+    return null;
+  }
+
+  async function loadCrypto(a) {
+    const [w, d] = await Promise.all([binanceKlines(a.pair, "1w", 300), binanceKlines(a.pair, "1d", 400)]);
+    Object.assign(data[a.key], { status: "ok", w, d, ts: Date.now(), msg: "" });
+  }
+
+  async function pool(items, limit, fn) {
+    let next = 0;
+    const worker = async () => { while (next < items.length) { const k = next++; await fn(items[k]); } };
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let stockRun = 0;
+  const STOCK_MAX_AGE = 12 * 3600 * 1000;
+  const WATCH_MAX_AGE = 60 * 60 * 1000; // bevakade aktier: högst en timme gammal data
+  const STOCK_GAP = 8000; // gratisnivån: 8 anrop per minut
+
+  // Webbversionen: aktiedata från datafilen som den schemalagda kontrollen skriver (data/stocks.json).
+  // Finns ingen datafil (t.ex. när sidan öppnas som fil) används Twelve Data som tidigare.
+  let hostedAt = 0, hostedSet = null;
+  async function loadHostedStocks(force) {
+    if (location.protocol === "file:") return null;
+    if (!force && hostedSet && Date.now() - hostedAt < 30 * 60000) return hostedSet;
+    try {
+      const r = await fetch("data/stocks.json", { cache: "no-cache" });
+      if (!r.ok) return hostedSet;
+      const j = await r.json();
+      const set = new Set();
+      const conv = arr => arr.map(x => ({ t: x[0] * 1000, o: x[1], h: x[2], l: x[3], c: x[4] }));
+      Object.entries(j.assets || {}).forEach(([key, v]) => {
+        if (!data[key] || !Array.isArray(v.d) || !v.d.length) return;
+        const d = conv(v.d), w = Array.isArray(v.w) && v.w.length ? conv(v.w) : toWeekly(d);
+        Object.assign(data[key], { status: "ok", d: d.slice(-400), w, ts: Date.parse(j.updated) || Date.now(), msg: "" });
+        set.add(key);
+      });
+      hostedAt = Date.now(); hostedSet = set;
+      state.hosted = { updated: Date.parse(j.updated) || null, n: set.size };
+      return set;
+    } catch (e) { return hostedSet; }
+  }
+
+  async function loadStocks(force) {
+    const run = ++stockRun;
+    state.keyError = null;
+    const stocks = ASSETS.filter(a => a.type === "aktie");
+    // Visa sparad data direkt, oavsett ålder. Nyare data fylls på i bakgrunden.
+    const ages = {};
+    await Promise.all(stocks.map(async a => {
+      const c = await readStockCache(a.key);
+      if (c && c.d.length) { setStock(a.key, c.d, c.ts); ages[a.key] = c.ts; }
+    }));
+    if (run !== stockRun) return;
+    const hosted = await loadHostedStocks(force);
+    if (run !== stockRun) return;
+    const need = stocks.filter(a => !(hosted && hosted.has(a.key)));
+    if (!need.length) { state.stockProgress = null; computeAll(); renderAll(); return; }
+    if (!apiKey) {
+      need.forEach(a => { if (data[a.key].status !== "ok") Object.assign(data[a.key], { status: "nokey", msg: hosted ? "Saknas i datafilen. Lägg in en API-nyckel från Twelve Data för att hämta den." : "Lägg in en API-nyckel från Twelve Data under Avancerade inställningar" }); });
+      state.stockProgress = null;
+      computeAll(); renderAll();
+      return;
+    }
+    need.forEach(a => { if (a.se && !settings.sePlan && data[a.key].status !== "ok") Object.assign(data[a.key], { status: "plan", msg: "Stockholmsbörsen kräver Twelve Data Pro. Slå på under Avancerade inställningar om du har den nivån." }); });
+    const todo = need
+      .filter(a => !a.se || settings.sePlan)
+      .filter(a => force || !ages[a.key] || Date.now() - ages[a.key] > (isWatched(a.key) ? WATCH_MAX_AGE : STOCK_MAX_AGE))
+      .sort((x, y) => (isWatched(y.key) - isWatched(x.key)) || (ages[x.key] || 0) - (ages[y.key] || 0));
+    todo.forEach(a => { if (data[a.key].status !== "ok") Object.assign(data[a.key], { status: "loading", msg: "I kö…" }); });
+    computeAll(); renderAll();
+
+    for (let i = 0; i < todo.length; i++) {
+      if (run !== stockRun) return;
+      const a = todo[i];
+      state.stockProgress = { done: i, total: todo.length };
+      if (data[a.key].status !== "ok") data[a.key].msg = "Hämtar…";
+      renderStatus(); renderTable();
+      try {
+        const daily = await twelveDaily(a);
+        setStock(a.key, daily, Date.now());
+        writeStockCache(a.key, daily);
+      } catch (e) {
+        if (e.code === 429) { // för många anrop: vänta en minut och försök igen
+          if (data[a.key].status !== "ok") data[a.key].msg = "Väntar på anropsgräns…";
+          renderTable();
+          await sleep(61000); i--; continue;
+        }
+        if (e.code === 401) { // nyckeln godkänns inte: stoppa kön direkt
+          state.keyError = e.message;
+          todo.slice(i).forEach(x => { if (data[x.key].status !== "ok") Object.assign(data[x.key], { status: "err", msg: "API-nyckeln godkändes inte" }); });
+          state.stockProgress = null;
+          computeAll(); renderAll();
+          return;
+        }
+        if (data[a.key].status !== "ok") Object.assign(data[a.key], { status: "err", msg: e.message || "Kunde inte hämta" });
+      }
+      computeAll(); renderAll();
+      if (i < todo.length - 1) await sleep(STOCK_GAP);
+    }
+    if (run === stockRun) { state.stockProgress = null; state.updated = Date.now(); renderAll(); }
+  }
+
+  // ---------- Exempeldata (när externa anrop blockeras) ----------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function hashStr(s) { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function demoDaily(a) {
+    const r = mulberry32(hashStr(a.sym + "flipradar"));
+    const base = a.type === "krypto" ? Math.pow(10, r() * 5 - 1.5) : 15 + r() * 600;
+    const n = 900;
+    const vol = a.type === "krypto" ? 0.034 : 0.017;
+    const now = new Date();
+    const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    let p = 100, drift = 0;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      if (i % 45 === 0) drift = (r() - 0.48) * vol * 0.5;
+      const ret = drift + (r() - 0.5) * 2 * vol;
+      const o = p, c = p * Math.exp(ret);
+      const h = Math.max(o, c) * (1 + r() * vol * 0.7);
+      const l = Math.min(o, c) * (1 - r() * vol * 0.7);
+      out.push({ t: today - (n - 1 - i) * DAY, o, h, l, c });
+      p = c;
+    }
+    const k = base / p;
+    return out.map(b => ({ t: b.t, o: b.o * k, h: b.h * k, l: b.l * k, c: b.c * k }));
+  }
+  function enterDemo() {
+    state.mode = "demo";
+    ASSETS.forEach(a => {
+      const d = demoDaily(a);
+      Object.assign(data[a.key], { status: "ok", d: d.slice(-400), w: toWeekly(d), msg: "" });
+    });
+    state.updated = Date.now();
+    computeAll();
+    renderAll();
+  }
+
+  // ---------- Laddning ----------
+  async function loadAll(force) {
+    stockRun++;
+    state.mode = "loading";
+    renderStatus();
+    const listed = await binanceListed();
+    if (!listed) { enterDemo(); return; }
+    state.mode = "live";
+    loadStocks(force); // aktierna hämtas parallellt, i sin egen takt
+    const cryptos = ASSETS.filter(a => a.type === "krypto");
+    cryptos.forEach(a => {
+      if (!listed.has(a.pair)) data[a.key].status = "hidden";
+      else if (force || data[a.key].status !== "ok") Object.assign(data[a.key], { status: "loading", msg: "Hämtar…" });
+    });
+    renderAll();
+    let n = 0;
+    await pool(cryptos.filter(a => data[a.key].status !== "hidden"), 8, async a => {
+      try { await loadCrypto(a); }
+      catch (e) { Object.assign(data[a.key], { status: "err", msg: "Ingen data från Binance" }); }
+      if (++n % 12 === 0) { computeAll(); renderAll(); }
+    });
+    state.updated = Date.now();
+    lastCrypto = Date.now();
+    computeAll(); renderAll();
+  }
+
+  // Tyst uppdatering medan sidan är öppen: behåller gammal data om ett anrop misslyckas
+  let lastCrypto = 0, refreshing = false;
+  async function refreshQuiet() {
+    if (refreshing || state.mode !== "live") return;
+    refreshing = true;
+    try {
+      const cryptos = ASSETS.filter(a => a.type === "krypto" && data[a.key].status === "ok");
+      await pool(cryptos, 8, async a => { try { await loadCrypto(a); } catch (e) { /* behåll gammal data */ } });
+      lastCrypto = Date.now(); state.updated = Date.now();
+      computeAll(); renderAll();
+      if (!state.stockProgress) loadStocks(false);
+    } finally { refreshing = false; }
+  }
+  setInterval(() => {
+    if (state.mode !== "live" || !settings.autoMin || !lastCrypto) return;
+    if (Date.now() - lastCrypto >= settings.autoMin * 60000) refreshQuiet();
+  }, 30000);
+
+  // ---------- Bevakning ----------
+  // watch[key] = { w: senast kända riktning på veckan, d: på dagen }
+  let watch = store.get("fr:watch", {}) || {};
+  let events = store.get("fr:events", []) || [];
+  const ASSET_BY_KEY = Object.fromEntries(ASSETS.map(a => [a.key, a]));
+  const isWatched = k => Object.prototype.hasOwnProperty.call(watch, k);
+  const watchDir = s => !s ? null : settings.notifyMode === "live" ? s.dir : s.cdir;
+  const watchLine = s => s.line; // samma nivå som tabellen visar: den som gäller vid nästa stängning
+  function saveWatch() { store.set("fr:watch", watch); }
+  function baseline(key) {
+    const res = data[key] && data[key].res;
+    return { w: watchDir(res && res.w), d: watchDir(res && res.d) };
+  }
+  function rebaselineWatch() { Object.keys(watch).forEach(k => { watch[k] = baseline(k); }); saveWatch(); }
+
+  function toggleWatch(key) {
+    const a = ASSET_BY_KEY[key];
+    if (isWatched(key)) { delete watch[key]; saveWatch(); }
+    else {
+      watch[key] = baseline(key); saveWatch();
+      if (notifyState() === "default" && !store.get("fr:askedNotify", false)) {
+        store.set("fr:askedNotify", true);
+        showToast({ cls: "", title: `Du bevakar nu ${a.sym}`, body: "Vill du få en datornotis när en bevakad tillgång flippar? Sidan behöver vara öppen, men fliken får ligga i bakgrunden.", actions: [["Tillåt notiser", "perm"]] });
+      }
+    }
+    renderTiles(); renderTable(); renderNotify();
+  }
+
+  function checkWatch() {
+    if (state.mode !== "live") return;
+    const found = [];
+    Object.keys(watch).forEach(key => {
+      const a = ASSET_BY_KEY[key], d = data[key];
+      if (!a) { delete watch[key]; return; }
+      if (!d || !d.res) return;
+      ["w", "d"].forEach(tf => {
+        const s = d.res[tf], cur = watchDir(s);
+        if (cur == null) return;
+        const prev = watch[key][tf];
+        if (prev == null) { watch[key][tf] = cur; return; }
+        if (prev !== cur) {
+          watch[key][tf] = cur;
+          if (tf === "w" ? settings.notifyW : settings.notifyD) found.push({ a, tf, s, dir: cur });
+        }
+      });
+    });
+    saveWatch();
+    found.forEach(announce);
+  }
+
+  let unseen = 0;
+  function announce({ a, tf, s, dir }) {
+    const tfName = tf === "w" ? "veckografen" : "dagsgrafen";
+    const title = `${a.sym} flippade till ${dir === 1 ? "BULLISH" : "BEARISH"}`;
+    const next = watchLine(s);
+    const body = `${a.name} på ${tfName}. Pris ${fmtPrice(s.close)}. Blir ${dir === 1 ? "bearish under" : "bullish över"} ${fmtPrice(next)}.` +
+      (settings.notifyMode === "live" ? " Stapeln har inte stängt än, så flippen kan ändras." : "");
+    events.unshift({ t: Date.now(), key: a.key, sym: a.sym, name: a.name, tf, dir, price: s.close });
+    events = events.slice(0, 30);
+    store.set("fr:events", events);
+    showToast({ cls: dir === 1 ? "bull" : "bear", title, body, actions: [["Visa", "open:" + a.key]] });
+    desktopNotify(title, body, a.key + ":" + tf, a.key);
+    if (document.hidden) { unseen++; document.title = `(${unseen}) Flipradar`; }
+    renderNotify();
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { unseen = 0; document.title = "Flipradar"; } });
+
+  function notifyState() {
+    if (!("Notification" in window)) return "unsupported";
+    return Notification.permission; // "default" | "granted" | "denied"
+  }
+  function desktopNotify(title, body, tag, key) {
+    if (notifyState() !== "granted") return false;
+    try {
+      const n = new Notification(title, { body, tag });
+      n.onclick = () => { try { window.focus(); } catch (e) {} if (key) openAsset(key); n.close(); };
+      return true;
+    } catch (e) { return false; }
+  }
+  async function askPermission() {
+    if (notifyState() === "unsupported") { renderNotify(); return; }
+    try { await Promise.resolve(Notification.requestPermission()); } catch (e) { /* nekad eller stöds inte här */ }
+    renderNotify();
+    if (notifyState() === "granted") desktopNotify("Flipradar", "Datornotiser är på. Du får en notis när en bevakad tillgång flippar.", "flipradar-on");
+  }
+
+  function showToast({ cls, title, body, actions }) {
+    const box = $("toasts");
+    const el = document.createElement("div");
+    el.className = "toast " + (cls || "");
+    el.innerHTML = `<strong>${esc(title)}</strong><button class="close" aria-label="Stäng">×</button><p>${esc(body)}</p>` +
+      (actions && actions.length ? `<div class="acts">${actions.map(([l, v]) => `<button class="btn" data-act="${esc(v)}">${esc(l)}</button>`).join("")}</div>` : "");
+    box.prepend(el);
+    while (box.children.length > 4) box.lastElementChild.remove();
+  }
+  document.getElementById("toasts").addEventListener("click", e => {
+    const t = e.target.closest(".toast"); if (!t) return;
+    if (e.target.closest(".close")) { t.remove(); return; }
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const v = b.dataset.act;
+    if (v === "perm") askPermission();
+    else if (v.startsWith("open:")) openAsset(v.slice(5));
+    t.remove();
+  });
+
+  function openAsset(key) {
+    const rows = applyFilters(buildRows());
+    if (!rows.some(r => r.a.key === key)) {
+      Object.assign(state, { market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, quick: null, q: "", watchOnly: false });
+      syncControls();
+    }
+    state.open = key;
+    renderTiles(); renderTable();
+    const tr = tbody.querySelector(`tr.row[data-sym="${CSS.escape(key)}"]`);
+    if (tr) tr.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function renderNotify() {
+    const n = Object.keys(watch).length;
+    $("nWatch").textContent = n;
+    const st = notifyState();
+    const where = `Du bevakar <b>${n}</b> ${n === 1 ? "tillgång" : "tillgångar"}. Markera fler med stjärnan i tabellen. Sidan måste vara öppen för att upptäcka flippar, men fliken får ligga i bakgrunden.`;
+    const msg = {
+      granted: "Datornotiser är <b>på</b>.",
+      default: "Datornotiser är inte påslagna. Flippar visas som rutor här på sidan tills du tillåter notiser.",
+      denied: "Datornotiser är <b>blockerade</b> för den här sidan. Tillåt dem i webbläsarens inställningar för sidan (ikonen till vänster om adressfältet). Har du öppnat Flipradar som fil kan webbläsaren blockera notiser helt; då visas flippar som rutor här på sidan.",
+      unsupported: "Den här webbläsaren eller vyn kan inte visa datornotiser. Flippar visas som rutor här på sidan."
+    }[st];
+    $("notifyStatus").innerHTML = `${msg} ${where}`;
+    $("btnPerm").hidden = st !== "default";
+    const ev = $("eventList");
+    ev.innerHTML = events.length ? events.slice(0, 10).map(e => `<li><button data-open="${esc(e.key)}">
+        <span class="t">${new Date(e.t).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+        <span class="s">${esc(e.sym)}</span>
+        <span class="${e.dir === 1 ? "up" : "down"}">${e.dir === 1 ? "Bullish" : "Bearish"} · ${e.tf === "w" ? "vecka" : "dag"}</span>
+        <span class="muted">${fmtPrice(e.price)}</span></button></li>`).join("")
+      : `<li class="empty-ev">Inga flippar än. Här listas de när de händer.</li>`;
+  }
+  document.getElementById("eventList").addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (b) openAsset(b.dataset.open); });
+  document.getElementById("btnPerm").addEventListener("click", askPermission);
+  document.getElementById("btnTest").addEventListener("click", () => {
+    const title = "Testnotis från Flipradar", body = "Så här ser det ut när en bevakad tillgång flippar.";
+    const sent = desktopNotify(title, body, "flipradar-test");
+    showToast({ cls: "bull", title, body: body + (sent ? " En datornotis skickades också." : " Datornotiser är inte påslagna, så bara den här rutan visas.") });
+  });
+
+  // ---------- Formatering ----------
+  const nf0 = new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 });
+  const nf2 = new Intl.NumberFormat("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function fmtPrice(v) {
+    if (v == null || !isFinite(v)) return "–";
+    const a = Math.abs(v);
+    if (a >= 1000) return nf0.format(v);
+    if (a >= 1) return nf2.format(v);
+    return new Intl.NumberFormat("sv-SE", { maximumSignificantDigits: 4 }).format(v);
+  }
+  const fmtPct = v => (v == null || !isFinite(v)) ? "–" : nf2.format(v) + " %";
+  const fmtSigned = v => (v == null || !isFinite(v)) ? "–" : (v >= 0 ? "+" : "−") + nf2.format(Math.abs(v)) + " %";
+  const fmtDate = t => t == null ? "–" : new Date(t).toISOString().slice(0, 10);
+  const fmtTime = t => new Date(t).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+  function fmtSince(s, tf) {
+    if (s.barsSince == null) return "–";
+    const days = Math.max(0, Math.round((Date.now() - s.flipTime) / DAY));
+    return tf === "w" ? `${s.barsSince} v · ${days} d` : `${s.barsSince} d`;
+  }
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // ---------- Rader och filter ----------
+  function confOf(res) {
+    const w = res && res.w ? res.w.dir : null, d = res && res.d ? res.d.dir : null;
+    if (w === 1 && d === 1) return 2;
+    if (w === -1 && d === -1) return -2;
+    return 0;
+  }
+
+  function buildRows() {
+    return ASSETS.filter(a => data[a.key].status !== "hidden").map(a => {
+      const d = data[a.key];
+      const s = d.res ? d.res[state.tf] : null;
+      return { a, d, s, conf: confOf(d.res) };
+    });
+  }
+
+  function marketMatch(r) {
+    if (state.market === "alla") return true;
+    if (state.market === "krypto") return r.a.type === "krypto";
+    if (state.market === "sverige") return !!r.a.se;
+    return r.a.type === "aktie";
+  }
+
+  function isFresh(s) { return s && s.barsSince != null && s.barsSince < settings.freshN; }
+  function isNear(s) { return s && s.dist <= settings.nearPct; }
+
+  // Marknad, kategori och sökning: styr både tabellen och rutorna högst upp
+  function baseMatch(r) {
+    if (state.watchOnly && !isWatched(r.a.key)) return false;
+    if (!marketMatch(r)) return false;
+    if (state.cat !== "alla" && !(r.a.cats && r.a.cats.includes(state.cat))) return false;
+    const q = state.q.trim().toLowerCase();
+    if (q && !(r.a.sym.toLowerCase().includes(q) || r.a.name.toLowerCase().includes(q))) return false;
+    return true;
+  }
+
+  function applyFilters(rows) {
+    return rows.filter(r => {
+      if (!baseMatch(r)) return false;
+      const s = r.s;
+      const needs = state.trend !== "alla" || state.quick || state.rs !== "alla" || state.minScore;
+      if (needs && !s) return false;
+      if (state.trend === "bull" && s.dir !== 1) return false;
+      if (state.trend === "bear" && s.dir !== -1) return false;
+      if (state.trend === "aligned" && r.conf === 0) return false;
+      if (state.quick === "bull" && s.dir !== 1) return false;
+      if (state.quick === "bear" && s.dir !== -1) return false;
+      if (state.quick === "fresh" && !isFresh(s)) return false;
+      if (state.quick === "near" && !isNear(s)) return false;
+      if (state.rs !== "alla" && !(s && s.rs && s.rs.dir === (state.rs === "strong" ? 1 : -1))) return false;
+      if (state.minScore && !(s && s.scoreN != null && s.scoreN >= state.minScore)) return false;
+      return true;
+    });
+  }
+
+  function sortRows(rows) {
+    const k = state.sortKey, dir = state.sortDir;
+    const val = r => {
+      if (k === "sym") return r.a.sym;
+      if (k === "conf") return r.conf;
+      return r.s ? r.s[k] : null;
+    };
+    return rows.slice().sort((x, y) => {
+      const a = val(x), b = val(y);
+      if (a == null && b == null) return x.a.sym.localeCompare(y.a.sym);
+      if (a == null) return 1;
+      if (b == null) return -1;
+      if (typeof a === "string") return a.localeCompare(b) * dir;
+      return (a - b) * dir || x.a.sym.localeCompare(y.a.sym);
+    });
+  }
+
+  // ---------- Rendering ----------
+  const $ = id => document.getElementById(id);
+  const tbody = $("tbody");
+
+  function renderStatus() {
+    const el = $("status"), txt = $("statusTxt");
+    el.className = "status " + state.mode;
+    if (state.mode === "loading") txt.textContent = "Hämtar kurser…";
+    else if (state.mode === "demo") txt.textContent = "Exempeldata";
+    else {
+      let t = "Live · uppdaterad " + (state.updated ? fmtTime(state.updated) : "–");
+      if (state.hosted && state.hosted.n) t += ` · aktier från datafil ${state.hosted.updated ? new Date(state.hosted.updated).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}`;
+      if (state.stockProgress) {
+        const left = Math.ceil((state.stockProgress.total - state.stockProgress.done) * STOCK_GAP / 60000);
+        t += ` · aktier ${state.stockProgress.done}/${state.stockProgress.total}, ca ${left} min kvar`;
+      }
+      txt.textContent = t;
+    }
+    $("paramsTxt").textContent = `ATR ${settings.atrLen} × ${String(settings.mult).replace(".", ",")}`;
+    $("sumMeta").textContent = `ATR ${settings.atrLen} × ${String(settings.mult).replace(".", ",")} · ${apiKey ? "API-nyckel inlagd" : "Ingen API-nyckel"}`;
+    $("freshSub").textContent = `inom ${settings.freshN} staplar`;
+    $("nearSub").textContent = `inom ${String(settings.nearPct).replace(".", ",")} % från linjen`;
+    renderBanners();
+  }
+
+  function renderBanners() {
+    const out = [];
+    if (state.mode === "demo") {
+      out.push(`<div class="banner"><strong>Du ser exempeldata</strong><p>Sidan kunde inte hämta kurser härifrån. Artifact-sidor får inte anropa externa webbplatser, så siffrorna nedan är påhittade för att visa hur allt fungerar. Öppna HTML-filen från chatten i din webbläsare för att få riktiga kurser.</p></div>`);
+    } else if (state.mode === "live" && apiKey && state.keyError) {
+      out.push(`<div class="banner"><strong>Twelve Data godkände inte API-nyckeln</strong><p>Svar från Twelve Data: ${esc(state.keyError)}</p><p>Kopiera nyckeln igen från din sida hos Twelve Data (under API Keys), klistra in den under Avancerade inställningar och tryck Spara nyckel.</p><p><button class="linkbtn" data-open-settings>Öppna Avancerade inställningar</button></p></div>`);
+    } else if (state.mode === "live" && !apiKey && !(state.hosted && state.hosted.n)) {
+      out.push(`<div class="banner info"><strong>Aktier behöver en API-nyckel</strong><p>Kryptokurserna hämtas utan nyckel. För aktier skapar du ett gratiskonto hos Twelve Data och klistrar in nyckeln under Avancerade inställningar. Gratisnivån klarar 8 anrop per minut, så första hämtningen av alla cirka 100 aktier tar runt 13 minuter. Datan sparas i webbläsaren och visas direkt nästa gång, medan sidan uppdaterar det som är äldre än 12 timmar i bakgrunden.</p><p><button class="linkbtn" data-open-settings>Lägg in nyckel</button></p></div>`);
+    }
+    $("banners").innerHTML = out.join("");
+    $("banners").hidden = out.length === 0;
+  }
+
+  function renderTiles() {
+    const rows = buildRows().filter(baseMatch).filter(r => r.s);
+    $("nBull").textContent = rows.filter(r => r.s.dir === 1).length;
+    $("nBear").textContent = rows.filter(r => r.s.dir === -1).length;
+    $("nFresh").textContent = rows.filter(r => isFresh(r.s)).length;
+    $("nNear").textContent = rows.filter(r => isNear(r.s)).length;
+    document.querySelectorAll(".tile").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
+    renderMarket();
+  }
+
+  function vdCell(res) {
+    const cell = (s, letter) => !s ? `<span class="n">${letter}</span>` : `<span class="${s.dir === 1 ? "b" : "r"}" title="${letter === "V" ? "Vecka" : "Dag"}: ${s.dir === 1 ? "bullish" : "bearish"}">${letter}</span>`;
+    return `<div class="vd">${cell(res && res.w, "V")}${cell(res && res.d, "D")}</div>`;
+  }
+
+  function scoreCell(s) {
+    if (!s.score) return `<span class="score s-na" title="För lite historik för ett betyg">–</span>`;
+    return `<span class="score ${scoreCls(s.scoreN)}" title="Signalbetyg ${s.scoreN}/10 (${scoreLabel(s.scoreN).toLowerCase()}): hur väl trendlinjen har fungerat historiskt på tillgången">${s.scoreN}</span>`;
+  }
+  function rsCell(s) {
+    if (!s.rs) return `<span class="muted">–</span>`;
+    const strong = s.rs.dir === 1;
+    return `<span class="rs ${strong ? "up" : "down"}" title="Trendlinjen på kvoten mot ${s.rsRef}: ${strong ? "starkare" : "svagare"} än ${s.rsRef}. Förändring mot ${s.rsRef} senaste ${s.rs.back} ${state.tf === "w" ? "veckorna" : "dagarna"}: ${s.rs.chg == null ? "–" : fmtSigned(s.rs.chg)}.">${strong ? "▲" : "▼"} ${s.rs.chg == null ? (strong ? "Starkare" : "Svagare") : fmtSigned(s.rs.chg)}</span>`;
+  }
+  function patCell(s) {
+    const p = s.lastPat;
+    if (!p) return `<span class="muted">–</span>`;
+    return `<span class="patname ${p.side === 1 ? "up" : "down"}" title="${esc(p.name)} → ${p.side === 1 ? "bullish" : "bearish"} (${esc(p.ref)}). ${OUTCOME_NAMES[p.outcome]}.">${p.side === 1 ? "▲" : "▼"} ${esc(p.name)}</span> <span class="muted small">${s.L - p.i} st</span>`;
+  }
+
+  function assetCell(a) {
+    const tag = a.type === "krypto" ? "Krypto" : a.se ? (a.etf ? "ETP · SE" : "Aktie · SE") : a.etf ? "ETF" : "Aktie";
+    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span></div></td>`;
+  }
+
+  const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
+  const TREND_NAMES = { bull: "Bull", bear: "Bear", aligned: "V+D samstämmiga" };
+  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip" };
+  function activeFilterList() {
+    const f = [];
+    if (state.market !== "alla") f.push(["market", "Marknad", MARKET_NAMES[state.market]]);
+    if (state.trend !== "alla") f.push(["trend", "Trend", TREND_NAMES[state.trend]]);
+    if (state.cat !== "alla") f.push(["cat", "Kategori", (ALL_CATEGORIES.find(c => c[0] === state.cat) || [, state.cat])[1]]);
+    if (state.quick) f.push(["quick", "Ruta", QUICK_NAMES[state.quick]]);
+    if (state.q.trim()) f.push(["q", "Sök", `”${state.q.trim()}”`]);
+    if (state.rs !== "alla") f.push(["rs", "Mot BTC/SPY", state.rs === "strong" ? "Starkare" : "Svagare"]);
+    if (state.minScore) f.push(["minScore", "Betyg", state.minScore + " eller högre"]);
+    if (state.watchOnly) f.push(["watch", "Visar", "Bara bevakade"]);
+    return f;
+  }
+  function renderActiveFilters() {
+    const f = activeFilterList();
+    const box = $("activeFilters");
+    box.hidden = f.length === 0;
+    $("btnClear").disabled = f.length === 0;
+    $("btnClear").textContent = f.length ? `Rensa filter (${f.length})` : "Rensa filter";
+    $("selCat").classList.toggle("is-active", state.cat !== "alla");
+    $("selScore").classList.toggle("is-active", !!state.minScore);
+    $("search").classList.toggle("is-active", !!state.q.trim());
+    if (!f.length) { box.innerHTML = ""; return; }
+    box.innerHTML = `<span class="af-lbl">Aktiva filter</span>` +
+      f.map(([k, lbl, val]) => `<button class="chip" data-clear="${k}" title="Ta bort filtret"><span>${lbl}:</span> ${esc(val)} <i class="x" aria-hidden="true">×</i></button>`).join("") +
+      `<button class="linkbtn" data-clear="all">Rensa alla</button>`;
+  }
+
+  function renderTable() {
+    renderActiveFilters();
+    const all = buildRows();
+    const rows = sortRows(applyFilters(all));
+    $("countTxt").textContent = `Visar ${rows.length} av ${all.length}`;
+    document.querySelectorAll("#thead th[data-key]").forEach(th => {
+      const on = th.dataset.key === state.sortKey;
+      if (on) th.setAttribute("aria-sort", state.sortDir === 1 ? "ascending" : "descending"); else th.removeAttribute("aria-sort");
+      th.querySelector(".arrow").textContent = on ? (state.sortDir === 1 ? "▲" : "▼") : "";
+    });
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="12" class="empty">${state.watchOnly && !Object.keys(watch).length ? "Du bevakar inget än. Klicka på stjärnan framför en tillgång för att bevaka den." : "Inga tillgångar matchar filtren."}${state.cat !== "alla" && ((state.market === "krypto") !== state.cat.startsWith("k-")) && state.market !== "alla" ? " Kategorin hör till en annan marknad än den du valt." : ""}</td></tr>`;
+      return;
+    }
+    const html = [];
+    for (const r of rows) {
+      const { a, d, s } = r;
+      if (!s) {
+        const msg = d.status === "loading" ? (d.msg || "Hämtar…") : (d.status === "nokey" || d.status === "plan") ? d.msg : d.status === "err" ? "Kunde inte hämta: " + d.msg : "För lite historik";
+        html.push(`<tr>${assetCell(a)}<td colspan="11" class="msg">${esc(msg)}</td></tr>`);
+        continue;
+      }
+      const open = state.open === a.key;
+      const fresh = isFresh(s);
+      html.push(`<tr class="row${open ? " is-open" : ""}" data-sym="${esc(a.key)}" tabindex="0" aria-expanded="${open}">
+        ${assetCell(a)}
+        <td class="num">${fmtPrice(s.close)}</td>
+        <td><span class="pill ${s.dir === 1 ? "bull" : "bear"}${s.dir !== s.cdir ? " prelim" : ""}"${s.dir !== s.cdir ? ` title="Priset har korsat linjen men stapeln har inte stängt än. Flippen är obekräftad."` : ""}>${s.dir === 1 ? "Bull" : "Bear"}</span></td>
+        <td class="num">${scoreCell(s)}</td>
+        <td class="num ${s.dir === 1 ? "up" : "down"}">${s.vol && s.vol.level >= 4 ? `<span class="volwarn" title="Mycket brett band: linjen ligger ${nf0.format(s.vol.bw)} % från priset när den sätts, så den reagerar sent just nu">!</span>` : ""}${fmtPrice(s.line)}</td>
+        <td class="num opt ${isNear(s) ? "warn" : ""}">${fmtPct(s.dist)}</td>
+        <td class="num opt-m">${fmtSince(s, state.tf)}${fresh ? '<span class="new">NY</span>' : ""}</td>
+        <td class="num opt ${s.sinceFlip == null ? "" : s.sinceFlip >= 0 ? "up" : "down"}">${fmtSigned(s.sinceFlip)}</td>
+        <td class="opt">${rsCell(s)}</td>
+        <td class="opt">${patCell(s)}</td>
+        <td class="opt opt-wide">${vdCell(d.res)}</td>
+        <td class="opt opt-wide"><canvas class="spark" data-sym="${esc(a.key)}"></canvas></td>
+      </tr>`);
+      if (open) html.push(detailRow(a, d));
+    }
+    tbody.innerHTML = html.join("");
+    tbody.querySelectorAll("canvas.spark").forEach(c => {
+      const d = data[c.dataset.sym];
+      const s = d.res[state.tf];
+      drawSpark(c, d[state.tf], s);
+    });
+    const big = tbody.querySelector("canvas.big");
+    if (big) drawDetail(big, data[big.dataset.sym][state.tf], data[big.dataset.sym].res[state.tf]);
+  }
+
+  function detailRow(a, d) {
+    const s = d.res[state.tf];
+    const w = d.res.w, dd = d.res.d;
+    const tfName = state.tf === "w" ? "veckograf" : "dagsgraf";
+    const tvSym = a.type === "krypto" ? `BINANCE:${a.pair}` : a.se ? `OMXSTO:${a.sym.replace(".", "_")}` : a.sym;
+    const facts = [
+      ["Trend", `<span class="${s.dir === 1 ? "up" : "down"}">${s.dir === 1 ? "Bullish" : "Bearish"}</span>`],
+      [s.dir === 1 ? "Blir bearish under" : "Blir bullish över", fmtPrice(s.line)],
+      ["Avstånd", fmtPct(s.dist)],
+      ["Senaste flip", fmtPrice(s.lastFlipLevel)],
+      ["Flipdatum", fmtDate(s.flipTime)],
+      ["Tid sedan flip", fmtSince(s, state.tf)],
+      ["Sedan flip", fmtSigned(s.sinceFlip)],
+      ["Vecka", w ? (w.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(w.line) : "–"],
+      ["Dag", dd ? (dd.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(dd.line) : "–"],
+      ["Samstämmighet", confOf(d.res) === 2 ? '<span class="up">Bull</span>' : confOf(d.res) === -2 ? '<span class="down">Bear</span>' : "Blandad"]
+    ];
+    return `<tr class="detail"><td colspan="12">
+      <div class="detail-grid">
+        <div class="chart-box">
+          <div class="chart-head"><h3>${esc(a.name)} <span class="muted">${esc(a.sym)} · ${tfName}</span></h3>
+            <span class="detail-links"><a href="https://www.tradingview.com/chart/?symbol=${encodeURIComponent(tvSym)}" target="_blank" rel="noopener">Öppna i TradingView</a></span></div>
+          <div class="legend"><span><i></i>Pris just nu <b>${fmtPrice(s.close)}</b></span><span><i class="flip ${s.dir === 1 ? "bull" : "bear"}"></i>Flipnivå (${s.dir === 1 ? "blir bearish under" : "blir bullish över"}) <b>${fmtPrice(s.line)}</b></span></div>
+          <canvas class="big" data-sym="${esc(a.key)}" aria-label="Diagram för ${esc(a.name)} med trendlinjen"></canvas>
+        </div>
+        <dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+      </div>
+      <div class="insights">${insightCards(a, s, tfName)}</div>
+      ${typeof journalBlock === "function" ? journalBlock(a, s) : ""}
+    </td></tr>`;
+  }
+
+  function pctTxt(x) { return x == null ? "–" : nf0.format(x * 100) + " %"; }
+  function bar(x) { return `<span class="mbar"><i style="width:${Math.round(Math.max(0, Math.min(1, x)) * 100)}%"></i></span>`; }
+  function insightCards(a, s, tfName) {
+    const unit = state.tf === "w" ? "veckor" : "dagar";
+    // Signalbetyg
+    let sc;
+    if (s.score) {
+      const S = s.score;
+      sc = `<section class="card">
+        <h4>Signalbetyg</h4>
+        <div class="bigscore"><span class="score big ${scoreCls(S.score)}">${S.score}</span><span><b>${scoreLabel(S.score)}</b> tillförlitlighet<br><span class="muted small">av 10, på ${tfName}en</span></span></div>
+        <p class="muted small">Hur väl trendlinjen har fungerat på ${esc(a.name)} de senaste ${nf0.format(Math.max(1, S.years))} åren (${S.nBull} bull- och ${S.nBear} bear-perioder). Det säger inget säkert om framtiden.</p>
+        <ul class="parts">
+          <li><span>Bull-perioder med vinst</span>${bar(S.parts.win)}<b>${pctTxt(S.parts.win)}</b></li>
+          <li><span>Vinstfaktor</span>${bar(S.parts.pf)}<b>${S.pfRaw >= 4 ? "4+" : nf2.format(S.pfRaw)}</b></li>
+          <li><span>Bear-perioder där priset föll</span>${bar(S.parts.bearOk)}<b>${pctTxt(S.parts.bearOk)}</b></li>
+          <li><span>Stabilitet (ej falska flippar)</span>${bar(S.parts.stable)}<b>${pctTxt(S.parts.stable)}</b></li>
+        </ul>
+        <p class="small">Snitt per bull-period <b class="${S.avgBull >= 0 ? "up" : "down"}">${fmtSigned(S.avgBull * 100)}</b> · per bear-period <b class="${S.avgBear <= 0 ? "up" : "down"}">${fmtSigned(S.avgBear * 100)}</b> · gav tillbaka från toppen i snitt <b>${pctTxt(S.avgGive)}</b></p>
+      </section>`;
+    } else {
+      sc = `<section class="card"><h4>Signalbetyg</h4><p class="muted small">För lite historik för ett betyg. Det krävs minst 3 avslutade bull-perioder och 2 bear-perioder på ${tfName}en.</p></section>`;
+    }
+    // Volatilitet
+    const v = s.vol;
+    const volTxt = !v ? "–" :
+      v.level === 4 ? "Linjen reagerar mycket sent just nu. Priset kan röra sig en tredjedel eller mer innan en flip kommer, så en stor del av en rörelse kan hinna försvinna. Så såg det ut för BTC under 2021." :
+      v.level === 3 ? "Linjen reagerar ganska sent. En flip kräver en stor rörelse, så räkna med att en del av toppen eller botten hinner passera." :
+      v.level === 1 ? "Linjen reagerar snabbt, men falska flippar blir vanligare." :
+      "Linjen reagerar i normal takt.";
+    const vc = `<section class="card">
+      <h4>Volatilitetsläge</h4>
+      <div class="kv"><span>Läge</span><b class="${v && v.level >= 3 ? "warn" : ""}">${v ? VOL_NAMES[v.level] : "–"}</b></div>
+      <div class="kv"><span>Bandets bredd</span><b>${v ? nf0.format(v.bw) + " % av priset" : "–"}</b></div>
+      <div class="kv"><span>Jämfört med de senaste 5 åren</span><b>${v && v.pct != null ? "bredare än " + nf0.format(v.pct) + " % av tiden" : "–"}</b></div>
+      <p class="muted small">${volTxt}</p>
+    </section>`;
+    // Relativ styrka
+    const rs = s.rs;
+    const rc = `<section class="card">
+      <h4>Relativ styrka</h4>
+      ${rs ? `<div class="kv"><span>Mot ${s.rsRef}</span><b class="${rs.dir === 1 ? "up" : "down"}">${rs.dir === 1 ? "▲ Starkare" : "▼ Svagare"}</b></div>
+      <div class="kv"><span>Senaste ${rs.back} ${unit}</span><b class="${rs.chg >= 0 ? "up" : "down"}">${rs.chg == null ? "–" : fmtSigned(rs.chg)}</b></div>
+      <p class="muted small">Trendlinjen körd på kvoten ${esc(a.sym)}/${s.rsRef}. ${rs.dir === 1 ? `${esc(a.sym)} har en egen uppåttrend mot ${s.rsRef}, alltså gått bättre än att bara äga ${s.rsRef}.` : `${esc(a.sym)} har gått sämre än ${s.rsRef}. Att äga ${s.rsRef} hade varit bättre under trenden.`}</p>`
+      : `<p class="muted small">${s.rsRef ? `Jämförelsen mot ${s.rsRef} är inte klar än.` : a.se ? "Svenska aktier jämförs inte, eftersom det saknas ett jämförbart index i samma valuta." : "Referensen jämförs inte med sig själv."}</p>`}
+    </section>`;
+    // Mönster
+    const pats = s.pats.slice().reverse();
+    const pst = s.patStats;
+    const pc = `<section class="card">
+      <h4>Mönster, senaste 3</h4>
+      ${pats.length ? `<ul class="patlist">${pats.map(p => `<li>
+        <span class="patname ${p.side === 1 ? "up" : "down"}">${p.side === 1 ? "▲" : "▼"} ${esc(p.name)}</span>
+        <span class="muted small">${fmtDate(p.t)}${p.target ? " · mål " + fmtPrice(p.target) : ""}</span>
+        <span class="oc oc-${p.outcome}">${OUTCOME_NAMES[p.outcome]}</span></li>`).join("")}</ul>` : `<p class="muted small">Inga mönster hittade.</p>`}
+      <div class="kv"><span>Mönsterbild</span><b class="${s.patDir === 1 ? "up" : s.patDir === -1 ? "down" : ""}">${!pats.length ? "–" : s.patDir === 1 ? `Bullish (${s.patBull} av ${pats.length})` : s.patDir === -1 ? `Bearish (${s.patBear} av ${pats.length})` : "Blandad"}</b></div>
+      <div class="kv"><span>Trendlinje + mönster</span><b class="${!s.patDir ? "" : s.patDir === s.dir ? (s.dir === 1 ? "up" : "down") : "warn"}">${!s.patDir ? "–" : s.patDir === s.dir ? "Samstämmiga" : "Motstridiga"}</b></div>
+      <p class="muted small">${pst.n ? `Mönster på ${esc(a.sym)} har fungerat ${pst.hit} av ${pst.n} gånger (${nf0.format(pst.hit / pst.n * 100)} %).` : "Inga avslutade mönster att utvärdera än."} Diagrammönster räknas som fungerande om de nådde sitt mätta mål, ljusstakemönster om priset rört sig rätt 5 staplar senare.</p>
+    </section>`;
+    return sc + vc + rc + pc;
+  }
+
+  // ---------- Handelsdagbok ----------
+  // journal: [{ id, key, side: "buy"|"sell", price, t, note, tf, dir, score }]
+  let journal = store.get("fr:journal", []) || [];
+  const saveJournal = () => store.set("fr:journal", journal);
+  const todayISO = () => new Date().toISOString().slice(0, 10);
+
+  // Trendens riktning på ett visst datum (på den tidsram som visas)
+  function dirAt(key, tf, t) {
+    const d = data[key], s = d && d.res && d.res[tf], bars = d && d[tf];
+    if (!s || !bars) return null;
+    let idx = -1;
+    for (let i = bars.length - 1; i >= 0; i--) if (bars[i].t <= t) { idx = i; break; }
+    return idx >= 0 ? s.series.dirs[idx] : null;
+  }
+  const aligned = e => e.dir == null ? null : (e.side === "buy" ? e.dir === 1 : e.dir === -1);
+
+  // Para ihop köp och sälj per tillgång (först in, först ut)
+  function roundTrips() {
+    const byKey = {};
+    journal.slice().sort((x, y) => x.t - y.t || x.id - y.id).forEach(e => (byKey[e.key] = byKey[e.key] || []).push(e));
+    const closed = [], open = [];
+    Object.entries(byKey).forEach(([key, list]) => {
+      const q = [];
+      list.forEach(e => {
+        if (e.side === "buy") q.push(e);
+        else if (q.length) { const b = q.shift(); closed.push({ key, buy: b, sell: e, ret: e.price / b.price - 1 }); }
+      });
+      q.forEach(b => {
+        const d = data[key], s = d && d.res && (d.res[b.tf] || d.res.w);
+        open.push({ key, buy: b, ret: s ? s.close / b.price - 1 : null });
+      });
+    });
+    return { closed, open };
+  }
+
+  function journalRow(e, withSym) {
+    const a = ASSET_BY_KEY[e.key];
+    const al = aligned(e);
+    return `<li>
+      <span class="num muted">${fmtDate(e.t)}</span>
+      <span class="${e.side === "buy" ? "up" : "down"}">${e.side === "buy" ? "Köp" : "Sälj"}</span>
+      <span class="num">${withSym && a ? `<button class="linkbtn" data-open="${esc(e.key)}">${esc(a.sym)}</button> ` : ""}${fmtPrice(e.price)}</span>
+      <span class="note" title="${esc(e.note || "")}">${esc(e.note || "")}</span>
+      <span class="res">${al == null ? `<span class="tagok">–</span>` : `<span class="tagok ${al ? "yes" : "no"}" title="Trendlinjen var ${e.dir === 1 ? "bullish" : "bearish"} på ${e.tf === "w" ? "veckografen" : "dagsgrafen"} vid beslutet">${al ? "Med trenden" : "Mot trenden"}</span>`}</span>
+      <button class="del" data-del="${e.id}" aria-label="Ta bort" title="Ta bort">×</button>
+    </li>`;
+  }
+
+  function journalBlock(a, s) {
+    const mine = journal.filter(e => e.key === a.key).sort((x, y) => y.t - x.t);
+    const rt = roundTrips();
+    const openHere = rt.open.filter(o => o.key === a.key && o.ret != null);
+    const closedHere = rt.closed.filter(c => c.key === a.key);
+    return `<div class="journal">
+      <h4>Handelsdagbok för ${esc(a.sym)}</h4>
+      <form class="jform" data-key="${esc(a.key)}">
+        <div class="seg" role="radiogroup" aria-label="Köp eller sälj">
+          <button type="button" data-side="buy" aria-pressed="true">Köp</button>
+          <button type="button" data-side="sell" aria-pressed="false">Sälj</button>
+        </div>
+        <input type="number" name="price" step="any" min="0" value="${+s.close.toPrecision(6)}" aria-label="Pris" required>
+        <input type="date" name="date" value="${todayISO()}" max="${todayISO()}" aria-label="Datum">
+        <input type="text" name="note" maxlength="200" placeholder="Varför? T.ex. veckan flippade bull, betyg 8" aria-label="Anteckning">
+        <button class="btn primary" type="submit">Logga</button>
+      </form>
+      ${openHere.length || closedHere.length ? `<p class="small muted">${closedHere.map(c => `Avslutad affär ${fmtDate(c.buy.t)} → ${fmtDate(c.sell.t)}: <b class="${c.ret >= 0 ? "up" : "down"}">${fmtSigned(c.ret * 100)}</b>`).concat(openHere.map(o => `Öppet köp ${fmtDate(o.buy.t)}: <b class="${o.ret >= 0 ? "up" : "down"}">${fmtSigned(o.ret * 100)}</b> hittills`)).join(" · ")}</p>` : ""}
+      ${mine.length ? `<ul class="jlist">${mine.map(e => journalRow(e, false)).join("")}</ul>` : `<p class="small muted">Inga loggade beslut för ${esc(a.sym)} än.</p>`}
+    </div>`;
+  }
+
+  function renderJournal() {
+    const rt = roundTrips();
+    const withDir = journal.filter(e => aligned(e) != null);
+    const alignedN = withDir.filter(aligned).length;
+    const cl = rt.closed;
+    const win = cl.filter(c => c.ret > 0).length;
+    const avg = cl.length ? mean(cl.map(c => c.ret)) : null;
+    const withT = cl.filter(c => aligned(c.buy) === true), againstT = cl.filter(c => aligned(c.buy) === false);
+    const openR = rt.open.filter(o => o.ret != null);
+    $("journalMeta").textContent = journal.length ? `${journal.length} loggade beslut` : "Inga loggade beslut";
+    const stat = (lbl, v, sub, cls) => `<div class="jstat"><span class="lbl">${lbl}</span><span class="v ${cls || ""}">${v}</span><span class="sub">${sub}</span></div>`;
+    $("jStats").innerHTML = journal.length ? [
+      stat("Följde trendlinjen", withDir.length ? nf0.format(alignedN / withDir.length * 100) + " %" : "–", `${alignedN} av ${withDir.length} beslut`),
+      stat("Avslutade affärer", cl.length ? `${win} av ${cl.length}` : "–", cl.length ? `vinnare · snitt ${fmtSigned(avg * 100)}` : "para ihop köp med sälj", avg == null ? "" : avg >= 0 ? "up" : "down"),
+      stat("Köp med trenden", withT.length ? fmtSigned(mean(withT.map(c => c.ret)) * 100) : "–", `snitt, ${withT.length} avslutade`),
+      stat("Köp mot trenden", againstT.length ? fmtSigned(mean(againstT.map(c => c.ret)) * 100) : "–", `snitt, ${againstT.length} avslutade`),
+      stat("Öppna köp", openR.length ? String(openR.length) : "–", openR.length ? `snitt ${fmtSigned(mean(openR.map(o => o.ret)) * 100)} hittills` : "inga öppna")
+    ].join("") : `<p class="hint">Inga loggade beslut än.</p>`;
+    const list = journal.slice().sort((x, y) => y.t - x.t || y.id - x.id).slice(0, 50);
+    $("jAll").innerHTML = list.length ? `<ul class="jlist">${list.map(e => journalRow(e, true)).join("")}</ul>` : "";
+  }
+
+  function addJournal(key, side, price, t, note) {
+    const tf = state.tf;
+    const s = data[key].res && data[key].res[tf];
+    journal.push({ id: Date.now() + Math.floor(Math.random() * 1000), key, side, price, t, note, tf, dir: dirAt(key, tf, t), score: s ? s.scoreN : null });
+    saveJournal(); renderJournal(); renderTable();
+  }
+
+  tbody.addEventListener("click", e => {
+    const sideBtn = e.target.closest(".jform [data-side]");
+    if (sideBtn) {
+      sideBtn.parentElement.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === sideBtn)));
+      e.stopPropagation(); return;
+    }
+    if (e.target.closest(".journal")) e.stopPropagation();
+  }, true);
+  tbody.addEventListener("submit", e => {
+    const f = e.target.closest(".jform"); if (!f) return;
+    e.preventDefault();
+    const price = parseFloat(f.price.value);
+    if (!(price > 0)) { f.price.focus(); return; }
+    const side = f.querySelector("[data-side][aria-pressed='true']").dataset.side;
+    const t = f.date.value ? Date.parse(f.date.value + "T12:00:00Z") : Date.now();
+    addJournal(f.dataset.key, side, price, Math.min(t, Date.now()), f.note.value.trim());
+    showToast({ cls: side === "buy" ? "bull" : "bear", title: `${side === "buy" ? "Köp" : "Sälj"} loggat`, body: `${ASSET_BY_KEY[f.dataset.key].sym} ${fmtPrice(price)}` });
+  });
+  document.addEventListener("click", e => {
+    const del = e.target.closest("[data-del]");
+    if (del) {
+      e.stopPropagation();
+      journal = journal.filter(x => String(x.id) !== del.dataset.del);
+      saveJournal(); renderJournal(); renderTable(); return;
+    }
+    const op = e.target.closest("#jAll [data-open]");
+    if (op) openAsset(op.dataset.open);
+  }, true);
+
+  // Export / import av egna data
+  document.getElementById("btnExport").addEventListener("click", () => {
+    const payload = { app: "Flipradar", version: 1, exported: new Date().toISOString(),
+      settings: Object.assign({}, settings), watch, events, journal };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `flipradar-data-${todayISO()}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  });
+  document.getElementById("inImport").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const p = JSON.parse(rd.result);
+        if (p.app !== "Flipradar") throw new Error("Filen kommer inte från Flipradar.");
+        if (p.settings) { settings = Object.assign({}, DEFAULTS, p.settings); store.set("fr:settings", settings); fillSettings(); }
+        if (p.watch) { watch = Object.assign({}, p.watch, watch); saveWatch(); }
+        if (Array.isArray(p.events)) { events = p.events.concat(events).slice(0, 30); store.set("fr:events", events); }
+        let added = 0;
+        if (Array.isArray(p.journal)) {
+          const ids = new Set(journal.map(x => x.id));
+          p.journal.forEach(x => { if (!ids.has(x.id) && ASSET_BY_KEY[x.key]) { journal.push(x); added++; } });
+          saveJournal();
+        }
+        recomputeQuiet(); renderNotify(); renderJournal(); renderAll();
+        showToast({ cls: "bull", title: "Data importerad", body: `${Object.keys(p.watch || {}).length} bevakningar och ${added} nya dagboksrader.` });
+      } catch (err) {
+        showToast({ cls: "bear", title: "Kunde inte importera", body: err.message || "Filen gick inte att läsa." });
+      }
+      e.target.value = "";
+    };
+    rd.readAsText(file);
+  });
+  document.getElementById("btnCopyWatch").addEventListener("click", async () => {
+    const txt = JSON.stringify(Object.keys(watch), null, 0);
+    const out = document.getElementById("watchOut");
+    out.value = txt; out.hidden = false;
+    try { await navigator.clipboard.writeText(txt); showToast({ cls: "bull", title: "Kopierat", body: "Klistra in listan i filen watchlist.json i ditt GitHub-repo." }); }
+    catch (err) { out.focus(); out.select(); showToast({ cls: "", title: "Markera och kopiera", body: "Listan visas under knappen. Kopiera den och klistra in i watchlist.json." }); }
+  });
+
+  // ---------- Marknadsbredd och sektorer ----------
+  function breadthSeries(isCrypto, tf) {
+    const N = tf === "w" ? 104 : 250;
+    const cnt = new Map();
+    ASSETS.forEach(a => {
+      if ((a.type === "krypto") !== isCrypto) return;
+      const d = data[a.key], s = d.res && d.res[tf], bars = d[tf];
+      if (!s || !bars) return;
+      const dirs = s.series.dirs;
+      for (let i = Math.max(0, bars.length - N - 5); i < bars.length; i++) {
+        if (dirs[i] == null) continue;
+        const c = cnt.get(bars[i].t) || [0, 0];
+        c[0] += dirs[i] === 1 ? 1 : 0; c[1] += 1;
+        cnt.set(bars[i].t, c);
+      }
+    });
+    const pts = [...cnt.entries()].filter(([, c]) => c[1] >= 5).sort((x, y) => x[0] - y[0]).slice(-N)
+      .map(([t, c]) => ({ t, v: c[0] / c[1] * 100, n: c[1] }));
+    return pts;
+  }
+
+  function renderMarket() {
+    const tf = state.tf, back = tf === "w" ? 4 : 5;
+    const series = [
+      { name: "Krypto", col: css("--accent"), pts: breadthSeries(true, tf) },
+      { name: "Aktier", col: css("--series2"), pts: breadthSeries(false, tf) }
+    ].filter(x => x.pts.length > 1);
+    $("bSub").textContent = `Andel tillgångar där trendlinjen är bullish · ${tf === "w" ? "veckograf, 2 år" : "dagsgraf, 1 år"}`;
+    $("bStats").innerHTML = series.length ? series.map(x => {
+      const last = x.pts[x.pts.length - 1], prev = x.pts[Math.max(0, x.pts.length - 1 - back)];
+      const ch = last.v - prev.v;
+      return `<div class="bstat"><span class="lbl"><i style="background:${x.col}"></i>${x.name} · ${last.n} st</span>
+        <span class="v">${nf0.format(last.v)} %</span>
+        <span class="ch ${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "+" : "−"}${nf0.format(Math.abs(ch))} enheter senaste ${back} ${tf === "w" ? "veckorna" : "dagarna"}</span></div>`;
+    }).join("") : `<span class="muted small">Visas när kurserna har laddats.</span>`;
+    drawBreadth($("breadthCanvas"), series);
+    renderSectors();
+  }
+
+  function drawBreadth(c, series) {
+    const { ctx, W, H } = setupCanvas(c);
+    const padL = 30, padR = 6, padT = 6, padB = 16;
+    const cw = W - padL - padR, ch = H - padT - padB;
+    ctx.clearRect(0, 0, W, H);
+    if (!series.length) return;
+    const t0 = Math.min(...series.map(x => x.pts[0].t)), t1 = Math.max(...series.map(x => x.pts[x.pts.length - 1].t));
+    const x = t => padL + (t1 === t0 ? 0 : (t - t0) / (t1 - t0)) * cw;
+    const y = v => padT + (1 - v / 100) * ch;
+    ctx.font = `10px ${css("--font-num")}`; ctx.textBaseline = "middle"; ctx.textAlign = "right";
+    [0, 50, 100].forEach(v => {
+      ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+      ctx.setLineDash(v === 50 ? [3, 3] : []);
+      ctx.beginPath(); ctx.moveTo(padL, Math.round(y(v)) + 0.5); ctx.lineTo(padL + cw, Math.round(y(v)) + 0.5); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = css("--faint"); ctx.fillText(v + "%", padL - 4, y(v));
+    });
+    ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText(fmtDate(t0).slice(0, 7), padL, padT + ch + 4);
+    ctx.textAlign = "right"; ctx.fillText(fmtDate(t1).slice(0, 7), padL + cw, padT + ch + 4);
+    series.forEach(sr => {
+      ctx.strokeStyle = sr.col; ctx.lineWidth = 1.8; ctx.beginPath();
+      sr.pts.forEach((p, i) => i ? ctx.lineTo(x(p.t), y(p.v)) : ctx.moveTo(x(p.t), y(p.v)));
+      ctx.stroke();
+      const lp = sr.pts[sr.pts.length - 1];
+      ctx.fillStyle = sr.col; ctx.beginPath(); ctx.arc(x(lp.t), y(lp.v), 3, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  function renderSectors() {
+    const tf = state.tf;
+    const groups = [];
+    const wantStocks = state.market !== "krypto", wantCrypto = state.market === "alla" || state.market === "krypto";
+    const calc = list => list.map(([k, n]) => {
+      let bull = 0, tot = 0;
+      ASSETS.forEach(a => {
+        if (!a.cats || !a.cats.includes(k)) return;
+        if (state.market === "sverige" && !a.se) return;
+        const s = data[a.key].res && data[a.key].res[tf];
+        if (!s) return;
+        tot++; if (s.dir === 1) bull++;
+      });
+      return { k, n, bull, tot, p: tot ? bull / tot : 0 };
+    }).filter(x => x.tot >= 3).sort((p, q) => q.p - p.p || q.tot - p.tot);
+    if (wantStocks) groups.push(["Aktier", calc(CATEGORIES)]);
+    if (wantCrypto) groups.push(["Krypto", calc(CRYPTO_CATEGORIES)]);
+    const html = groups.filter(([, l]) => l.length).map(([g, l]) =>
+      `<div class="grp">${g}</div>` + l.map(x => `<button class="sec" data-cat="${x.k}" aria-pressed="${state.cat === x.k}" title="${x.bull} av ${x.tot} bullish">
+        <span class="nm">${x.n}</span><span class="sbar"><i style="width:${Math.round(x.p * 100)}%"></i></span><span class="pc">${nf0.format(x.p * 100)} % · ${x.tot}</span></button>`).join("")).join("");
+    $("sectors").innerHTML = html || `<span class="muted small">Visas när kurserna har laddats.</span>`;
+  }
+  document.getElementById("sectors").addEventListener("click", e => {
+    const b = e.target.closest("[data-cat]"); if (!b) return;
+    const k = b.dataset.cat;
+    state.cat = state.cat === k ? "alla" : k;
+    if (state.cat !== "alla") {
+      if (k.startsWith("k-") && state.market !== "krypto" && state.market !== "alla") state.market = "krypto";
+      if (!k.startsWith("k-") && state.market === "krypto") state.market = "aktier";
+    }
+    syncControls(); saveView(); renderTiles(); renderTable();
+  });
+
+  function renderAll() { renderStatus(); renderTiles(); renderTable(); renderJournal(); }
+
+  // ---------- Diagram ----------
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  function setupCanvas(c) {
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.clientWidth, H = c.clientHeight;
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    const ctx = c.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, W, H };
+  }
+
+  function drawSpark(c, bars, s) {
+    if (!bars || !s) return;
+    const { ctx, W, H } = setupCanvas(c);
+    const N = Math.min(bars.length, state.tf === "w" ? 52 : 120);
+    const st = bars.length - N;
+    const { line, dirs } = s.series;
+    let lo = Infinity, hi = -Infinity;
+    for (let i = st; i < bars.length; i++) {
+      lo = Math.min(lo, bars[i].c, line[i] ?? Infinity);
+      hi = Math.max(hi, bars[i].c, line[i] ?? -Infinity);
+    }
+    const pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    const x = i => ((i - st) / (N - 1)) * (W - 2) + 1;
+    const y = v => H - 2 - ((v - lo) / (hi - lo)) * (H - 4);
+    // trendlinje
+    ctx.lineWidth = 1.6;
+    for (let i = st + 1; i < bars.length; i++) {
+      if (line[i] == null || line[i - 1] == null || dirs[i] !== dirs[i - 1]) continue;
+      ctx.strokeStyle = dirs[i] === 1 ? css("--bull") : css("--bear");
+      ctx.beginPath(); ctx.moveTo(x(i - 1), y(line[i - 1])); ctx.lineTo(x(i), y(line[i])); ctx.stroke();
+    }
+    // pris
+    ctx.strokeStyle = css("--text");
+    ctx.globalAlpha = 0.75;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    for (let i = st; i < bars.length; i++) { const px = x(i), py = y(bars[i].c); i === st ? ctx.moveTo(px, py) : ctx.lineTo(px, py); }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = css("--text");
+    ctx.beginPath(); ctx.arc(x(bars.length - 1), y(bars[bars.length - 1].c), 2, 0, Math.PI * 2); ctx.fill();
+  }
+
+  function drawDetail(c, bars, s) {
+    if (!bars || !s) return;
+    const { ctx, W, H } = setupCanvas(c);
+    const N = Math.min(bars.length, state.tf === "w" ? 104 : 180);
+    const st = bars.length - N;
+    const { line, dirs } = s.series;
+    const padL = 8, padR = 78, padT = 12, padB = 24;
+    const cw = W - padL - padR, ch = H - padT - padB;
+    let lo = Infinity, hi = -Infinity;
+    for (let i = st; i < bars.length; i++) {
+      lo = Math.min(lo, bars[i].l); hi = Math.max(hi, bars[i].h);
+      if (line[i] != null) { lo = Math.min(lo, line[i]); hi = Math.max(hi, line[i]); }
+    }
+    const pad = (hi - lo) * 0.05; lo -= pad; hi += pad;
+    const step = cw / N;
+    const x = i => padL + (i - st + 0.5) * step;
+    const y = v => padT + (1 - (v - lo) / (hi - lo)) * ch;
+    const cText = css("--text"), cMuted = css("--muted"), cFaint = css("--faint"), cLine = css("--line");
+    const cBull = css("--bull"), cBear = css("--bear");
+
+    // rutnät + prisetiketter
+    ctx.font = `11px ${css("--font-num")}`;
+    ctx.textBaseline = "middle";
+    for (let g = 0; g <= 4; g++) {
+      const v = lo + (hi - lo) * (g / 4);
+      const yy = Math.round(y(v)) + 0.5;
+      ctx.strokeStyle = cLine; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL + cw, yy); ctx.stroke();
+      ctx.fillStyle = cFaint; ctx.textAlign = "left";
+      ctx.fillText(fmtPrice(v), padL + cw + 8, yy);
+    }
+    // datumetiketter
+    ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillStyle = cFaint;
+    const labels = cw < 420 ? 3 : 5;
+    for (let k = 0; k < labels; k++) {
+      const i = st + Math.round((N - 1) * (k + 0.5) / labels);
+      ctx.fillText(fmtDate(bars[i].t).slice(0, 7), x(i), padT + ch + 7);
+    }
+    // ljus
+    const bw = Math.max(1, Math.min(8, step * 0.6));
+    for (let i = st; i < bars.length; i++) {
+      const b = bars[i], upBar = b.c >= b.o;
+      ctx.strokeStyle = upBar ? cBull : cBear;
+      ctx.fillStyle = upBar ? cBull : cBear;
+      ctx.globalAlpha = 0.55;
+      ctx.lineWidth = 1;
+      const xx = Math.round(x(i)) + 0.5;
+      ctx.beginPath(); ctx.moveTo(xx, y(b.h)); ctx.lineTo(xx, y(b.l)); ctx.stroke();
+      const top = y(Math.max(b.o, b.c)), bot = y(Math.min(b.o, b.c));
+      ctx.fillRect(x(i) - bw / 2, top, bw, Math.max(1, bot - top));
+    }
+    ctx.globalAlpha = 1;
+    // trendlinje med fyllning
+    for (let i = st + 1; i < bars.length; i++) {
+      if (line[i] == null || line[i - 1] == null || dirs[i] !== dirs[i - 1]) continue;
+      const col = dirs[i] === 1 ? cBull : cBear;
+      ctx.fillStyle = col; ctx.globalAlpha = 0.08;
+      ctx.beginPath();
+      ctx.moveTo(x(i - 1), y(line[i - 1])); ctx.lineTo(x(i), y(line[i]));
+      ctx.lineTo(x(i), y((bars[i].h + bars[i].l) / 2)); ctx.lineTo(x(i - 1), y((bars[i - 1].h + bars[i - 1].l) / 2));
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = col; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(x(i - 1), y(line[i - 1])); ctx.lineTo(x(i), y(line[i])); ctx.stroke();
+    }
+    // flipmarkörer
+    for (let i = Math.max(st, 1); i < bars.length; i++) {
+      if (dirs[i] == null || dirs[i - 1] == null || dirs[i] === dirs[i - 1]) continue;
+      const bull = dirs[i] === 1;
+      const xx = x(i), yy = bull ? y(bars[i].l) + 8 : y(bars[i].h) - 8;
+      ctx.fillStyle = bull ? cBull : cBear;
+      ctx.beginPath();
+      if (bull) { ctx.moveTo(xx, yy); ctx.lineTo(xx - 5, yy + 8); ctx.lineTo(xx + 5, yy + 8); }
+      else { ctx.moveTo(xx, yy); ctx.lineTo(xx - 5, yy - 8); ctx.lineTo(xx + 5, yy - 8); }
+      ctx.closePath(); ctx.fill();
+    }
+    // mönstermarkörer (de tre senaste)
+    ctx.font = `600 10px ${css("--font-cond")}`;
+    ctx.textAlign = "center";
+    const placed = [];
+    for (const p of (s.pats || []).slice().reverse()) {   // nyast först
+      if (p.i < st) continue;
+      const bull = p.side === 1, xx = x(p.i);
+      const yy = bull ? y(bars[p.i].l) + 20 : y(bars[p.i].h) - 20;
+      ctx.fillStyle = bull ? cBull : cBear;
+      ctx.beginPath(); ctx.arc(xx, yy, 3, 0, Math.PI * 2); ctx.fill();
+      const tw = ctx.measureText(p.name).width;
+      const tx = Math.max(padL + tw / 2 + 2, Math.min(padL + cw - tw / 2 - 2, xx));
+      const ty = bull ? yy + 5 : yy - 5;
+      const box = [tx - tw / 2 - 3, ty - (bull ? 0 : 12), tw + 6, 12];
+      if (placed.some(b => b[0] < box[0] + box[2] && box[0] < b[0] + b[2] && b[1] < box[1] + box[3] && box[1] < b[1] + b[3])) continue;
+      placed.push(box);
+      ctx.textBaseline = bull ? "top" : "bottom";
+      ctx.fillText(p.name, tx, ty);
+    }
+    // horisontella linjer: flipnivå (streckad, trendfärg) och pris just nu (prickad, ljus)
+    const last = bars[bars.length - 1];
+    const col = s.dir === 1 ? cBull : cBear;
+    const fy = Math.round(y(s.line)) + 0.5;
+    const py = Math.round(y(last.c)) + 0.5;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = col;
+    ctx.beginPath(); ctx.moveTo(padL, fy); ctx.lineTo(padL + cw, fy); ctx.stroke();
+    ctx.setLineDash([1, 3]); ctx.strokeStyle = cText; ctx.globalAlpha = 0.6;
+    ctx.beginPath(); ctx.moveTo(x(bars.length - 1), py); ctx.lineTo(padL + cw, py); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.fillStyle = cText;
+    ctx.beginPath(); ctx.arc(x(bars.length - 1), y(last.c), 3, 0, Math.PI * 2); ctx.fill();
+
+    // etiketter på högeraxeln; flyttas isär om de ligger för nära varandra
+    const LH = 18, GAP = 2;
+    let fTag = fy, pTag = py;
+    if (Math.abs(fTag - pTag) < LH + GAP) {
+      const mid = (fTag + pTag) / 2, half = (LH + GAP) / 2;
+      if (pTag <= fTag) { pTag = mid - half; fTag = mid + half; } else { pTag = mid + half; fTag = mid - half; }
+    }
+    const clampTag = v => Math.max(padT + LH / 2, Math.min(padT + ch - LH / 2, v));
+    ctx.font = `600 11px ${css("--font-num")}`;
+    ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    const tag = (label, yy, bg, fg) => {
+      yy = clampTag(yy);
+      const tw = Math.min(ctx.measureText(label).width + 10, padR - 4);
+      ctx.fillStyle = bg; ctx.fillRect(padL + cw + 2, yy - LH / 2, tw, LH);
+      ctx.fillStyle = fg; ctx.fillText(label, padL + cw + 7, yy + 0.5);
+    };
+    tag(fmtPrice(s.line), fTag, col, "#0e1217");
+    tag(fmtPrice(last.c), pTag, cText, "#0e1217");
+    void cMuted;
+  }
+
+  // ---------- Händelser ----------
+  function saveView() { store.set("fr:view", { tf: state.tf, market: state.market, trend: state.trend, cat: state.cat, rs: state.rs, minScore: state.minScore, sortKey: state.sortKey, sortDir: state.sortDir }); }
+
+  const SEGS = [["segTf", "tf"], ["segMarket", "market"], ["segTrend", "trend"], ["segRs", "rs"]];
+  function syncControls() {
+    SEGS.forEach(([id, key]) => $(id).querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state[key]))));
+    $("selCat").value = state.cat;
+    $("selScore").value = String(state.minScore || 0);
+    $("btnWatch").setAttribute("aria-pressed", String(!!state.watchOnly));
+    if ($("search").value !== state.q) $("search").value = state.q;
+  }
+  SEGS.forEach(([id, key]) => $(id).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state[key] = b.dataset.v; syncControls(); saveView(); renderTiles(); renderTable();
+  }));
+
+  // Kategorimeny (antal aktier per kategori i etiketten)
+  (function fillCategories() {
+    const sel = $("selCat");
+    const count = k => ASSETS.filter(a => a.cats && a.cats.includes(k)).length;
+    const opts = list => list.map(([k, n]) => `<option value="${k}">${n} (${count(k)})</option>`).join("");
+    sel.innerHTML = `<option value="alla">Alla kategorier</option>` +
+      `<optgroup label="Aktier">${opts(CATEGORIES)}</optgroup><optgroup label="Krypto">${opts(CRYPTO_CATEGORIES)}</optgroup>`;
+    if (!ALL_CATEGORIES.some(([k]) => k === state.cat)) state.cat = "alla";
+  })();
+  $("selCat").addEventListener("change", e => { state.cat = e.target.value; saveView(); renderTiles(); renderTable(); });
+  $("selScore").addEventListener("change", e => { state.minScore = parseInt(e.target.value, 10) || 0; saveView(); renderTable(); });
+
+  // Rensa filter
+  function clearFilters() {
+    Object.assign(state, { market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, quick: null, q: "", watchOnly: false });
+    syncControls(); saveView(); renderTiles(); renderTable();
+  }
+  $("btnClear").addEventListener("click", clearFilters);
+  $("btnWatch").addEventListener("click", () => { state.watchOnly = !state.watchOnly; syncControls(); renderTiles(); renderTable(); });
+  $("activeFilters").addEventListener("click", e => {
+    const b = e.target.closest("[data-clear]"); if (!b) return;
+    const k = b.dataset.clear;
+    if (k === "all") { clearFilters(); return; }
+    if (k === "quick") state.quick = null;
+    else if (k === "watch") state.watchOnly = false;
+    else if (k === "minScore") state.minScore = 0;
+    else if (k === "q") state.q = "";
+    else state[k] = "alla";
+    syncControls(); saveView(); renderTiles(); renderTable();
+  });
+
+  // Länkar i banners som öppnar Avancerade inställningar
+  $("banners").addEventListener("click", e => {
+    if (!e.target.closest("[data-open-settings]")) return;
+    const d = $("settings"); d.open = true;
+    d.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => $("inKey").focus(), 250);
+  });
+
+  document.querySelectorAll(".tile").forEach(t => t.addEventListener("click", () => {
+    state.quick = state.quick === t.dataset.quick ? null : t.dataset.quick;
+    if (state.quick === "fresh" && state.sortKey !== "barsSince") { state.sortKey = "barsSince"; state.sortDir = 1; }
+    if (state.quick === "near" && state.sortKey !== "dist") { state.sortKey = "dist"; state.sortDir = 1; }
+    renderTiles(); renderTable();
+  }));
+
+  $("search").addEventListener("input", e => { state.q = e.target.value; renderTiles(); renderTable(); });
+
+  $("thead").addEventListener("click", e => {
+    const th = e.target.closest("th[data-key]"); if (!th) return;
+    const k = th.dataset.key;
+    if (state.sortKey === k) state.sortDir *= -1;
+    else { state.sortKey = k; state.sortDir = (k === "sinceFlip" || k === "close") ? -1 : 1; }
+    saveView(); renderTable();
+  });
+
+  function toggleRow(tr) {
+    const sym = tr.dataset.sym;
+    state.open = state.open === sym ? null : sym;
+    renderTable();
+  }
+  tbody.addEventListener("click", e => {
+    if (e.target.closest("a")) return;
+    const star = e.target.closest("[data-watch]");
+    if (star) { e.stopPropagation(); toggleWatch(star.dataset.watch); return; }
+    const tr = e.target.closest("tr.row"); if (tr) toggleRow(tr);
+  });
+  tbody.addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (e.target.closest("[data-watch]")) return;
+    const tr = e.target.closest("tr.row"); if (!tr) return;
+    e.preventDefault(); toggleRow(tr);
+  });
+
+  // Inställningar
+  const inAtr = $("inAtr"), inMult = $("inMult"), inFresh = $("inFresh"), inNear = $("inNear"), inKey = $("inKey"), inSe = $("inSe");
+  const inMode = $("inMode"), inAuto = $("inAuto"), inNW = $("inNW"), inND = $("inND");
+  function fillSettings() {
+    inAtr.value = settings.atrLen; inMult.value = settings.mult; inFresh.value = settings.freshN; inNear.value = settings.nearPct;
+    inKey.value = apiKey;
+    inSe.checked = !!settings.sePlan;
+    inMode.value = settings.notifyMode; inAuto.value = String(settings.autoMin);
+    inNW.checked = !!settings.notifyW; inND.checked = !!settings.notifyD;
+  }
+  fillSettings();
+  function onParam() {
+    const n = (el, def, min, max) => { const v = parseFloat(el.value); return isFinite(v) ? Math.min(max, Math.max(min, v)) : def; };
+    settings = Object.assign({}, settings, {
+      atrLen: Math.round(n(inAtr, DEFAULTS.atrLen, 1, 100)),
+      mult: n(inMult, DEFAULTS.mult, 0.5, 10),
+      freshN: Math.round(n(inFresh, DEFAULTS.freshN, 1, 52)),
+      nearPct: n(inNear, DEFAULTS.nearPct, 0.5, 30),
+      sePlan: inSe.checked,
+      notifyMode: inMode.value === "live" ? "live" : "closed",
+      notifyW: inNW.checked, notifyD: inND.checked,
+      autoMin: parseInt(inAuto.value, 10) || 0
+    });
+    store.set("fr:settings", settings);
+    recomputeQuiet(); renderAll();
+  }
+  [inAtr, inMult, inFresh, inNear, inMode, inAuto, inNW, inND].forEach(el => el.addEventListener("change", onParam));
+  inSe.addEventListener("change", () => { onParam(); if (state.mode === "live") loadStocks(false); });
+  $("btnReset").addEventListener("click", () => {
+    Object.assign(settings, { atrLen: DEFAULTS.atrLen, mult: DEFAULTS.mult, freshN: DEFAULTS.freshN, nearPct: DEFAULTS.nearPct });
+    store.set("fr:settings", settings); fillSettings(); recomputeQuiet(); renderAll();
+  });
+  $("btnSaveKey").addEventListener("click", () => {
+    apiKey = inKey.value.replace(/\s+/g, "");
+    store.set("fr:tdkey", apiKey);
+    $("btnSaveKey").textContent = apiKey ? "Nyckel sparad" : "Nyckel borttagen";
+    setTimeout(() => { $("btnSaveKey").textContent = "Spara nyckel"; }, 1800);
+    if (state.mode === "live") loadStocks(false); else renderBanners();
+  });
+  $("btnRefresh").addEventListener("click", () => loadAll(true));
+
+  let rz;
+  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { renderTable(); renderMarket(); }, 150); });
+
+  // Start
+  syncControls();
+  renderNotify();
+  renderJournal();
+  renderAll();
+  loadAll(false);
+})();
+</script>
+
+</body>
+</html>
