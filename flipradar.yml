@@ -1,0 +1,36 @@
+name: Flipradar
+
+on:
+  schedule:
+    - cron: "10 0 * * *"      # strax efter att kryptons dagsstapel stängt (00:00 UTC)
+    - cron: "15 22 * * 1-5"   # efter börsstängning i Stockholm och New York
+  workflow_dispatch:           # gör att du kan köra den manuellt under Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flipradar
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Hämta kurser och kontrollera bevakningar
+        run: node check.mjs
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          PUBLISH_STOCKS: ${{ vars.PUBLISH_STOCKS }}
+      - name: Spara kurser och läge
+        run: |
+          git config user.name "flipradar-bot"
+          git config user.email "flipradar-bot@users.noreply.github.com"
+          git add -A state.json data
+          git diff --cached --quiet || git commit -m "Uppdatera kurser och bevakning"
+          git push
