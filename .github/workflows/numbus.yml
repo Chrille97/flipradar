@@ -1,0 +1,22 @@
+name: Nimbus3000 backtest
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node nimbus/run.mjs
+      - name: Spara resultat
+        run: |
+          git config user.name "nimbus3000"
+          git config user.email "nimbus3000@users.noreply.github.com"
+          git add nimbus
+          git commit -m "Nimbus3000 backtest" || echo "Inget nytt att spara"
+          git pull --rebase
+          git push
