@@ -278,6 +278,10 @@
   .asset-cell { display: flex; align-items: baseline; gap: 8px; }
   .sym { font-family: var(--font-num); font-weight: 500; font-size: 13px; min-width: 3.2em; }
   .nm { color: var(--muted); font-size: 13px; }
+  .tag.pull { color: var(--accent); border-color: var(--accent); }
+  .tag.pull.exit { color: var(--bear, #ff3b5c); border-color: currentColor; }
+  .card.pullcard.on { border-color: var(--accent); }
+  .card.pullcard ol { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; }
   .tag {
     font-family: var(--font-cond); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--faint); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; line-height: 16px;
@@ -535,6 +539,7 @@
     <input class="search" id="search" type="search" placeholder="Sök symbol eller namn" aria-label="Sök">
     <span class="count" id="countTxt"></span>
     <span class="spacer"></span>
+    <button class="btn watchbtn" id="btnPull" aria-pressed="false" title="Rekyltrade: tillgångar i upptrend som just fallit kraftigt (köpläge), pågående rekylaffärer och säljlägen. Räknas alltid på dagsgrafen.">Rekyltrade <span class="n" id="nPull">0</span></button>
     <button class="btn watchbtn" id="btnWatch" aria-pressed="false" title="Visa bara bevakade">★ Bevakade <span class="n" id="nWatch">0</span></button>
     <button class="btn clear" id="btnClear" disabled>Rensa filter</button>
     <button class="btn primary" id="btnRefresh">Uppdatera</button>
@@ -802,11 +807,11 @@
   let apiKey = String(store.get("fr:tdkey", "") || "").replace(/\s+/g, "");
 
   const state = {
-    tf: "w", market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, ext: "alla", quick: null, q: "", watchOnly: false,
+    tf: "w", market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, ext: "alla", quick: null, q: "", watchOnly: false, pull: false,
     sortKey: "barsSince", sortDir: 1, open: null,
     mode: "loading", stockProgress: null, updated: null
   };
-  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false });
+  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false, pull: false });
 
   // data[sym] = { status: 'loading'|'ok'|'err'|'nokey', msg, w:[], d:[], res:{w,d} }
   const data = {};
@@ -1136,10 +1141,57 @@
       pats, lastPat: pats.length ? pats[pats.length - 1] : null, L,
       patDir: !pats.length ? 0 : patBull > patBear ? 1 : patBear > patBull ? -1 : 0, patBull, patBear,
       patStats: { n: resolved.length, hit: resolved.filter(p => p.outcome === "hit").length },
+      pull: tf === "d" ? pullbackOf(bars, a) : null,
       rs: null, rsChg: null, rsRef: refKeyOf(a) ? (a.type === "krypto" ? "BTC" : "SPY") : null,
       series: { line, dirs }
     };
   }
+
+  // ---------- Rekyltrade (dagsgraf) ----------
+  // Köpläge: Trendlinjen bullish och RSI(2) under 10 på stängd dag. Köp vid nästa öppning.
+  // Sälj: när dagen stänger över 5-dagars medel, senast efter 10 dagar. Nödstopp 3 × ATR(14) under köpkursen.
+  const PB = { rsi: 10, sma: 5, maxDays: 10, stopAtr: 3 };
+  function pullbackOf(bars, a) {
+    const n = bars.length;
+    if (n < 40) return null;
+    const fee = a.type === "krypto" ? 0.0045 : 0.001;
+    const c = bars.map(b => b.c), { dirs } = trendLine(bars, settings.atrLen, settings.mult);
+    const rsi = rsiSeries(c, 2), atr = atrRma(bars, 14);
+    const sma = i => { let t = 0; for (let k = i - PB.sma + 1; k <= i; k++) t += c[k]; return t / PB.sma; };
+    const last = barClosed(bars[n - 1].t, "d", a, Date.now()) ? n - 1 : n - 2;
+    const trades = []; let pos = null, exitAt = -1, exitWhy = "", exitTrade = null;
+    for (let i = PB.sma; i <= last; i++) {
+      if (pos && pos.i < 0) { pos.i = i; pos.e = bars[i].o; pos.stop = pos.e - PB.stopAtr * pos.a; }
+      if (pos) {
+        let x = null, why = "";
+        if (bars[i].l <= pos.stop) { x = Math.min(bars[i].o, pos.stop); why = "stop"; }
+        else if (c[i] > sma(i)) { x = c[i]; why = "sma"; }
+        else if (i - pos.i + 1 >= PB.maxDays) { x = c[i]; why = "time"; }
+        if (x != null) { const t = { r: x / pos.e * (1 - fee) * (1 - fee) - 1, e: pos.e, x, t: bars[pos.i].t }; trades.push(t); exitAt = i; exitWhy = why; exitTrade = t; pos = null; }
+      }
+      if (!pos && dirs[i] === 1 && rsi[i] != null && atr[i] != null && rsi[i] < PB.rsi) pos = { i: -1, a: atr[i], sig: i };
+    }
+    const wins = trades.filter(t => t.r > 0);
+    const out = {
+      state: "none", dir: dirs[last], rsi: rsi[last], sma: sma(last), atr: atr[last], close: c[last], live: c[n - 1],
+      hasLive: n - 1 > last, closedT: bars[last].t,
+      stats: trades.length ? { n: trades.length, win: wins.length / trades.length, avg: mean(trades.map(t => t.r)), worst: Math.min(...trades.map(t => t.r)) } : null
+    };
+    if (pos && pos.i < 0) {
+      // Signal på senaste stängda dag. Finns en pågående dag är dess öppning köpkursen.
+      const e = out.hasLive ? bars[n - 1].o : c[last];
+      Object.assign(out, { state: "signal", entry: e, entryKnown: out.hasLive, stopDist: PB.stopAtr * pos.a, stop: e - PB.stopAtr * pos.a });
+    } else if (pos) {
+      Object.assign(out, { state: "open", entry: pos.e, entryT: bars[pos.i].t, stop: pos.stop, held: last - pos.i + 1,
+        stopHitLive: out.hasLive && bars[n - 1].l <= pos.stop });
+    } else if (exitAt === last && exitTrade) {
+      Object.assign(out, { state: "exit", why: exitWhy, entry: exitTrade.e, exitPx: exitTrade.x, entryT: exitTrade.t, result: exitTrade.r });
+    }
+    return out;
+  }
+  const pullOf = key => { const d = data[key]; return d && d.res && d.res.d ? d.res.d.pull : null; };
+  const pullActive = key => { const p = pullOf(key); return !!p && p.state !== "none"; };
+  const PULL_TXT = { signal: "Rekyl: köpläge", open: "Rekyl: pågår", exit: "Rekyl: sälj" };
 
   let suppressWatch = false;
   function computeAll() {
@@ -1660,6 +1712,7 @@
   // Marknad, kategori och sökning: styr både tabellen och rutorna högst upp
   function baseMatch(r) {
     if (state.watchOnly && !isWatched(r.a.key)) return false;
+    if (state.pull && !pullActive(r.a.key)) return false;
     if (!marketMatch(r)) return false;
     if (state.cat !== "alla" && !(r.a.cats && r.a.cats.includes(state.cat))) return false;
     const q = state.q.trim().toLowerCase();
@@ -1780,7 +1833,7 @@
 
   function assetCell(a) {
     const tag = a.type === "krypto" ? "Krypto" : a.se ? (a.etf ? "ETP · SE" : "Aktie · SE") : a.etf ? "ETF" : "Aktie";
-    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span></div></td>`;
+    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span>${pullActive(a.key) ? `<span class="tag pull ${pullOf(a.key).state}">${PULL_TXT[pullOf(a.key).state]}</span>` : ""}</div></td>`;
   }
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
@@ -1797,6 +1850,7 @@
     if (state.minScore) f.push(["minScore", "Betyg", state.minScore + " eller högre"]);
     if (state.ext !== "alla") f.push(["ext", "Läge", state.ext === "stretched" ? "Uttänjda" : "Billiga"]);
     if (state.watchOnly) f.push(["watch", "Visar", "Bara bevakade"]);
+    if (state.pull) f.push(["pull", "Visar", "Rekyltrade"]);
     return f;
   }
   function renderActiveFilters() {
@@ -1817,6 +1871,7 @@
 
   function renderTable() {
     renderActiveFilters();
+    $("nPull").textContent = ASSETS.filter(a => pullActive(a.key)).length;
     const all = buildRows();
     const rows = sortRows(applyFilters(all));
     $("countTxt").textContent = `Visar ${rows.length} av ${all.length}`;
@@ -1958,7 +2013,7 @@
       <div class="kv"><span>Trendlinje + mönster</span><b class="${!s.patDir ? "" : s.patDir === s.dir ? (s.dir === 1 ? "up" : "down") : "warn"}">${!s.patDir ? "–" : s.patDir === s.dir ? "Samstämmiga" : "Motstridiga"}</b></div>
       <p class="muted small">${pst.n ? `Mönster på ${esc(a.sym)} har fungerat ${pst.hit} av ${pst.n} gånger (${nf0.format(pst.hit / pst.n * 100)} %).` : "Inga avslutade mönster att utvärdera än."} Ett mönster räknas som fungerande om priset nådde det mätta målet innan det gick tillbaka förbi mönstrets topp eller botten.</p>
     </section>`;
-    return riskCard(a, s) + btCard(a, s, tfName) + extCard(a, s) + sc + vc + rc + pc;
+    return pullCard(a) + riskCard(a, s) + btCard(a, s, tfName) + extCard(a, s) + sc + vc + rc + pc;
   }
 
   // Läget i korthet: väger ihop trend, betyg, relativ styrka, extremläge och bandbredd. Information, inte råd.
@@ -1977,6 +2032,61 @@
     else take = "Trenden är nedåt, så det finns ingen köpsignal.";
     if (s.dir === 1 && s.rs && s.rs.dir === -1) take += ` Den går dock sämre än ${s.rsRef}.`;
     return `<div class="summary"><span class="sumlbl">Läget i korthet</span><span>${bits.join(" · ")}</span><span class="take">${take}</span></div>`;
+  }
+
+  // Rekyltrade: tydlig plan för köp, stopp och sälj. Räknas alltid på dagsgrafen.
+  function pullCard(a) {
+    const p = pullOf(a.key);
+    const head = `<h4>Rekyltrade <span class="muted small">dagsgraf</span></h4>`;
+    if (!p) return `<section class="card pullcard">${head}<p class="muted small">För lite dagshistorik.</p></section>`;
+    const kr = a.type === "krypto";
+    const st = p.stats ? `På ${esc(a.sym)} har regeln gett ${p.stats.n} affärer i den historik som visas: ${nf0.format(p.stats.win * 100)} % med vinst, i snitt ${fmtSigned(p.stats.avg * 100)} per affär efter avgifter, sämsta ${fmtSigned(p.stats.worst * 100)}.` : `Regeln har inte gett någon avslutad affär på ${esc(a.sym)} i den historik som visas.`;
+    const foot = `<p class="muted small">${st} Få affärer per tillgång säger lite. I testet över 134 aktier gick 66 % av affärerna med vinst, men snittförlusten var större än snittvinsten. Courtage och valutaväxling tillkommer. Information, inte råd.</p>`;
+    const sellRule = `<li><b>Sälj</b> när en dag stänger över 5-dagarsmedlet (just nu ${fmtPrice(p.sma)}; nivån ändras varje dag). Sälj vid nästa öppning.</li>
+        <li><b>Sälj senast</b> efter ${PB.maxDays} ${kr ? "dagar" : "handelsdagar"}, även om inget hänt.</li>`;
+    if (p.state === "signal") {
+      const cap = settings.capital, risk = settings.riskPct / 100, sp = p.stopDist / p.entry, pos = Math.min(1, risk / sp);
+      return `<section class="card pullcard on">${head}
+        <div class="kv"><span>Läge</span><b class="up">Köpläge</b></div>
+        <div class="kv"><span>Varför</span><b>Bullish trend · RSI(2) ${nf0.format(p.rsi)}</b></div>
+        <div class="kv"><span>${p.entryKnown ? "Köpkurs (dagens öppning)" : "Köpkurs (ungefär)"}</span><b>${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Stop loss</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
+        <div class="kv"><span>Sälj över (just nu)</span><b>${fmtPrice(p.sma)}</b></div>
+        <div class="kv"><span>Köp för</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>
+        <ol>
+          <li><b>Köp</b> ${kr ? (p.entryKnown ? "nu. Signalen kom vid dygnsskiftet (02:00 svensk sommartid)." : "efter dygnsskiftet (02:00 svensk sommartid).") : (p.entryKnown ? "nu, börsen har öppnat." : "när börsen öppnar nästa handelsdag.")}</li>
+          <li><b>Lägg stop loss</b> direkt: din köpkurs minus ${fmtPrice(p.stopDist)}. Med köpkursen ovan blir det ${fmtPrice(p.stop)}.</li>
+          ${sellRule}
+        </ol>
+        <p class="muted small">Storleken är räknad så att du förlorar cirka ${nf2.format(Math.min(risk, sp) * 100)} % av kapitalet om stoppet går. Kapital och risk ställer du in i kortet Risk och positionsstorlek. Kommer det många köplägen samma dag, bestäm i förväg hur många du tar.</p>${foot}</section>`;
+    }
+    if (p.state === "open") {
+      const res = p.live / p.entry - 1;
+      return `<section class="card pullcard on">${head}
+        <div class="kv"><span>Läge</span><b class="${p.stopHitLive ? "down" : "up"}">${p.stopHitLive ? "Stoppet har nåtts idag" : "Pågående affär"}</b></div>
+        <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Resultat hittills</span><b class="${res >= 0 ? "up" : "down"}">${fmtSigned(res * 100)}</b></div>
+        <div class="kv"><span>Stop loss</span><b class="down">${fmtPrice(p.stop)}</b></div>
+        <div class="kv"><span>Sälj över (just nu)</span><b>${fmtPrice(p.sma)}</b></div>
+        <div class="kv"><span>Dag</span><b>${p.held} av ${PB.maxDays}</b></div>
+        <ol>${sellRule}<li><b>Stop loss</b> ligger kvar på ${fmtPrice(p.stop)} och flyttas inte.</li></ol>
+        <p class="muted small">Köpläget har redan passerat. Att gå in i efterhand är inte testat.</p>${foot}</section>`;
+    }
+    if (p.state === "exit") {
+      const why = { sma: "Dagen stängde över 5-dagarsmedlet.", time: `${PB.maxDays} dagar har gått.`, stop: "Stop loss gick." }[p.why];
+      return `<section class="card pullcard on">${head}
+        <div class="kv"><span>Läge</span><b class="down">${p.why === "stop" ? "Stoppad" : "Sälj"}</b></div>
+        <div class="kv"><span>Varför</span><b>${why}</b></div>
+        <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Resultat enligt regeln</span><b class="${p.result >= 0 ? "up" : "down"}">${fmtSigned(p.result * 100)}</b></div>
+        <ol><li>${p.why === "stop" ? "Affären är avslutad av stoppet." : `<b>Sälj</b> ${kr ? "nu." : "när börsen öppnar nästa handelsdag."}`}</li></ol>${foot}</section>`;
+    }
+    const need = p.dir !== 1 ? "Trendlinjen på dagsgrafen är bearish. Rekylköp görs bara i upptrend." : `Trenden är bullish men priset har inte fallit tillräckligt. RSI(2) är ${nf0.format(p.rsi)} och behöver stänga under ${PB.rsi}.`;
+    return `<section class="card pullcard">${head}
+      <div class="kv"><span>Läge</span><b>Inget köpläge</b></div>
+      <div class="kv"><span>Trend (dag)</span><b class="${p.dir === 1 ? "up" : "down"}">${p.dir === 1 ? "Bullish" : "Bearish"}</b></div>
+      <div class="kv"><span>RSI(2)</span><b>${p.rsi == null ? "–" : nf0.format(p.rsi)}</b></div>
+      <p class="muted small">${need}</p>${foot}</section>`;
   }
 
   function riskCard(a, s) {
@@ -2498,6 +2608,7 @@
     $("selScore").value = String(state.minScore || 0);
     $("selExt").value = state.ext || "alla";
     $("btnWatch").setAttribute("aria-pressed", String(!!state.watchOnly));
+    $("btnPull").setAttribute("aria-pressed", String(!!state.pull));
     if ($("search").value !== state.q) $("search").value = state.q;
   }
   SEGS.forEach(([id, key]) => $(id).addEventListener("click", e => {
@@ -2520,17 +2631,19 @@
 
   // Rensa filter
   function clearFilters() {
-    Object.assign(state, { market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, ext: "alla", quick: null, q: "", watchOnly: false });
+    Object.assign(state, { market: "alla", trend: "alla", cat: "alla", rs: "alla", minScore: 0, ext: "alla", quick: null, q: "", watchOnly: false, pull: false });
     syncControls(); saveView(); renderTiles(); renderTable();
   }
   $("btnClear").addEventListener("click", clearFilters);
   $("btnWatch").addEventListener("click", () => { state.watchOnly = !state.watchOnly; syncControls(); renderTiles(); renderTable(); });
+  $("btnPull").addEventListener("click", () => { state.pull = !state.pull; syncControls(); renderTiles(); renderTable(); });
   $("activeFilters").addEventListener("click", e => {
     const b = e.target.closest("[data-clear]"); if (!b) return;
     const k = b.dataset.clear;
     if (k === "all") { clearFilters(); return; }
     if (k === "quick") state.quick = null;
     else if (k === "watch") state.watchOnly = false;
+    else if (k === "pull") state.pull = false;
     else if (k === "minScore") state.minScore = 0;
     else if (k === "q") state.q = "";
     else state[k] = "alla";
@@ -2632,6 +2745,7 @@
   loadAll(false);
 })();
 </script>
+
 
 </body>
 </html>
