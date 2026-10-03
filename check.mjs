@@ -147,9 +147,40 @@ for (const a of stocks) {
   await sleep(DELAY);
 }
 log(`  ${okStocks} av ${stocks.length} aktier hämtade.`);
+// Nästa rapportdatum. Yahoo kräver kaka och "crumb" för kalenderdata. Misslyckas det hoppar vi över rapportdatumen.
+async function yahooAuth() {
+  try {
+    const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
+    const r = await fetch(env.COOKIE_URL || "https://fc.yahoo.com", { headers: { "User-Agent": UA }, redirect: "manual" });
+    const raw = r.headers.getSetCookie ? r.headers.getSetCookie() : [r.headers.get("set-cookie") || ""];
+    const cookie = raw.map(c => c.split(";")[0]).filter(Boolean).join("; ");
+    if (!cookie) return null;
+    const cr = await fetch(`${YAHOO2}/v1/test/getcrumb`, { headers: { "User-Agent": UA, Cookie: cookie } });
+    const crumb = cr.ok ? await cr.text() : "";
+    return crumb && crumb.length < 40 && !crumb.includes("<") ? { cookie, crumb, UA } : null;
+  } catch { return null; }
+}
+const YAHOO2 = env.YAHOO2_URL || "https://query2.finance.yahoo.com";
 if (publish && okStocks) {
+  const auth = await yahooAuth();
+  let nEr = 0;
+  if (auth) {
+    for (const a of stocks) {
+      if (!stockData[a.key] || a.etf) continue;
+      try {
+        const r = await fetch(`${YAHOO2}/v10/finance/quoteSummary/${encodeURIComponent(yahooSymbol(a))}?modules=calendarEvents&crumb=${encodeURIComponent(auth.crumb)}`, { headers: { "User-Agent": auth.UA, Cookie: auth.cookie } });
+        if (r.ok) {
+          const m = (await r.json())?.quoteSummary?.result?.[0];
+          const ds = (m?.calendarEvents?.earnings?.earningsDate || []).map(x => x.raw).filter(x => x && x * 1000 > Date.now() - DAY);
+          if (ds.length) { stockData[a.key].er = Math.min(...ds); nEr++; }
+        }
+      } catch {}
+      await sleep(Math.min(DELAY, 200));
+    }
+  }
+  log(auth ? `  Rapportdatum för ${nEr} aktier.` : "  Kunde inte hämta rapportdatum (ingen åtkomst).");
   const out = { updated: new Date().toISOString(), source: "Yahoo Finance", assets: {} };
-  for (const [k, v] of Object.entries(stockData)) out.assets[k] = { d: pack(v.d.slice(-400)), w: pack(v.w) };
+  for (const [k, v] of Object.entries(stockData)) { out.assets[k] = { d: pack(v.d.slice(-400)), w: pack(v.w) }; if (v.er) out.assets[k].er = v.er; }
   await fs.mkdir("data", { recursive: true });
   await fs.writeFile("data/stocks.json", JSON.stringify(out));
   log("Skrev data/stocks.json");

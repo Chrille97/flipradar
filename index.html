@@ -1293,12 +1293,12 @@
   const pullWOf = key => { const d = data[key]; return d && d.res && d.res.w ? d.res.w.pullW : null; };
   const pullOf = key => { const d = data[key]; return d && d.res && d.res.d ? d.res.d.pull : null; };
   // Visas i filtret: köpläge eller pågående affär där säljnivån (5-dagarsmedlet) ligger minst 1 % över priset.
-  const PULL_MIN_UP = 0.01;
+  const PULL_MIN_UP = 0.01, PULL_STRONG_UP = 0.03;
   const pullDayShown = key => { const p = pullOf(key); return !!p && (p.state === "signal" || p.state === "open") && p.upside >= PULL_MIN_UP && !p.stopHitLive; };
   const pullShown = key => pullDayShown(key) || (pullWOf(key) || {}).state === "signal";
   function pullTags(key) {
     const p = pullOf(key), w = pullWOf(key), t = [];
-    if (p && (p.state === "exit" || pullDayShown(key))) t.push(`<span class="tag pull ${p.state}">${PULL_TXT[p.state]}</span>`);
+    if (p && (p.state === "exit" || pullDayShown(key))) t.push(`<span class="tag pull ${p.state}">${p.state === "signal" && p.upside >= PULL_STRONG_UP ? "Rekyl: starkt köpläge" : PULL_TXT[p.state]}</span>`);
     if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? "Månadsrekyl: köpläge" : "Månadsrekyl: sälj"}</span>`);
     return t.join("");
   }
@@ -1472,7 +1472,7 @@
       Object.entries(j.assets || {}).forEach(([key, v]) => {
         if (!data[key] || !Array.isArray(v.d) || !v.d.length) return;
         const d = conv(v.d), w = Array.isArray(v.w) && v.w.length ? conv(v.w) : toWeekly(d);
-        Object.assign(data[key], { status: "ok", d: d.slice(-400), w, ts: Date.parse(j.updated) || Date.now(), msg: "" });
+        Object.assign(data[key], { status: "ok", d: d.slice(-400), w, er: v.er ? v.er * 1000 : null, ts: Date.parse(j.updated) || Date.now(), msg: "" });
         set.add(key);
       });
       hostedAt = Date.now(); hostedSet = set;
@@ -2079,10 +2079,10 @@
     // Kort rekyl (dag)
     const p = pullOf(a.key);
     if (p) {
-      const [cls, txt] = p.state === "signal" ? (p.upside >= PULL_MIN_UP ? ["pos", "Köpläge · tyder på kortsiktig uppgång"] : ["neu", "Köpläge, men för liten uppgång"])
+      const [cls, txt] = p.state === "signal" ? (p.upside >= PULL_STRONG_UP ? ["pos", "Starkt köpläge · tyder på kortsiktig uppgång"] : p.upside >= PULL_MIN_UP ? ["pos", "Köpläge · tyder på kortsiktig uppgång"] : ["neu", "Köpläge, men för liten uppgång"])
         : p.state === "open" ? ["neu", `Pågår · dag ${p.held} av ${PB.maxDays}`] : p.state === "exit" ? ["neg", p.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
       rows.push(sigRow("pull", "Rekyl, några dagar", cls, txt,
-        `Köpläge när dagstrenden är uppåt och priset fallit kraftigt på kort tid (RSI(2) under 10). Affären varar oftast 2–5 dagar. I test på 134 aktier under ett år gick 66 % av affärerna med vinst, men förlusterna var i snitt större än vinsterna (+2,7 % mot −4,0 %).${p.stats ? ` På ${a.sym}: ${p.stats.n} affärer, ${nf0.format(p.stats.win * 100)} % med vinst.` : ""} Just nu: RSI(2) ${p.rsi == null ? "–" : nf0.format(p.rsi)}.`,
+        `Köpläge när dagstrenden är uppåt och priset fallit kraftigt på kort tid (RSI(2) under 10). Affären varar oftast 2–5 dagar. Test på 234 aktier över tio år, cirka 10 800 affärer: 63–64 % gick med vinst och snittet var +0,2 till +0,5 % per affär efter courtage. Fördelen är liten, och 2018 och 2022 gick regeln minus. Valutaväxling är inte inräknad. Starkt köpläge betyder minst 3 % upp till säljnivån: då var snittet högre (+0,6 till +0,8 %) men de sämsta affärerna större.${p.stats ? ` På ${a.sym}: ${p.stats.n} affärer, ${nf0.format(p.stats.win * 100)} % med vinst.` : ""} Just nu: RSI(2) ${p.rsi == null ? "–" : nf0.format(p.rsi)}.`,
         p.state === "none" ? null : planDay(a, p)));
     }
     // Månadsrekyl (vecka)
@@ -2091,9 +2091,19 @@
       const [cls, txt] = pw.state === "signal" ? ["pos", "Köpläge · tyder på uppgång inom en månad"]
         : pw.state === "open" ? ["neu", `Pågår · vecka ${pw.held} av ${PBW.hold}`] : pw.state === "exit" ? ["neg", pw.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
       rows.push(sigRow("pullw", "Rekyl, en månad", cls, txt,
-        `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. I test på 133 aktier över tio år gick 58–64 % av affärerna med vinst, mot 54–59 % för ett köp vilken vecka som helst. Fördelen är alltså liten. Testat på aktier, inte krypto.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
+        `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. Test på 234 aktier över tio år, cirka 1 800 affärer: 59–61 % gick med vinst och snittet var +2,3 till +3,3 % per affär, mot +1,3 till +1,9 % för ett köp vilken vecka som helst över 40-veckorsmedlet. Regeln gick plus alla år 2017–2026 och slog jämförelsen nio år av tio. De sämsta 5 % av affärerna förlorade 13–16 % eller mer, eftersom kursen kan öppna under stoppet. Testat på aktier, inte krypto.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
         pw.state === "none" ? null : planWeek(a, pw)));
     }
+    // Rapport och nyheter (informationslagret)
+    const er = data[a.key].er, erDays = er ? Math.ceil((er - Date.now()) / DAY) : null;
+    if (a.type === "aktie" && !a.etf) {
+      const soon = erDays != null && erDays >= 0 && erDays <= 7, inMonth = erDays != null && erDays >= 0 && erDays <= 28;
+      rows.push(sigRow("er", "Nästa rapport", soon ? "neg" : "neu",
+        erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · större risk" : inMonth ? " · inom en månadsrekyl" : ""}`,
+        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test gick 48 % av de korta rekylaffärerna som låg över en rapport med stor kursrörelse med vinst, mot 64 % för övriga, och de sämsta förlusterna var upp till dubbelt så stora. Snittresultatet blev varken tydligt bättre eller sämre. Datumet kommer från Yahoo och kan ändras."));
+    }
+    const newsQ = encodeURIComponent(a.type === "krypto" ? `${a.name} ${a.sym} crypto` : `${a.name} ${a.se ? "aktie" : "stock"}`);
+    rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("Öppnar de senaste nyheterna om tillgången. Läs dem innan du köper på en rekyl: ett kursfall med en tydlig dålig nyhet bakom (vinstvarning, utredning, tappad kund) är något annat än ett fall utan orsak. Det här går inte att testa i efterhand, så det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
     // Prisnivå
     const e = b.ext;
     if (e) rows.push(sigRow("ext", "Prisnivå", e.level < 0 ? "pos" : e.level > 0 ? "neg" : "neu",
@@ -2151,6 +2161,10 @@
     const cap = settings.capital, risk = settings.riskPct / 100, pos = Math.min(1, risk / stopFrac);
     return `<div class="kv"><span>Köp för ${tipBtn(`Räknat så att du förlorar cirka ${nf2.format(Math.min(risk, stopFrac) * 100)} % av kapitalet om stoppet går. Kapital och risk ändrar du under Positionsstorlek.`)}</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>`;
   }
+  function erWarn(a, days) {
+    const er = data[a.key].er, n = er ? Math.ceil((er - Date.now()) / DAY) : null;
+    return n != null && n >= 0 && n <= days ? `<p class="muted small"><b class="warn">Rapport ${fmtDate(er)}, om ${n} ${n === 1 ? "dag" : "dagar"}.</b> Kursen kan öppna under stoppet. Överväg mindre position eller att stå över.</p>` : "";
+  }
   function planDay(a, p) {
     const kr = a.type === "krypto";
     if (p.state === "signal") {
@@ -2161,7 +2175,7 @@
         <div class="kv"><span>Sälj ${tipBtn("Sälj när en dag stänger över 5-dagarsmedlet. Nivån ändras varje dag, så titta här varje kväll. Sälj vid nästa öppning.")}</span><b>över ${fmtPrice(p.sma)} · ${fmtSigned(p.upside * 100)}</b></div>
         <div class="kv"><span>Sälj senast</span><b>efter ${PB.maxDays} ${kr ? "dagar" : "handelsdagar"}</b></div>
         ${sizeRow(sp)}
-        ${p.upside < PULL_MIN_UP ? `<p class="muted small"><b class="warn">För liten uppgång.</b> Säljnivån ligger mindre än 1 % över köpkursen.</p>` : ""}</section>`;
+        ${p.upside < PULL_MIN_UP ? `<p class="muted small"><b class="warn">För liten uppgång.</b> Säljnivån ligger mindre än 1 % över köpkursen.</p>` : ""}${erWarn(a, 14)}</section>`;
     }
     if (p.state === "open") {
       const r = p.live / p.entry - 1;
@@ -2187,7 +2201,7 @@
         <div class="kv"><span>Köp</span><b>${p.entryKnown ? "nu" : kr ? "efter veckoskiftet" : "när börsen öppnar på måndag"} · ca ${fmtPrice(p.entry)}</b></div>
         <div class="kv"><span>Stop loss ${tipBtn(`Lägg stoppet direkt efter köpet: din köpkurs minus ${fmtPrice(p.stopDist)}. Stoppet flyttas inte.`)}</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
         <div class="kv"><span>Sälj</span><b>efter ${PBW.hold} veckor</b></div>
-        ${sizeRow(sp)}</section>`;
+        ${sizeRow(sp)}${erWarn(a, 28)}</section>`;
     }
     if (p.state === "open") {
       const r = p.live / p.entry - 1;
