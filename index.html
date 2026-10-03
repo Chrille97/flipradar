@@ -89,7 +89,7 @@
   .banner.info strong { color: var(--accent); }
 
   /* Summary tiles */
-  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
   .tile {
     text-align: left;
     background: var(--panel);
@@ -108,7 +108,8 @@
   .tile.bear .val { color: var(--bear); }
   .tile.fresh .val { color: var(--accent); }
   .tile.near .val { color: var(--warn); }
-  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tile.pull .val { color: var(--accent); }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile.pull { grid-column: 1 / -1; } }
 
   /* Controls */
   .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -410,7 +411,40 @@
   td .patname { display: inline-block; max-width: 10.5em; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
   @media (max-width: 1400px) { th.opt-wide, td.opt-wide { display: none; } }
   .small { font-size: 12px; }
-  .insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+  .insights { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 12px; }
+  .acc { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+  .acc[open] { border-color: var(--line-strong); }
+  .acc > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 12px; padding: 10px 14px; }
+  .acc > summary::-webkit-details-marker { display: none; }
+  .acc > summary::before { content: "›"; color: var(--muted); font-size: 16px; line-height: 1; transition: transform 0.15s; }
+  .acc[open] > summary::before { transform: rotate(90deg); }
+  .acc-t { font-family: var(--font-cond); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); white-space: nowrap; min-width: 150px; }
+  @media (max-width: 720px) { .acc > summary, .acc-h { flex-wrap: wrap; gap: 2px 10px; } .acc-t { min-width: 0; } .acc-s { flex-basis: 100%; } .tip:hover::after, .tip:focus::after { width: 70vw !important; } .acc-s { flex-basis: 100% !important; } }
+  .acc-t .muted { display: none; }
+  .acc-s { font-size: 13px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+  .acc-s .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+  .acc-s.pos { color: var(--bull); } .acc-s.pos .dot { background: var(--bull); }
+  .acc-s.neg { color: var(--bear); } .acc-s.neg .dot { background: var(--bear); }
+  .acc > summary, .acc-h { position: relative; }
+  .acc-h { display: flex; align-items: baseline; gap: 12px; padding: 10px 14px 10px 32px; }
+  .tip { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line-strong); background: none; color: var(--muted); font: 600 11px/1 var(--font-ui); cursor: help; flex: none; padding: 0; align-self: center; }
+  .tip:hover, .tip:focus { color: var(--accent); border-color: var(--accent); outline: none; }
+  .tip:hover::after, .tip:focus::after { content: attr(data-tip); position: absolute; left: 14px; top: calc(100% - 2px); z-index: 30; width: min(440px, 80vw); background: var(--panel-2, #1b222b); border: 1px solid var(--line-strong); border-radius: 6px; padding: 10px 12px; font: 400 13px/1.45 var(--font-ui); letter-spacing: 0; text-transform: none; color: var(--text); text-align: left; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
+  .kv { position: relative; }
+  .kv .tip { margin-left: 6px; vertical-align: middle; }
+  .acc .card { border: 0; padding: 2px 14px 14px; max-width: 620px; }
+  .acc .card > h4 { display: none; }
+  .verdict { margin-top: 14px; border: 1px solid var(--line-strong); border-left-width: 4px; border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; background: var(--bg); }
+  .verdict p { margin: 0; }
+  .verdict.good { border-left-color: var(--bull); } .verdict.ok { border-left-color: var(--warn); } .verdict.bad { border-left-color: var(--bear); }
+  .vhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+  .vlbl { font-size: 18px; }
+  .verdict.good .vlbl { color: var(--bull); } .verdict.ok .vlbl { color: var(--warn); } .verdict.bad .vlbl { color: var(--bear); } .verdict.none .vlbl { color: var(--muted); }
+  .vcount { color: var(--muted); font-size: 13px; }
+  .verdict ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 18px; font-size: 13px; max-width: 900px; }
+  .verdict li { color: var(--text); display: flex; gap: 8px; }
+  .verdict li i { font-style: normal; font-family: var(--font-num); width: 10px; }
+  .verdict li.up i { color: var(--bull); } .verdict li.down i { color: var(--bear); }
   .card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
   .card h4 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
   .card p { margin: 0; }
@@ -493,6 +527,7 @@
     <button class="tile bear" id="tBear" data-quick="bear" aria-pressed="false"><span class="lbl">Bearish</span><span class="val" id="nBear">–</span><span class="sub">under linjen</span></button>
     <button class="tile fresh" id="tFresh" data-quick="fresh" aria-pressed="false"><span class="lbl">Nyss flippade</span><span class="val" id="nFresh">–</span><span class="sub" id="freshSub">inom 3 staplar</span></button>
     <button class="tile near" id="tNear" data-quick="near" aria-pressed="false"><span class="lbl">Nära flip</span><span class="val" id="nNear">–</span><span class="sub" id="nearSub">inom 3 % från linjen</span></button>
+    <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Rekyltrade: tillgångar i upptrend som just fallit kraftigt. Kort rekyl på dagsgrafen (några dagar) och månadsrekyl på veckografen (fyra veckor)."><span class="lbl">Rekyltrade</span><span class="val" id="nPull">–</span><span class="sub">köplägen på dag och vecka</span></button>
   </section>
 
   <section class="market" aria-label="Marknaden">
@@ -530,7 +565,7 @@
       <button data-v="weak" aria-pressed="false">Svagare</button>
     </div>
     <select class="select" id="selCat" aria-label="Kategori"></select>
-    <select class="select" id="selScore" aria-label="Minsta signalbetyg">
+    <select class="select" id="selScore" aria-label="Minsta signalbetyg" hidden style="display:none">
       <option value="0">Alla betyg</option><option value="5">Betyg 5+</option><option value="7">Betyg 7+</option><option value="8">Betyg 8+</option>
     </select>
     <select class="select" id="selExt" aria-label="Extremläge">
@@ -539,7 +574,6 @@
     <input class="search" id="search" type="search" placeholder="Sök symbol eller namn" aria-label="Sök">
     <span class="count" id="countTxt"></span>
     <span class="spacer"></span>
-    <button class="btn watchbtn" id="btnPull" aria-pressed="false" title="Rekyltrade: tillgångar i upptrend som just fallit kraftigt (köpläge), pågående rekylaffärer och säljlägen. Räknas alltid på dagsgrafen.">Rekyltrade <span class="n" id="nPull">0</span></button>
     <button class="btn watchbtn" id="btnWatch" aria-pressed="false" title="Visa bara bevakade">★ Bevakade <span class="n" id="nWatch">0</span></button>
     <button class="btn clear" id="btnClear" disabled>Rensa filter</button>
     <button class="btn primary" id="btnRefresh">Uppdatera</button>
@@ -632,14 +666,12 @@
           <th class="asset" data-key="sym"><button>Tillgång <span class="arrow"></span></button></th>
           <th class="num" data-key="close"><button>Pris <span class="arrow"></span></button></th>
           <th data-key="dir"><button>Trend <span class="arrow"></span></button></th>
-          <th class="num" data-key="scoreN" title="Signalbetyg 1–10: hur väl trendlinjen har fungerat historiskt på tillgången"><button>Betyg <span class="arrow"></span></button></th>
           <th class="num" data-key="line"><button>Nästa flip <span class="arrow"></span></button></th>
           <th class="num opt" data-key="dist"><button>Avstånd <span class="arrow"></span></button></th>
           <th class="num opt-m" data-key="barsSince"><button>Tid sedan flip <span class="arrow"></span></button></th>
           <th class="num opt" data-key="sinceFlip"><button>Sedan flip <span class="arrow"></span></button></th>
           <th class="opt" data-key="rsChg" title="Krypto mot BTC, amerikanska aktier mot SPY"><button>Mot BTC/SPY <span class="arrow"></span></button></th>
           <th class="opt" data-key="extLevel" title="Extremläge från veckodata: uttänjt eller billigt mot den långa historiken"><button>Läge <span class="arrow"></span></button></th>
-          <th class="static opt">Senaste mönster</th>
           <th class="opt opt-wide" data-key="conf"><button>V · D <span class="arrow"></span></button></th>
           <th class="static opt opt-wide">Senaste året</th>
         </tr>
@@ -708,7 +740,7 @@
   // Kategorier för aktier. Nyckel → namn i menyn, i den ordning de visas.
   const CATEGORIES = [
     ["bigtech", "Big Tech"], ["ai", "AI"], ["semi", "Halvledare"], ["mjuk", "Mjukvara & moln"],
-    ["infra", "Infrastruktur"], ["green", "Greentech"], ["energi", "Energi"], ["verkstad", "Verkstad & industri"],
+    ["infra", "Infrastruktur"], ["green", "Greentech"], ["energi", "Energi"], ["karn", "Kärnkraft & uran"], ["verkstad", "Verkstad & industri"],
     ["forsvar", "Försvar"], ["finans", "Finans"], ["krypto", "Kryptonära"], ["halsa", "Hälsa"],
     ["konsument", "Konsument"], ["ravaror", "Råvaror"], ["index", "Index & ETF"]
   ];
@@ -750,7 +782,33 @@
     ["LMT","Lockheed Martin","forsvar"],["RTX","RTX","forsvar"],["DE","Deere","verkstad"],
     ["SPY","S&P 500","index",1],["QQQ","Nasdaq 100","index",1],["IWM","Russell 2000","index",1],["DIA","Dow Jones","index",1],
     ["GLD","Guld","ravaror,index",1],["SLV","Silver","ravaror,index",1],["TLT","Långa US-räntor","index",1],
-    ["SMH","Halvledare","semi,index",1],["ARKK","ARK Innovation","index",1],["IBIT","iShares Bitcoin","krypto,index",1]
+    ["SMH","Halvledare","semi,index",1],["ARKK","ARK Innovation","index",1],["IBIT","iShares Bitcoin","krypto,index",1],
+    ["ANET","Arista Networks","ai,infra"],["DELL","Dell","ai,infra"],["CRDO","Credo","ai,semi"],
+    ["ALAB","Astera Labs","ai,semi"],["COHR","Coherent","ai,semi"],["CIEN","Ciena","ai,infra"],
+    ["LITE","Lumentum","ai,semi"],["GLW","Corning","ai,infra"],["MPWR","Monolithic Power","ai,semi"],
+    ["NXPI","NXP","semi"],["WDC","Western Digital","ai,semi"],["SNPS","Synopsys","semi,mjuk"],
+    ["CDNS","Cadence","semi,mjuk"],["TER","Teradyne","semi,verkstad"],["CRWV","CoreWeave","ai,infra"],
+    ["NBIS","Nebius","ai,infra"],["ZS","Zscaler","mjuk"],["FTNT","Fortinet","mjuk"],
+    ["MDB","MongoDB","mjuk,ai"],["TEAM","Atlassian","mjuk"],["WDAY","Workday","mjuk"],
+    ["DUOL","Duolingo","mjuk,konsument"],["RBLX","Roblox","konsument"],["TTD","The Trade Desk","mjuk"],
+    ["AXON","Axon","forsvar,mjuk"],["CEG","Constellation Energy","karn,energi"],["VST","Vistra","energi,karn"],
+    ["GEV","GE Vernova","energi,infra"],["TLN","Talen Energy","energi,karn"],["OKLO","Oklo","karn"],
+    ["SMR","NuScale","karn"],["CCJ","Cameco","karn,ravaror"],["BWXT","BWX Technologies","karn,forsvar"],
+    ["LEU","Centrus Energy","karn"],["BE","Bloom Energy","energi,green"],["COP","ConocoPhillips","energi"],
+    ["LNG","Cheniere","energi"],["HWM","Howmet Aerospace","verkstad,forsvar"],["TT","Trane Technologies","infra,green"],
+    ["EME","Emcor","infra"],["FIX","Comfort Systems","infra"],["HON","Honeywell","verkstad"],
+    ["SYM","Symbotic","ai,verkstad"],["NOC","Northrop Grumman","forsvar"],["LHX","L3Harris","forsvar"],
+    ["KTOS","Kratos","forsvar"],["AVAV","AeroVironment","forsvar"],["ASTS","AST SpaceMobile","forsvar,infra"],
+    ["RGTI","Rigetti","ai"],["QBTS","D-Wave","ai"],["NU","Nu Holdings","finans"],
+    ["AFRM","Affirm","finans"],["XYZ","Block","finans,krypto"],["IBKR","Interactive Brokers","finans"],
+    ["KKR","KKR","finans"],["BX","Blackstone","finans"],["VRTX","Vertex","halsa"],
+    ["REGN","Regeneron","halsa"],["AMGN","Amgen","halsa"],["HIMS","Hims & Hers","halsa,konsument"],
+    ["BSX","Boston Scientific","halsa"],["SYK","Stryker","halsa"],["MELI","MercadoLibre","konsument,finans"],
+    ["SE","Sea Limited","konsument"],["BABA","Alibaba","konsument,ai"],["BKNG","Booking","konsument"],
+    ["DASH","DoorDash","konsument"],["CVNA","Carvana","konsument"],["FCX","Freeport-McMoRan","ravaror"],
+    ["NEM","Newmont","ravaror"],["MP","MP Materials","ravaror"],["ALB","Albemarle","ravaror,green"],
+    ["URA","Uran","karn,index",1],["COPX","Koppargruvor","ravaror,index",1],["ITA","Försvar USA","forsvar,index",1],
+    ["XLE","Energisektorn","energi,index",1],["IGV","Mjukvara","mjuk,index",1],["ETHA","iShares Ethereum","krypto,index",1]
   ];
   // Stockholmsbörsen: [symbol, namn, kategorier, etp?]. Kräver Twelve Data Pro eller högre.
   const SWEDEN = [
@@ -761,7 +819,15 @@
     ["SHB.A","Handelsbanken","finans"],["SWED.A","Swedbank","finans"],["AZA","Avanza","finans"],["SAVE","Nordnet","finans"],
     ["ERIC.B","Ericsson","infra"],["SINCH","Sinch","mjuk"],["AZN","AstraZeneca","halsa"],
     ["HM.B","H&M","konsument"],["EVO","Evolution","konsument"],["SAAB.B","Saab","forsvar"],
-    ["NIBE.B","NIBE","green"],["BOL","Boliden","ravaror,green"],["VIR10SEK","Virtune Crypto Top 10","krypto",1]
+    ["NIBE.B","NIBE","green"],["BOL","Boliden","ravaror,green"],["VIR10SEK","Virtune Crypto Top 10","krypto",1],
+    ["EPI.A","Epiroc","verkstad"],["LIFCO.B","Lifco","verkstad"],["ADDT.B","Addtech","verkstad"],
+    ["LAGR.B","Lagercrantz","verkstad"],["INDU.C","Industrivärden","finans"],["LATO.B","Latour","finans"],
+    ["KINV.B","Kinnevik","finans"],["NDA.SE","Nordea","finans"],["ESSITY.B","Essity","konsument"],
+    ["TELIA","Telia","infra"],["TEL2.B","Tele2","infra"],["SSAB.B","SSAB","ravaror,green"],
+    ["GETI.B","Getinge","halsa"],["SOBI","Sobi","halsa"],["CAMX","Camurus","halsa"],
+    ["SECT.B","Sectra","halsa,mjuk"],["BONEX","Bonesupport","halsa"],["MYCR","Mycronic","semi,verkstad"],
+    ["HMS","HMS Networks","verkstad,infra"],["MILDEF","MilDef","forsvar"],["TRUE.B","Truecaller","mjuk"],
+    ["YUBICO","Yubico","mjuk"]
   ];
   // Kategorier för krypto (en tillgång kan ha flera)
   const CRYPTO_CATEGORIES = [
@@ -811,7 +877,7 @@
     sortKey: "barsSince", sortDir: 1, open: null,
     mode: "loading", stockProgress: null, updated: null
   };
-  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false, pull: false });
+  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false, pull: false, minScore: 0 });
 
   // data[sym] = { status: 'loading'|'ok'|'err'|'nokey', msg, w:[], d:[], res:{w,d} }
   const data = {};
@@ -1116,7 +1182,7 @@
     if (dirs[L] == null) return null;
     const score = scoreOf(periodsOf(bars, dirs), bars);
     const bt = backtestOf(bars, dirs);
-    const allPats = detectPatterns(bars).map(p => Object.assign(p, { outcome: patternOutcome(p, bars) }));
+    const allPats = []; // mönster är borttagna: de gav brus
     const resolved = allPats.filter(p => p.outcome !== "open");
     const pats = allPats.slice(-3);
     const patBull = pats.filter(p => p.side === 1).length, patBear = pats.length - patBull;
@@ -1142,6 +1208,7 @@
       patDir: !pats.length ? 0 : patBull > patBear ? 1 : patBear > patBull ? -1 : 0, patBull, patBear,
       patStats: { n: resolved.length, hit: resolved.filter(p => p.outcome === "hit").length },
       pull: tf === "d" ? pullbackOf(bars, a) : null,
+      pullW: tf === "w" ? pullbackWeekOf(bars, a) : null,
       rs: null, rsChg: null, rsRef: refKeyOf(a) ? (a.type === "krypto" ? "BTC" : "SPY") : null,
       series: { line, dirs }
     };
@@ -1180,17 +1247,61 @@
     if (pos && pos.i < 0) {
       // Signal på senaste stängda dag. Finns en pågående dag är dess öppning köpkursen.
       const e = out.hasLive ? bars[n - 1].o : c[last];
-      Object.assign(out, { state: "signal", entry: e, entryKnown: out.hasLive, stopDist: PB.stopAtr * pos.a, stop: e - PB.stopAtr * pos.a });
+      Object.assign(out, { state: "signal", entry: e, entryKnown: out.hasLive, stopDist: PB.stopAtr * pos.a, stop: e - PB.stopAtr * pos.a, upside: out.sma / e - 1 });
     } else if (pos) {
       Object.assign(out, { state: "open", entry: pos.e, entryT: bars[pos.i].t, stop: pos.stop, held: last - pos.i + 1,
-        stopHitLive: out.hasLive && bars[n - 1].l <= pos.stop });
+        stopHitLive: out.hasLive && bars[n - 1].l <= pos.stop, upside: out.sma / c[n - 1] - 1 });
     } else if (exitAt === last && exitTrade) {
       Object.assign(out, { state: "exit", why: exitWhy, entry: exitTrade.e, exitPx: exitTrade.x, entryT: exitTrade.t, result: exitTrade.r });
     }
     return out;
   }
+  // Månadsrekyl (veckograf): pris över 40-veckorsmedlet och RSI(2) under 10 på stängd vecka. Köp nästa veckas öppning,
+  // sälj efter 4 veckor, stop loss 2 × ATR(14) under köpkursen.
+  const PBW = { rsi: 10, sma: 40, hold: 4, stopAtr: 2 };
+  function pullbackWeekOf(bars, a) {
+    const n = bars.length;
+    if (n < 60) return null;
+    const fee = a.type === "krypto" ? 0.0045 : 0.001;
+    const c = bars.map(b => b.c), rsi = rsiSeries(c, 2), atr = atrRma(bars, 14);
+    const sma = i => { let t = 0; for (let k = i - PBW.sma + 1; k <= i; k++) t += c[k]; return t / PBW.sma; };
+    const last = barClosed(bars[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2;
+    const trades = []; let pos = null, exitAt = -1, exitWhy = "", exitTrade = null;
+    for (let i = PBW.sma; i <= last; i++) {
+      if (pos && pos.i < 0) { pos.i = i; pos.e = bars[i].o; pos.stop = pos.e - PBW.stopAtr * pos.a; }
+      if (pos) {
+        let x = null, why = "";
+        if (bars[i].l <= pos.stop) { x = Math.min(bars[i].o, pos.stop); why = "stop"; }
+        else if (i - pos.i + 1 >= PBW.hold) { x = c[i]; why = "time"; }
+        if (x != null) { const t = { r: x / pos.e * (1 - fee) * (1 - fee) - 1, e: pos.e, x, t: bars[pos.i].t }; trades.push(t); exitAt = i; exitWhy = why; exitTrade = t; pos = null; continue; }
+      }
+      if (!pos && c[i] > sma(i) && rsi[i] != null && atr[i] != null && rsi[i] < PBW.rsi) pos = { i: -1, a: atr[i] };
+    }
+    const wins = trades.filter(t => t.r > 0);
+    const out = { state: "none", above: c[last] > sma(last), rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1],
+      stats: trades.length ? { n: trades.length, win: wins.length / trades.length, avg: mean(trades.map(t => t.r)) } : null };
+    if (pos && pos.i < 0) {
+      const e = out.hasLive ? bars[n - 1].o : c[last];
+      Object.assign(out, { state: "signal", entry: e, entryKnown: out.hasLive, stopDist: PBW.stopAtr * pos.a, stop: e - PBW.stopAtr * pos.a });
+    } else if (pos) {
+      Object.assign(out, { state: "open", entry: pos.e, entryT: bars[pos.i].t, stop: pos.stop, held: last - pos.i + 1, stopHitLive: out.hasLive && bars[n - 1].l <= pos.stop });
+    } else if (exitAt === last && exitTrade) {
+      Object.assign(out, { state: "exit", why: exitWhy, entry: exitTrade.e, entryT: exitTrade.t, result: exitTrade.r });
+    }
+    return out;
+  }
+  const pullWOf = key => { const d = data[key]; return d && d.res && d.res.w ? d.res.w.pullW : null; };
   const pullOf = key => { const d = data[key]; return d && d.res && d.res.d ? d.res.d.pull : null; };
-  const pullActive = key => { const p = pullOf(key); return !!p && p.state !== "none"; };
+  // Visas i filtret: köpläge eller pågående affär där säljnivån (5-dagarsmedlet) ligger minst 1 % över priset.
+  const PULL_MIN_UP = 0.01;
+  const pullDayShown = key => { const p = pullOf(key); return !!p && (p.state === "signal" || p.state === "open") && p.upside >= PULL_MIN_UP && !p.stopHitLive; };
+  const pullShown = key => pullDayShown(key) || (pullWOf(key) || {}).state === "signal";
+  function pullTags(key) {
+    const p = pullOf(key), w = pullWOf(key), t = [];
+    if (p && (p.state === "exit" || pullDayShown(key))) t.push(`<span class="tag pull ${p.state}">${PULL_TXT[p.state]}</span>`);
+    if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? "Månadsrekyl: köpläge" : "Månadsrekyl: sälj"}</span>`);
+    return t.join("");
+  }
   const PULL_TXT = { signal: "Rekyl: köpläge", open: "Rekyl: pågår", exit: "Rekyl: sälj" };
 
   let suppressWatch = false;
@@ -1712,7 +1823,6 @@
   // Marknad, kategori och sökning: styr både tabellen och rutorna högst upp
   function baseMatch(r) {
     if (state.watchOnly && !isWatched(r.a.key)) return false;
-    if (state.pull && !pullActive(r.a.key)) return false;
     if (!marketMatch(r)) return false;
     if (state.cat !== "alla" && !(r.a.cats && r.a.cats.includes(state.cat))) return false;
     const q = state.q.trim().toLowerCase();
@@ -1733,6 +1843,7 @@
       if (state.quick === "bear" && s.dir !== -1) return false;
       if (state.quick === "fresh" && !isFresh(s)) return false;
       if (state.quick === "near" && !isNear(s)) return false;
+      if (state.quick === "pull" && !pullShown(r.a.key)) return false;
       if (state.rs !== "alla" && !(s && s.rs && s.rs.dir === (state.rs === "strong" ? 1 : -1))) return false;
       if (state.minScore && !(s && s.scoreN != null && s.scoreN >= state.minScore)) return false;
       if (state.ext === "stretched" && !(s && s.extLevel > 0)) return false;
@@ -1802,6 +1913,7 @@
     $("nBear").textContent = rows.filter(r => r.s.dir === -1).length;
     $("nFresh").textContent = rows.filter(r => isFresh(r.s)).length;
     $("nNear").textContent = rows.filter(r => isNear(r.s)).length;
+    $("nPull").textContent = buildRows().filter(baseMatch).filter(r => pullShown(r.a.key)).length;
     document.querySelectorAll(".tile").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
     renderMarket();
   }
@@ -1833,12 +1945,12 @@
 
   function assetCell(a) {
     const tag = a.type === "krypto" ? "Krypto" : a.se ? (a.etf ? "ETP · SE" : "Aktie · SE") : a.etf ? "ETF" : "Aktie";
-    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span>${pullActive(a.key) ? `<span class="tag pull ${pullOf(a.key).state}">${PULL_TXT[pullOf(a.key).state]}</span>` : ""}</div></td>`;
+    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span>${pullTags(a.key)}</div></td>`;
   }
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
   const TREND_NAMES = { bull: "Bull", bear: "Bear", aligned: "V+D samstämmiga" };
-  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip" };
+  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Rekyltrade" };
   function activeFilterList() {
     const f = [];
     if (state.market !== "alla") f.push(["market", "Marknad", MARKET_NAMES[state.market]]);
@@ -1850,7 +1962,6 @@
     if (state.minScore) f.push(["minScore", "Betyg", state.minScore + " eller högre"]);
     if (state.ext !== "alla") f.push(["ext", "Läge", state.ext === "stretched" ? "Uttänjda" : "Billiga"]);
     if (state.watchOnly) f.push(["watch", "Visar", "Bara bevakade"]);
-    if (state.pull) f.push(["pull", "Visar", "Rekyltrade"]);
     return f;
   }
   function renderActiveFilters() {
@@ -1871,7 +1982,6 @@
 
   function renderTable() {
     renderActiveFilters();
-    $("nPull").textContent = ASSETS.filter(a => pullActive(a.key)).length;
     const all = buildRows();
     const rows = sortRows(applyFilters(all));
     $("countTxt").textContent = `Visar ${rows.length} av ${all.length}`;
@@ -1881,7 +1991,7 @@
       th.querySelector(".arrow").textContent = on ? (state.sortDir === 1 ? "▲" : "▼") : "";
     });
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="13" class="empty">${state.watchOnly && !Object.keys(watch).length ? "Du bevakar inget än. Klicka på stjärnan framför en tillgång för att bevaka den." : "Inga tillgångar matchar filtren."}${state.cat !== "alla" && ((state.market === "krypto") !== state.cat.startsWith("k-")) && state.market !== "alla" ? " Kategorin hör till en annan marknad än den du valt." : ""}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="11" class="empty">${state.watchOnly && !Object.keys(watch).length ? "Du bevakar inget än. Klicka på stjärnan framför en tillgång för att bevaka den." : "Inga tillgångar matchar filtren."}${state.cat !== "alla" && ((state.market === "krypto") !== state.cat.startsWith("k-")) && state.market !== "alla" ? " Kategorin hör till en annan marknad än den du valt." : ""}</td></tr>`;
       return;
     }
     const html = [];
@@ -1889,7 +1999,7 @@
       const { a, d, s } = r;
       if (!s) {
         const msg = d.status === "loading" ? (d.msg || "Hämtar…") : (d.status === "nokey" || d.status === "plan") ? d.msg : d.status === "err" ? "Kunde inte hämta: " + d.msg : "För lite historik";
-        html.push(`<tr>${assetCell(a)}<td colspan="12" class="msg">${esc(msg)}</td></tr>`);
+        html.push(`<tr>${assetCell(a)}<td colspan="10" class="msg">${esc(msg)}</td></tr>`);
         continue;
       }
       const open = state.open === a.key;
@@ -1898,14 +2008,12 @@
         ${assetCell(a)}
         <td class="num">${fmtPrice(s.close)}</td>
         <td><span class="pill ${s.dir === 1 ? "bull" : "bear"}${s.dir !== s.cdir ? " prelim" : ""}"${s.dir !== s.cdir ? ` title="Priset har korsat linjen men stapeln har inte stängt än. Flippen är obekräftad."` : ""}>${s.dir === 1 ? "Bull" : "Bear"}</span></td>
-        <td class="num">${scoreCell(s)}</td>
         <td class="num ${s.dir === 1 ? "up" : "down"}">${s.vol && s.vol.level >= 4 ? `<span class="volwarn" title="Mycket brett band: linjen ligger ${nf0.format(s.vol.bw)} % från priset när den sätts, så den reagerar sent just nu">!</span>` : ""}${fmtPrice(s.line)}</td>
         <td class="num opt ${isNear(s) ? "warn" : ""}">${fmtPct(s.dist)}</td>
         <td class="num opt-m">${fmtSince(s, state.tf)}${fresh ? '<span class="new">NY</span>' : ""}</td>
         <td class="num opt ${s.sinceFlip == null ? "" : s.sinceFlip >= 0 ? "up" : "down"}">${fmtSigned(s.sinceFlip)}</td>
         <td class="opt">${rsCell(s)}</td>
         <td class="opt">${extCell(s)}</td>
-        <td class="opt">${patCell(s)}</td>
         <td class="opt opt-wide">${vdCell(d.res)}</td>
         <td class="opt opt-wide"><canvas class="spark" data-sym="${esc(a.key)}"></canvas></td>
       </tr>`);
@@ -1938,7 +2046,7 @@
       ["Dag", dd ? (dd.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(dd.line) : "–"],
       ["Samstämmighet", confOf(d.res) === 2 ? '<span class="up">Bull</span>' : confOf(d.res) === -2 ? '<span class="down">Bear</span>' : "Blandad"]
     ];
-    return `<tr class="detail"><td colspan="13">
+    return `<tr class="detail"><td colspan="11">
       <div class="detail-grid">
         <div class="chart-box">
           <div class="chart-head"><h3>${esc(a.name)} <span class="muted">${esc(a.sym)} · ${tfName}</span></h3>
@@ -1956,137 +2064,144 @@
 
   function pctTxt(x) { return x == null ? "–" : nf0.format(x * 100) + " %"; }
   function bar(x) { return `<span class="mbar"><i style="width:${Math.round(Math.max(0, Math.min(1, x)) * 100)}%"></i></span>`; }
-  function insightCards(a, s, tfName) {
-    const unit = state.tf === "w" ? "veckor" : "dagar";
-    // Signalbetyg
-    let sc;
-    if (s.score) {
-      const S = s.score;
-      sc = `<section class="card">
-        <h4>Signalbetyg</h4>
-        <div class="bigscore"><span class="score big ${scoreCls(S.score)}">${S.score}</span><span><b>${scoreLabel(S.score)}</b> tillförlitlighet<br><span class="muted small">av 10, på ${tfName}en</span></span></div>
-        <p class="muted small">Hur väl trendlinjen har fungerat på ${esc(a.name)} de senaste ${nf0.format(Math.max(1, S.years))} åren (${S.nBull} bull- och ${S.nBear} bear-perioder). Det säger inget säkert om framtiden.</p>
-        <ul class="parts">
-          <li><span>Bull-perioder med vinst</span>${bar(S.parts.win)}<b>${pctTxt(S.parts.win)}</b></li>
-          <li><span>Vinstfaktor</span>${bar(S.parts.pf)}<b>${S.pfRaw >= 4 ? "4+" : nf2.format(S.pfRaw)}</b></li>
-          <li><span>Bear-perioder där priset föll</span>${bar(S.parts.bearOk)}<b>${pctTxt(S.parts.bearOk)}</b></li>
-          <li><span>Stabilitet (ej falska flippar)</span>${bar(S.parts.stable)}<b>${pctTxt(S.parts.stable)}</b></li>
-        </ul>
-        <p class="small">Snitt per bull-period <b class="${S.avgBull >= 0 ? "up" : "down"}">${fmtSigned(S.avgBull * 100)}</b> · per bear-period <b class="${S.avgBear <= 0 ? "up" : "down"}">${fmtSigned(S.avgBear * 100)}</b> · gav tillbaka från toppen i snitt <b>${pctTxt(S.avgGive)}</b></p>
-      </section>`;
-    } else {
-      sc = `<section class="card"><h4>Signalbetyg</h4><p class="muted small">För lite historik för ett betyg. Det krävs minst 3 avslutade bull-perioder och 2 bear-perioder på ${tfName}en.</p></section>`;
-    }
-    // Volatilitet
-    const v = s.vol;
-    const volTxt = !v ? "–" :
-      v.level === 4 ? "Linjen reagerar mycket sent just nu. Priset kan röra sig en tredjedel eller mer innan en flip kommer, så en stor del av en rörelse kan hinna försvinna. Så såg det ut för BTC under 2021." :
-      v.level === 3 ? "Linjen reagerar ganska sent. En flip kräver en stor rörelse, så räkna med att en del av toppen eller botten hinner passera." :
-      v.level === 1 ? "Linjen reagerar snabbt, men falska flippar blir vanligare." :
-      "Linjen reagerar i normal takt.";
-    const vc = `<section class="card">
-      <h4>Volatilitetsläge</h4>
-      <div class="kv"><span>Läge</span><b class="${v && v.level >= 3 ? "warn" : ""}">${v ? VOL_NAMES[v.level] : "–"}</b></div>
-      <div class="kv"><span>Bandets bredd</span><b>${v ? nf0.format(v.bw) + " % av priset" : "–"}</b></div>
-      <div class="kv"><span>Jämfört med de senaste 5 åren</span><b>${v && v.pct != null ? "bredare än " + nf0.format(v.pct) + " % av tiden" : "–"}</b></div>
-      <p class="muted small">${volTxt}</p>
-    </section>`;
-    // Relativ styrka
-    const rs = s.rs;
-    const rc = `<section class="card">
-      <h4>Relativ styrka</h4>
-      ${rs ? `<div class="kv"><span>Mot ${s.rsRef}</span><b class="${rs.dir === 1 ? "up" : "down"}">${rs.dir === 1 ? "▲ Starkare" : "▼ Svagare"}</b></div>
-      <div class="kv"><span>Senaste ${rs.back} ${unit}</span><b class="${rs.chg >= 0 ? "up" : "down"}">${rs.chg == null ? "–" : fmtSigned(rs.chg)}</b></div>
-      <p class="muted small">Trendlinjen körd på kvoten ${esc(a.sym)}/${s.rsRef}. ${rs.dir === 1 ? `${esc(a.sym)} har en egen uppåttrend mot ${s.rsRef}, alltså gått bättre än att bara äga ${s.rsRef}.` : `${esc(a.sym)} har gått sämre än ${s.rsRef}. Att äga ${s.rsRef} hade varit bättre under trenden.`}</p>`
-      : `<p class="muted small">${s.rsRef ? `Jämförelsen mot ${s.rsRef} är inte klar än.` : a.se ? "Svenska aktier jämförs inte, eftersom det saknas ett jämförbart index i samma valuta." : "Referensen jämförs inte med sig själv."}</p>`}
-    </section>`;
-    // Mönster
-    const pats = s.pats.slice().reverse();
-    const pst = s.patStats;
-    const pc = `<section class="card">
-      <h4>Mönster, senaste 3</h4>
-      ${pats.length ? `<ul class="patlist">${pats.map(p => `<li>
-        <span class="patname ${p.side === 1 ? "up" : "down"}">${p.side === 1 ? "▲" : "▼"} ${esc(p.name)}</span>
-        <span class="muted small">${fmtDate(p.t)}${p.target ? " · mål " + fmtPrice(p.target) : ""}</span>
-        <span class="oc oc-${p.outcome}">${OUTCOME_NAMES[p.outcome]}</span></li>`).join("")}</ul>` : `<p class="muted small">Inga mönster hittade.</p>`}
-      <div class="kv"><span>Mönsterbild</span><b class="${s.patDir === 1 ? "up" : s.patDir === -1 ? "down" : ""}">${!pats.length ? "–" : s.patDir === 1 ? `Bullish (${s.patBull} av ${pats.length})` : s.patDir === -1 ? `Bearish (${s.patBear} av ${pats.length})` : "Blandad"}</b></div>
-      <div class="kv"><span>Trendlinje + mönster</span><b class="${!s.patDir ? "" : s.patDir === s.dir ? (s.dir === 1 ? "up" : "down") : "warn"}">${!s.patDir ? "–" : s.patDir === s.dir ? "Samstämmiga" : "Motstridiga"}</b></div>
-      <p class="muted small">${pst.n ? `Mönster på ${esc(a.sym)} har fungerat ${pst.hit} av ${pst.n} gånger (${nf0.format(pst.hit / pst.n * 100)} %).` : "Inga avslutade mönster att utvärdera än."} Ett mönster räknas som fungerande om priset nådde det mätta målet innan det gick tillbaka förbi mönstrets topp eller botten.</p>
-    </section>`;
-    return pullCard(a) + riskCard(a, s) + btCard(a, s, tfName) + extCard(a, s) + sc + vc + rc + pc;
+  // Detaljvyn: en rad per mätvärde med ett enkelt omdöme. Förklaringen ligger bakom i-knappen, planen fälls ut.
+  const tipBtn = t => `<button type="button" class="tip" aria-label="Mer information" data-tip="${esc(t)}">i</button>`;
+  function sigRow(key, label, cls, text, tipTxt, body) {
+    const head = `<span class="acc-t">${label}</span>${tipBtn(tipTxt)}<span class="acc-s ${cls}"><i class="dot"></i>${text}</span>`;
+    return body ? `<details class="acc" data-acc="${key}"${accOpen.has(key) ? " open" : ""}><summary>${head}</summary>${body}</details>`
+      : `<div class="acc plain"><div class="acc-h">${head}</div></div>`;
   }
+  function insightCards(a, s, tfName) {
+    const res = data[a.key].res || {}, w = res.w, dd = res.d, b = w || s, rows = [];
+    const trendRow = (key, x, name, unit) => x && rows.push(sigRow(key, `Trend, ${name}`, x.dir === 1 ? "pos" : "neg", x.dir === 1 ? "Positivt · uppåttrend" : "Negativt · nedåttrend",
+      `Trendlinjen på ${name}grafen. ${x.dir === 1 ? `Blir negativ om en ${unit} stänger under ${fmtPrice(x.line)}.` : `Blir positiv om en ${unit} stänger över ${fmtPrice(x.line)}.`} Trenden skyddar mot stora nedgångar men förutsäger inte uppgång: i våra test steg aktier lika ofta i nedåttrend som i uppåttrend.`));
+    trendRow("tw", w, "vecka", "vecka"); trendRow("td", dd, "dag", "dag");
+    // Kort rekyl (dag)
+    const p = pullOf(a.key);
+    if (p) {
+      const [cls, txt] = p.state === "signal" ? (p.upside >= PULL_MIN_UP ? ["pos", "Köpläge · tyder på kortsiktig uppgång"] : ["neu", "Köpläge, men för liten uppgång"])
+        : p.state === "open" ? ["neu", `Pågår · dag ${p.held} av ${PB.maxDays}`] : p.state === "exit" ? ["neg", p.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
+      rows.push(sigRow("pull", "Rekyl, några dagar", cls, txt,
+        `Köpläge när dagstrenden är uppåt och priset fallit kraftigt på kort tid (RSI(2) under 10). Affären varar oftast 2–5 dagar. I test på 134 aktier under ett år gick 66 % av affärerna med vinst, men förlusterna var i snitt större än vinsterna (+2,7 % mot −4,0 %).${p.stats ? ` På ${a.sym}: ${p.stats.n} affärer, ${nf0.format(p.stats.win * 100)} % med vinst.` : ""} Just nu: RSI(2) ${p.rsi == null ? "–" : nf0.format(p.rsi)}.`,
+        p.state === "none" ? null : planDay(a, p)));
+    }
+    // Månadsrekyl (vecka)
+    const pw = pullWOf(a.key);
+    if (pw) {
+      const [cls, txt] = pw.state === "signal" ? ["pos", "Köpläge · tyder på uppgång inom en månad"]
+        : pw.state === "open" ? ["neu", `Pågår · vecka ${pw.held} av ${PBW.hold}`] : pw.state === "exit" ? ["neg", pw.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
+      rows.push(sigRow("pullw", "Rekyl, en månad", cls, txt,
+        `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. I test på 133 aktier över tio år gick 58–64 % av affärerna med vinst, mot 54–59 % för ett köp vilken vecka som helst. Fördelen är alltså liten. Testat på aktier, inte krypto.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
+        pw.state === "none" ? null : planWeek(a, pw)));
+    }
+    // Prisnivå
+    const e = b.ext;
+    if (e) rows.push(sigRow("ext", "Prisnivå", e.level < 0 ? "pos" : e.level > 0 ? "neg" : "neu",
+      e.level < 0 ? "Billigt mot sin historik" : e.level > 0 ? "Uttänjt · var försiktig med nya köp" : "Neutralt",
+      `Jämför priset med 200-veckorsmedlet och vecko-RSI. Vecko-RSI ${e.rsi == null ? "–" : nf0.format(e.rsi)}${e.ratio ? `, priset ${fmtSigned((e.ratio - 1) * 100)} mot 200-veckorsmedlet` : ""}. Till för att köpa och sälja stegvis, inte en signal. Har prickat stora bottnar i BTC bättre än toppar.`));
+    // Styrka
+    if (b.rs) rows.push(sigRow("rs", `Styrka mot ${b.rsRef}`, b.rs.dir === 1 ? "pos" : "neg", b.rs.dir === 1 ? `Starkare än ${b.rsRef}` : `Svagare än ${b.rsRef}`,
+      `Visar om ${a.sym} har gått bättre eller sämre än ${b.rsRef} på senare tid. Det beskriver läget men förutsäger inte fortsättningen.`));
+    // Rörlighet
+    const v = b.vol;
+    if (v) rows.push(sigRow("vol", "Rörlighet", v.level === 4 ? "neg" : "neu", v.level === 4 ? "Mycket hög · trendlinjen reagerar sent" : v.level === 3 ? "Hög" : "Normal",
+      `Trendlinjen ligger ${nf0.format(v.bw)} % från priset när den sätts. Ju högre rörlighet, desto mer hinner priset falla innan trenden slår om.`));
+    // Historik
+    const bt = s.bt;
+    if (bt) rows.push(sigRow("bt", "Historik", "neu", `Följt trendlinjen ${fmtSigned(bt.ret * 100)} · köpt och behållit ${fmtSigned(bt.bh * 100)}`,
+      `Sedan ${fmtDate(bt.from)} på ${tfName}en: köp när trenden blir positiv, sälj när den blir negativ, 0,1 % avgift. Största nedgång ${nf0.format(bt.mdd * 100)} % med linjen mot ${nf0.format(bt.bhDd * 100)} % för köp och behåll. ${bt.trades} affärer. Historiken säger inget säkert om framtiden.`));
+    // Risk
+    rows.push(sigRow("risk", "Positionsstorlek", "neu", s.dir === 1 ? `Stopp vid trendlinjen ${fmtPrice(s.line)}` : "Ingen köpsignal från trendlinjen",
+      "Räknar ut hur mycket du kan köpa för om du vill riskera en viss andel av kapitalet, med stopp vid trendlinjen. Ju längre bort stoppet ligger, desto mindre position.", riskCard(a, s)));
+    return rows.join("");
+  }
+
+  // Utfällbara flikar. Vilka som är öppna minns sidan mellan tillgångar.
+  const accOpen = new Set();
+  function accWrap(key, sum, html) {
+    const m = html.match(/<h4>([\s\S]*?)<\/h4>/);
+    return `<details class="acc" data-acc="${key}"${accOpen.has(key) ? " open" : ""}><summary><span class="acc-t">${m ? m[1] : key}</span><span class="acc-s">${sum}</span></summary>${html}</details>`;
+  }
+  // i-knappen ska bara visa förklaringen, inte fälla ut raden
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest(".tip")) e.preventDefault(); });
+  document.addEventListener("toggle", e => {
+    const d = e.target; if (!d.dataset || !d.dataset.acc) return;
+    if (d.open) accOpen.add(d.dataset.acc); else accOpen.delete(d.dataset.acc);
+  }, true);
 
   // Läget i korthet: väger ihop trend, betyg, relativ styrka, extremläge och bandbredd. Information, inte råd.
   function summaryBox(a, s) {
     const bits = [];
     bits.push(`<b class="${s.dir === 1 ? "up" : "down"}">${s.dir === 1 ? "Bullish" : "Bearish"} trend</b>`);
-    if (s.scoreN != null) bits.push(`${s.scoreN >= 8 ? "högt" : s.scoreN >= 5 ? "medel" : "lågt"} betyg (${s.scoreN})`);
     if (s.rs) bits.push(`${s.rs.dir === 1 ? "starkare" : "svagare"} än ${s.rsRef}`);
     if (s.ext && s.ext.level) bits.push(`<b class="${s.ext.level > 0 ? "warn" : "cold"}">${EXT_NAMES[s.ext.level].toLowerCase()}</b>`);
     if (s.vol && s.vol.level === 4) bits.push("linjen reagerar sent");
     const lv = s.ext ? s.ext.level : 0;
     let take;
     if (s.dir === 1 && lv > 0) take = "Trenden är uppåt men läget är uttänjt. Överväg att inte jaga nya köp och att ta hem en del stegvis.";
-    else if (s.dir === 1) take = s.scoreN != null && s.scoreN < 5 ? "Trenden är uppåt, men linjen har fungerat dåligt på den här tillgången. Lita mindre på signalen." : "Trenden är uppåt och läget är inte uttänjt.";
+    else if (s.dir === 1) take = "Trenden är uppåt och läget är inte uttänjt.";
     else if (lv < 0) take = "Trenden är nedåt men priset är lågt mot sin långa historik. Bevaka för stegvisa köp och låt linjen bekräfta vändningen.";
     else take = "Trenden är nedåt, så det finns ingen köpsignal.";
     if (s.dir === 1 && s.rs && s.rs.dir === -1) take += ` Den går dock sämre än ${s.rsRef}.`;
     return `<div class="summary"><span class="sumlbl">Läget i korthet</span><span>${bits.join(" · ")}</span><span class="take">${take}</span></div>`;
   }
 
-  // Rekyltrade: tydlig plan för köp, stopp och sälj. Räknas alltid på dagsgrafen.
-  function pullCard(a) {
-    const p = pullOf(a.key);
-    const head = `<h4>Rekyltrade <span class="muted small">dagsgraf</span></h4>`;
-    if (!p) return `<section class="card pullcard">${head}<p class="muted small">För lite dagshistorik.</p></section>`;
+  // Köpplaner för rekyl: kort (dag) och en månad (vecka). Bara det som behövs för att lägga ordern.
+  function sizeRow(stopFrac) {
+    const cap = settings.capital, risk = settings.riskPct / 100, pos = Math.min(1, risk / stopFrac);
+    return `<div class="kv"><span>Köp för ${tipBtn(`Räknat så att du förlorar cirka ${nf2.format(Math.min(risk, stopFrac) * 100)} % av kapitalet om stoppet går. Kapital och risk ändrar du under Positionsstorlek.`)}</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>`;
+  }
+  function planDay(a, p) {
     const kr = a.type === "krypto";
-    const st = p.stats ? `På ${esc(a.sym)} har regeln gett ${p.stats.n} affärer i den historik som visas: ${nf0.format(p.stats.win * 100)} % med vinst, i snitt ${fmtSigned(p.stats.avg * 100)} per affär efter avgifter, sämsta ${fmtSigned(p.stats.worst * 100)}.` : `Regeln har inte gett någon avslutad affär på ${esc(a.sym)} i den historik som visas.`;
-    const foot = `<p class="muted small">${st} Få affärer per tillgång säger lite. I testet över 134 aktier gick 66 % av affärerna med vinst, men snittförlusten var större än snittvinsten. Courtage och valutaväxling tillkommer. Information, inte råd.</p>`;
-    const sellRule = `<li><b>Sälj</b> när en dag stänger över 5-dagarsmedlet (just nu ${fmtPrice(p.sma)}; nivån ändras varje dag). Sälj vid nästa öppning.</li>
-        <li><b>Sälj senast</b> efter ${PB.maxDays} ${kr ? "dagar" : "handelsdagar"}, även om inget hänt.</li>`;
     if (p.state === "signal") {
-      const cap = settings.capital, risk = settings.riskPct / 100, sp = p.stopDist / p.entry, pos = Math.min(1, risk / sp);
-      return `<section class="card pullcard on">${head}
-        <div class="kv"><span>Läge</span><b class="up">Köpläge</b></div>
-        <div class="kv"><span>Varför</span><b>Bullish trend · RSI(2) ${nf0.format(p.rsi)}</b></div>
-        <div class="kv"><span>${p.entryKnown ? "Köpkurs (dagens öppning)" : "Köpkurs (ungefär)"}</span><b>${fmtPrice(p.entry)}</b></div>
-        <div class="kv"><span>Stop loss</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
-        <div class="kv"><span>Sälj över (just nu)</span><b>${fmtPrice(p.sma)}</b></div>
-        <div class="kv"><span>Köp för</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>
-        <ol>
-          <li><b>Köp</b> ${kr ? (p.entryKnown ? "nu. Signalen kom vid dygnsskiftet (02:00 svensk sommartid)." : "efter dygnsskiftet (02:00 svensk sommartid).") : (p.entryKnown ? "nu, börsen har öppnat." : "när börsen öppnar nästa handelsdag.")}</li>
-          <li><b>Lägg stop loss</b> direkt: din köpkurs minus ${fmtPrice(p.stopDist)}. Med köpkursen ovan blir det ${fmtPrice(p.stop)}.</li>
-          ${sellRule}
-        </ol>
-        <p class="muted small">Storleken är räknad så att du förlorar cirka ${nf2.format(Math.min(risk, sp) * 100)} % av kapitalet om stoppet går. Kapital och risk ställer du in i kortet Risk och positionsstorlek. Kommer det många köplägen samma dag, bestäm i förväg hur många du tar.</p>${foot}</section>`;
+      const sp = p.stopDist / p.entry;
+      return `<section class="card">
+        <div class="kv"><span>Köp</span><b>${kr ? (p.entryKnown ? "nu" : "efter 02:00 i natt") : (p.entryKnown ? "nu" : "när börsen öppnar")} · ca ${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Stop loss ${tipBtn(`Lägg stoppet direkt efter köpet: din köpkurs minus ${fmtPrice(p.stopDist)}. Stoppet flyttas inte.`)}</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
+        <div class="kv"><span>Sälj ${tipBtn("Sälj när en dag stänger över 5-dagarsmedlet. Nivån ändras varje dag, så titta här varje kväll. Sälj vid nästa öppning.")}</span><b>över ${fmtPrice(p.sma)} · ${fmtSigned(p.upside * 100)}</b></div>
+        <div class="kv"><span>Sälj senast</span><b>efter ${PB.maxDays} ${kr ? "dagar" : "handelsdagar"}</b></div>
+        ${sizeRow(sp)}
+        ${p.upside < PULL_MIN_UP ? `<p class="muted small"><b class="warn">För liten uppgång.</b> Säljnivån ligger mindre än 1 % över köpkursen.</p>` : ""}</section>`;
     }
     if (p.state === "open") {
-      const res = p.live / p.entry - 1;
-      return `<section class="card pullcard on">${head}
-        <div class="kv"><span>Läge</span><b class="${p.stopHitLive ? "down" : "up"}">${p.stopHitLive ? "Stoppet har nåtts idag" : "Pågående affär"}</b></div>
+      const r = p.live / p.entry - 1;
+      return `<section class="card">
         <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
-        <div class="kv"><span>Resultat hittills</span><b class="${res >= 0 ? "up" : "down"}">${fmtSigned(res * 100)}</b></div>
-        <div class="kv"><span>Stop loss</span><b class="down">${fmtPrice(p.stop)}</b></div>
-        <div class="kv"><span>Sälj över (just nu)</span><b>${fmtPrice(p.sma)}</b></div>
-        <div class="kv"><span>Dag</span><b>${p.held} av ${PB.maxDays}</b></div>
-        <ol>${sellRule}<li><b>Stop loss</b> ligger kvar på ${fmtPrice(p.stop)} och flyttas inte.</li></ol>
-        <p class="muted small">Köpläget har redan passerat. Att gå in i efterhand är inte testat.</p>${foot}</section>`;
+        <div class="kv"><span>Resultat hittills</span><b class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</b></div>
+        <div class="kv"><span>Stop loss</span><b class="down">${p.stopHitLive ? "nådd idag · " : ""}${fmtPrice(p.stop)}</b></div>
+        <div class="kv"><span>Sälj ${tipBtn("Sälj när en dag stänger över 5-dagarsmedlet. Nivån ändras varje dag. Att gå in i efterhand är inte testat.")}</span><b>över ${fmtPrice(p.sma)} · ${fmtSigned(p.upside * 100)}</b></div>
+        <div class="kv"><span>Sälj senast</span><b>om ${PB.maxDays - p.held} ${kr ? "dagar" : "handelsdagar"}</b></div></section>`;
     }
-    if (p.state === "exit") {
-      const why = { sma: "Dagen stängde över 5-dagarsmedlet.", time: `${PB.maxDays} dagar har gått.`, stop: "Stop loss gick." }[p.why];
-      return `<section class="card pullcard on">${head}
-        <div class="kv"><span>Läge</span><b class="down">${p.why === "stop" ? "Stoppad" : "Sälj"}</b></div>
-        <div class="kv"><span>Varför</span><b>${why}</b></div>
+    const why = { sma: "Dagen stängde över 5-dagarsmedlet", time: `${PB.maxDays} dagar har gått`, stop: "Stop loss gick" }[p.why];
+    return `<section class="card">
+      <div class="kv"><span>Varför</span><b>${why}</b></div>
+      <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
+      <div class="kv"><span>Resultat enligt regeln</span><b class="${p.result >= 0 ? "up" : "down"}">${fmtSigned(p.result * 100)}</b></div>
+      ${p.why === "stop" ? "" : `<div class="kv"><span>Sälj</span><b>${kr ? "nu" : "när börsen öppnar"}</b></div>`}</section>`;
+  }
+  function planWeek(a, p) {
+    const kr = a.type === "krypto";
+    if (p.state === "signal") {
+      const sp = p.stopDist / p.entry;
+      return `<section class="card">
+        <div class="kv"><span>Köp</span><b>${p.entryKnown ? "nu" : kr ? "efter veckoskiftet" : "när börsen öppnar på måndag"} · ca ${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Stop loss ${tipBtn(`Lägg stoppet direkt efter köpet: din köpkurs minus ${fmtPrice(p.stopDist)}. Stoppet flyttas inte.`)}</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
+        <div class="kv"><span>Sälj</span><b>efter ${PBW.hold} veckor</b></div>
+        ${sizeRow(sp)}</section>`;
+    }
+    if (p.state === "open") {
+      const r = p.live / p.entry - 1;
+      return `<section class="card">
         <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
-        <div class="kv"><span>Resultat enligt regeln</span><b class="${p.result >= 0 ? "up" : "down"}">${fmtSigned(p.result * 100)}</b></div>
-        <ol><li>${p.why === "stop" ? "Affären är avslutad av stoppet." : `<b>Sälj</b> ${kr ? "nu." : "när börsen öppnar nästa handelsdag."}`}</li></ol>${foot}</section>`;
+        <div class="kv"><span>Resultat hittills</span><b class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</b></div>
+        <div class="kv"><span>Stop loss</span><b class="down">${p.stopHitLive ? "nådd den här veckan · " : ""}${fmtPrice(p.stop)}</b></div>
+        <div class="kv"><span>Sälj</span><b>om ${PBW.hold - p.held} ${PBW.hold - p.held === 1 ? "vecka" : "veckor"}</b></div></section>`;
     }
-    const need = p.dir !== 1 ? "Trendlinjen på dagsgrafen är bearish. Rekylköp görs bara i upptrend." : `Trenden är bullish men priset har inte fallit tillräckligt. RSI(2) är ${nf0.format(p.rsi)} och behöver stänga under ${PB.rsi}.`;
-    return `<section class="card pullcard">${head}
-      <div class="kv"><span>Läge</span><b>Inget köpläge</b></div>
-      <div class="kv"><span>Trend (dag)</span><b class="${p.dir === 1 ? "up" : "down"}">${p.dir === 1 ? "Bullish" : "Bearish"}</b></div>
-      <div class="kv"><span>RSI(2)</span><b>${p.rsi == null ? "–" : nf0.format(p.rsi)}</b></div>
-      <p class="muted small">${need}</p>${foot}</section>`;
+    return `<section class="card">
+      <div class="kv"><span>Varför</span><b>${p.why === "stop" ? "Stop loss gick" : `${PBW.hold} veckor har gått`}</b></div>
+      <div class="kv"><span>Köpt enligt regeln</span><b>${fmtDate(p.entryT)} · ${fmtPrice(p.entry)}</b></div>
+      <div class="kv"><span>Resultat enligt regeln</span><b class="${p.result >= 0 ? "up" : "down"}">${fmtSigned(p.result * 100)}</b></div>
+      ${p.why === "stop" ? "" : `<div class="kv"><span>Sälj</span><b>${kr ? "nu" : "när börsen öppnar på måndag"}</b></div>`}</section>`;
   }
 
   function riskCard(a, s) {
@@ -2105,8 +2220,7 @@
     return `<section class="card"><h4>Risk och positionsstorlek</h4>${inputs}
       <div class="kv"><span>Stopp vid flipnivån</span><b>${fmtPrice(s.line)} · ${nf2.format(stop * 100)} % bort</b></div>
       <div class="kv"><span>Köp för</span><b class="up">${nf0.format(cap * posPct)} · ${nf2.format(posPct * 100)} % av kapitalet</b></div>
-      <div class="kv"><span>Förlust om stoppet går</span><b>ca ${nf0.format(cap * risk * (capped ? stop / risk : 1))} · ${nf2.format(Math.min(risk, stop) * 100)} %</b></div>
-      <p class="muted small">${capped ? "Stoppet ligger så nära att hela kapitalet ryms inom risken, så positionen begränsas till kapitalet. " : ""}Ju längre bort flipnivån ligger, desto mindre position. Linjen gäller på stängd stapel, så förlusten kan bli större om priset gapar. Belopp i samma valuta som kapitalet.</p></section>`;
+      <div class="kv"><span>Förlust om stoppet går</span><b>ca ${nf0.format(cap * risk * (capped ? stop / risk : 1))} · ${nf2.format(Math.min(risk, stop) * 100)} %</b></div></section>`;
   }
 
   function btCard(a, s, tfName) {
@@ -2201,7 +2315,7 @@
         </div>
         <input type="number" name="price" step="any" min="0" value="${+s.close.toPrecision(6)}" aria-label="Pris" required>
         <input type="date" name="date" value="${todayISO()}" max="${todayISO()}" aria-label="Datum">
-        <input type="text" name="note" maxlength="200" placeholder="Varför? T.ex. veckan flippade bull, betyg 8" aria-label="Anteckning">
+        <input type="text" name="note" maxlength="200" placeholder="Varför? T.ex. rekylköp, veckan flippade bull" aria-label="Anteckning">
         <button class="btn primary" type="submit">Logga</button>
       </form>
       ${openHere.length || closedHere.length ? `<p class="small muted">${closedHere.map(c => `Avslutad affär ${fmtDate(c.buy.t)} → ${fmtDate(c.sell.t)}: <b class="${c.ret >= 0 ? "up" : "down"}">${fmtSigned(c.ret * 100)}</b>`).concat(openHere.map(o => `Öppet köp ${fmtDate(o.buy.t)}: <b class="${o.ret >= 0 ? "up" : "down"}">${fmtSigned(o.ret * 100)}</b> hittills`)).join(" · ")}</p>` : ""}
@@ -2608,7 +2722,6 @@
     $("selScore").value = String(state.minScore || 0);
     $("selExt").value = state.ext || "alla";
     $("btnWatch").setAttribute("aria-pressed", String(!!state.watchOnly));
-    $("btnPull").setAttribute("aria-pressed", String(!!state.pull));
     if ($("search").value !== state.q) $("search").value = state.q;
   }
   SEGS.forEach(([id, key]) => $(id).addEventListener("click", e => {
@@ -2636,14 +2749,12 @@
   }
   $("btnClear").addEventListener("click", clearFilters);
   $("btnWatch").addEventListener("click", () => { state.watchOnly = !state.watchOnly; syncControls(); renderTiles(); renderTable(); });
-  $("btnPull").addEventListener("click", () => { state.pull = !state.pull; syncControls(); renderTiles(); renderTable(); });
   $("activeFilters").addEventListener("click", e => {
     const b = e.target.closest("[data-clear]"); if (!b) return;
     const k = b.dataset.clear;
     if (k === "all") { clearFilters(); return; }
     if (k === "quick") state.quick = null;
     else if (k === "watch") state.watchOnly = false;
-    else if (k === "pull") state.pull = false;
     else if (k === "minScore") state.minScore = 0;
     else if (k === "q") state.q = "";
     else state[k] = "alla";
