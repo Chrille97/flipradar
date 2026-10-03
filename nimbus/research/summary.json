@@ -1,0 +1,1404 @@
+{
+ "fetched": "2026-10-03T00:49:33.953Z",
+ "crumb": true,
+ "assets": {
+  "AAPL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MSFT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NVDA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AMZN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "GOOGL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "META": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TSLA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AVGO": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ORCL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ADBE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 3
+  },
+  "CRM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AMD": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "INTC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "QCOM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TXN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MU": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AMAT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LRCX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "KLAC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ARM": {
+   "bars": 765,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ASML": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TSM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SMCI": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MRVL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CSCO": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "IBM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NOW": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "INTU": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PANW": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CRWD": {
+   "bars": 1837,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SNOW": {
+   "bars": 1518,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PLTR": {
+   "bars": 1508,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NET": {
+   "bars": 1772,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DDOG": {
+   "bars": 1768,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SHOP": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "APP": {
+   "bars": 1373,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "VRT": {
+   "bars": 2052,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ETN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PWR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "FLEX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "UBER": {
+   "bars": 1859,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ABNB": {
+   "bars": 1458,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NFLX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SPOT": {
+   "bars": 2137,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DIS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RDDT": {
+   "bars": 635,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "COIN": {
+   "bars": 1374,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MSTR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HOOD": {
+   "bars": 1300,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MARA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RIOT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CLSK": {
+   "bars": 2481,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "IREN": {
+   "bars": 1222,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HUT": {
+   "bars": 2154,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CRCL": {
+   "bars": 333,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SOFI": {
+   "bars": 1443,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RKLB": {
+   "bars": 1469,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "IONQ": {
+   "bars": 1443,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "JPM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BAC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "GS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "WFC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BRK.B": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "V": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PYPL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AXP": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BLK": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SCHW": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LLY": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "UNH": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "JNJ": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NVO": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AZN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 2
+  },
+  "ABBV": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MRK": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PFE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ISRG": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TMO": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "WMT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "COST": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HD": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MCD": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "KO": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PEP": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NKE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SBUX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "PG": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "XOM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CVX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NEE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "FSLR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ENPH": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CAT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "GE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LMT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RTX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SPY": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "QQQ": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "IWM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "DIA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "GLD": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "SLV": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "TLT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "SMH": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "ARKK": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "IBIT": {
+   "bars": 683,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "ANET": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DELL": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CRDO": {
+   "bars": 1174,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ALAB": {
+   "bars": 636,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "COHR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CIEN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LITE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "GLW": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MPWR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NXPI": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "WDC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SNPS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CDNS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TER": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CRWV": {
+   "bars": 380,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NBIS": {
+   "bars": 488,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ZS": {
+   "bars": 2148,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "FTNT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MDB": {
+   "bars": 2249,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TEAM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "WDAY": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DUOL": {
+   "bars": 1301,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RBLX": {
+   "bars": 1398,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TTD": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AXON": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CEG": {
+   "bars": 1180,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "VST": {
+   "bars": 2511,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "GEV": {
+   "bars": 631,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TLN": {
+   "bars": 836,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "OKLO": {
+   "bars": 1315,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SMR": {
+   "bars": 1152,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CCJ": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BWXT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LEU": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BE": {
+   "bars": 2058,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "COP": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LNG": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HWM": {
+   "bars": 2492,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TT": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "EME": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "FIX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HON": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SYM": {
+   "bars": 1399,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NOC": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LHX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "KTOS": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AVAV": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 5
+  },
+  "ASTS": {
+   "bars": 1737,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "RGTI": {
+   "bars": 1368,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "QBTS": {
+   "bars": 1457,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NU": {
+   "bars": 1207,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AFRM": {
+   "bars": 1436,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "XYZ": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "IBKR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "KKR": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "VRTX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "REGN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AMGN": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HIMS": {
+   "bars": 1772,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BSX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SYK": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MELI": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SE": {
+   "bars": 2248,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BABA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BKNG": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "DASH": {
+   "bars": 1459,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CVNA": {
+   "bars": 2370,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "FCX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NEM": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MP": {
+   "bars": 1578,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ALB": {
+   "bars": 2513,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "URA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "COPX": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "ITA": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "XLE": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "IGV": {
+   "bars": 2513,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "ETHA": {
+   "bars": 551,
+   "earnChart": 0,
+   "qsErr": "HTTP 404"
+  },
+  "SWEC.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "VOLV.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ATCO.A@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SAND@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SKF.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ALFA@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ABB@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ASSA.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HEXA.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "INVE.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 0,
+   "hist": 0
+  },
+  "EQT@XSTO": {
+   "bars": 1765,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 0
+  },
+  "SEB.A@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SHB.A@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SWED.A@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AZA@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SAVE@XSTO": {
+   "bars": 1470,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ERIC.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SINCH@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "AZN@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HM.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "EVO@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SAAB.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "NIBE.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BOL@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "VIR10SEK@XSTO": {
+   "err": "HTTP 404"
+  },
+  "EPI.A@XSTO": {
+   "bars": 2082,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LIFCO.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ADDT.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "LAGR.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "INDU.C@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 0
+  },
+  "LATO.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 0
+  },
+  "KINV.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 0
+  },
+  "NDA.SE@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "ESSITY.B@XSTO": {
+   "bars": 2337,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TELIA@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TEL2.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SSAB.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 0,
+   "hist": 2
+  },
+  "GETI.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SOBI@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "CAMX@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "SECT.B@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "BONEX@XSTO": {
+   "bars": 2333,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MYCR@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "HMS@XSTO": {
+   "bars": 2514,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "MILDEF@XSTO": {
+   "bars": 1341,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "TRUE.B@XSTO": {
+   "bars": 1252,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  },
+  "YUBICO@XSTO": {
+   "bars": 1389,
+   "earnChart": 0,
+   "next": 1,
+   "hist": 4
+  }
+ },
+ "totals": {
+  "ok": 234,
+  "failed": 1,
+  "withChartEarnings": 0,
+  "withNext": 216,
+  "withHist": 213
+ }
+}
