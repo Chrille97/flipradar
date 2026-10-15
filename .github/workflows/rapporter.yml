@@ -1,0 +1,29 @@
+name: Rapporter (AI)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 3 * * *"
+permissions:
+  contents: write
+  models: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node nimbus/rapporter.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Spara
+        if: always()
+        run: |
+          git config user.name "flipradar-rapporter"
+          git config user.email "flipradar-rapporter@users.noreply.github.com"
+          git add nimbus/reports
+          git commit -m "Rapporter: hämtning och AI-läsning" || echo "Inget nytt"
+          git pull --rebase
+          git push
