@@ -89,7 +89,7 @@
   .banner.info strong { color: var(--accent); }
 
   /* Summary tiles */
-  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+  .tiles { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
   .tile {
     text-align: left;
     background: var(--panel);
@@ -110,7 +110,15 @@
   .tile.near .val { color: var(--warn); }
   .tile.pull .val { color: var(--accent); }
   .tile.raket .val { color: #f5a623; }
-  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tile.idx { position: relative; cursor: default; }
+  .tile.idx:hover { border-color: var(--line); }
+  .tile.idx .lbl { display: flex; align-items: center; gap: 8px; position: relative; }
+  .idxrow { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
+  .idxrow .nm { min-width: 74px; color: var(--muted); }
+  .idxrow b { font-family: var(--font-num); font-weight: 500; font-size: 18px; white-space: nowrap; }
+  .idxrow b.on { color: var(--bull); } .idxrow b.off { color: var(--bear); }
+  .idxrow .since { font-size: 12px; color: var(--faint); }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile.idx { grid-column: 1 / -1; } }
 
   /* Controls */
   .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -202,6 +210,7 @@
     padding: 8px 10px; border: 1px dashed rgba(217, 168, 78, 0.45); border-radius: var(--radius);
     background: rgba(217, 168, 78, 0.06);
   }
+  .active-filters[hidden], [hidden] { display: none !important; }
   .active-filters .af-lbl { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; font-weight: 600; color: var(--accent); }
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
@@ -369,7 +378,7 @@
   }
 
   /* Marknaden */
-  .market { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 10px; }
+  .market { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
   @media (max-width: 860px) { .market { grid-template-columns: 1fr; } }
   .market .card { background: var(--panel); }
   .mhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -525,21 +534,18 @@
   <div id="banners"></div>
 
   <section class="tiles" aria-label="Sammanfattning">
-    <button class="tile bull" id="tBull" data-quick="bull" aria-pressed="false"><span class="lbl">Bullish</span><span class="val" id="nBull">–</span><span class="sub">över linjen</span></button>
-    <button class="tile bear" id="tBear" data-quick="bear" aria-pressed="false"><span class="lbl">Bearish</span><span class="val" id="nBear">–</span><span class="sub">under linjen</span></button>
-    <button class="tile fresh" id="tFresh" data-quick="fresh" aria-pressed="false"><span class="lbl">Nyss flippade</span><span class="val" id="nFresh">–</span><span class="sub" id="freshSub">inom 3 staplar</span></button>
-    <button class="tile near" id="tNear" data-quick="near" aria-pressed="false"><span class="lbl">Nära flip</span><span class="val" id="nNear">–</span><span class="sub" id="nearSub">inom 3 % från linjen</span></button>
-    <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Rekyltrade: tillgångar i upptrend som just fallit kraftigt. Kort rekyl på dagsgrafen (några dagar) och månadsrekyl på veckografen (fyra veckor)."><span class="lbl">Rekyltrade</span><span class="val" id="nPull">–</span><span class="sub">köplägen på dag och vecka</span></button>
+    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="Trendlinjen på veckografen för hela marknaden: S&amp;P 500 (fonden SPY) för aktier och Bitcoin för krypto. Risk på betyder uppåttrend: var investerad och ta månadsrekylens köplägen. Risk av betyder nedåttrend: överväg att minska risken, till exempel genom att inte öppna nya affärer eller flytta en indexfond till sparkonto tills linjen vänder upp. Börsläget skyddar mot större nedgångar men ger inga köplägen. Det köper ofta tillbaka dyrare än det sålde och ger ibland falsklarm, så det kostar avkastning. Test S&amp;P 500: största nedgången blev −18 % i stället för −32 % (2017–2021) och −9 % i stället för −25 % (2022–2026), men avkastningen blev +76 % mot +112 % och +26 % mot +61 % för köp och behåll. Bitcoin: största nedgången blev −62 % i stället för −79 % och −26 % i stället för −66 %. Avkastningen blev lägre 2017–2021 (+792 % mot +1 795 %) men högre 2022–2026 (+237 % mot +94 %). Stockholmsbörsen är inte testad än.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
+    <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Månadsrekyl: aktier över sitt 40-veckorsmedel som just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor."><span class="lbl">Månadsrekyl</span><span class="val" id="nPull">–</span><span class="sub">köplägen just nu</span></button>
     <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Bäst som filter för månadsrekylen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
   </section>
 
   <section class="market" aria-label="Marknaden">
     <div class="card">
-      <div class="mhead"><h4>Marknadsbredd</h4><span class="muted small" id="bSub">Andel tillgångar där trendlinjen är bullish</span></div>
+      <div class="mhead"><h4>Marknadsbredd <button type="button" class="tip" aria-label="Mer information" data-tip="Andel tillgångar vars trendlinje är bullish. En bild av läget, inte en signal: i vårt test sa bredden inget om hur börsen gick de följande 4 eller 13 veckorna. Mycket låg bredd (under 30 %) följdes av uppgång, men det hände bara ett fåtal gånger, mest 2020 och 2022.">i</button></h4><span class="muted small" id="bSub">Andel tillgångar där trendlinjen är bullish</span></div>
       <div class="bstats" id="bStats"></div>
       <canvas id="breadthCanvas" class="breadth" aria-label="Andel bullish tillgångar över tid"></canvas>
     </div>
-    <div class="card">
+    <div class="card" hidden style="display:none">
       <div class="mhead"><h4>Sektorer</h4><span class="muted small">Andel bullish per kategori · klicka för att filtrera</span></div>
       <div class="sectors" id="sectors"></div>
     </div>
@@ -560,9 +566,8 @@
       <button data-v="alla" aria-pressed="true">Alla</button>
       <button data-v="bull" aria-pressed="false">Bull</button>
       <button data-v="bear" aria-pressed="false">Bear</button>
-      <button data-v="aligned" aria-pressed="false">V+D samstämmiga</button>
     </div>
-    <div class="seg" role="group" aria-label="Relativ styrka mot BTC eller SPY" id="segRs" title="Relativ styrka: krypto jämförs med BTC, amerikanska aktier med S&P 500 (SPY)">
+    <div class="seg" role="group" aria-label="Relativ styrka mot BTC eller SPY" id="segRs" hidden style="display:none" title="Relativ styrka: krypto jämförs med BTC, amerikanska aktier med S&P 500 (SPY)">
       <button data-v="alla" aria-pressed="true">Alla</button>
       <button data-v="strong" aria-pressed="false">Starkare än BTC/SPY</button>
       <button data-v="weak" aria-pressed="false">Svagare</button>
@@ -571,7 +576,7 @@
     <select class="select" id="selScore" aria-label="Minsta signalbetyg" hidden style="display:none">
       <option value="0">Alla betyg</option><option value="5">Betyg 5+</option><option value="7">Betyg 7+</option><option value="8">Betyg 8+</option>
     </select>
-    <select class="select" id="selExt" aria-label="Extremläge">
+    <select class="select" id="selExt" aria-label="Extremläge" hidden style="display:none">
       <option value="alla">Alla lägen</option><option value="stretched">Uttänjda</option><option value="cheap">Billiga</option>
     </select>
     <input class="search" id="search" type="search" placeholder="Sök symbol eller namn" aria-label="Sök">
@@ -592,8 +597,8 @@
         <div class="settings-grid">
           <div class="field"><label for="inAtr">ATR-längd</label><input id="inAtr" type="number" min="1" max="100" step="1"><span class="hint">Standard 10</span></div>
           <div class="field"><label for="inMult">ATR-multiplikator</label><input id="inMult" type="number" min="0.5" max="10" step="0.1"><span class="hint">Standard 3,2</span></div>
-          <div class="field"><label for="inFresh">Nyss flippad, max staplar</label><input id="inFresh" type="number" min="1" max="52" step="1"><span class="hint">Standard 3</span></div>
-          <div class="field"><label for="inNear">Nära flip, max %</label><input id="inNear" type="number" min="0.5" max="30" step="0.5"><span class="hint">Standard 3</span></div>
+          <div class="field" hidden style="display:none"><label for="inFresh">Nyss flippad, max staplar</label><input id="inFresh" type="number" min="1" max="52" step="1"><span class="hint">Standard 3</span></div>
+          <div class="field" hidden style="display:none"><label for="inNear">Nära flip, max %</label><input id="inNear" type="number" min="0.5" max="30" step="0.5"><span class="hint">Standard 3</span></div>
         </div>
         <div><button class="btn" id="btnReset">Återställ standard</button></div>
       </div>
@@ -605,7 +610,7 @@
           <button class="btn" id="btnTest">Skicka testnotis</button>
         </div>
         <div class="settings-grid">
-          <div class="field"><label for="inMode">Meddela när</label>
+          <div class="field" hidden style="display:none"><label for="inMode">Meddela när</label>
             <select class="select" id="inMode">
               <option value="closed">Flippen är bekräftad (stapeln har stängt)</option>
               <option value="live">Priset korsar linjen (kan ändras innan stapeln stänger)</option>
@@ -615,10 +620,10 @@
               <option value="0">Av</option><option value="5">Var 5:e minut</option><option value="15">Var 15:e minut</option>
               <option value="30">Var 30:e minut</option><option value="60">Varje timme</option>
             </select></div>
-          <div class="field"><span class="flabel">Tidsramar</span>
+          <div class="field" hidden style="display:none"><span class="flabel">Tidsramar</span>
             <div class="checks"><label class="check" for="inNW"><input id="inNW" type="checkbox"> Vecka</label><label class="check" for="inND"><input id="inND" type="checkbox"> Dag</label></div></div>
         </div>
-        <div class="events"><h3>Senaste flippar bland dina bevakade</h3><ol id="eventList"></ol></div>
+        <div class="events"><h3>Senaste notiser</h3><ol id="eventList"></ol></div>
       </div>
       <div class="settings-group">
         <h2>Datakälla för aktier</h2>
@@ -673,9 +678,6 @@
           <th class="num opt" data-key="dist"><button>Avstånd <span class="arrow"></span></button></th>
           <th class="num opt-m" data-key="barsSince"><button>Tid sedan flip <span class="arrow"></span></button></th>
           <th class="num opt" data-key="sinceFlip"><button>Sedan flip <span class="arrow"></span></button></th>
-          <th class="opt" data-key="rsChg" title="Krypto mot BTC, amerikanska aktier mot SPY"><button>Mot BTC/SPY <span class="arrow"></span></button></th>
-          <th class="opt" data-key="extLevel" title="Extremläge från veckodata: uttänjt eller billigt mot den långa historiken"><button>Läge <span class="arrow"></span></button></th>
-          <th class="opt opt-wide" data-key="conf"><button>V · D <span class="arrow"></span></button></th>
           <th class="static opt opt-wide">Senaste året</th>
         </tr>
       </thead>
@@ -880,7 +882,8 @@
     sortKey: "barsSince", sortDir: 1, open: null,
     mode: "loading", stockProgress: null, updated: null
   };
-  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false, pull: false, minScore: 0 });
+  Object.assign(state, store.get("fr:view", {}), { open: null, quick: null, q: "", watchOnly: false, pull: false, minScore: 0, rs: "alla", ext: "alla" });
+  if (state.trend === "aligned") state.trend = "alla";
 
   // data[sym] = { status: 'loading'|'ok'|'err'|'nokey', msg, w:[], d:[], res:{w,d} }
   const data = {};
@@ -1210,7 +1213,7 @@
       pats, lastPat: pats.length ? pats[pats.length - 1] : null, L,
       patDir: !pats.length ? 0 : patBull > patBear ? 1 : patBear > patBull ? -1 : 0, patBull, patBear,
       patStats: { n: resolved.length, hit: resolved.filter(p => p.outcome === "hit").length },
-      pull: tf === "d" ? pullbackOf(bars, a) : null,
+      pull: null, // kort rekyl (dag) borttagen: gav ingen fördel i testet
       pullW: tf === "w" ? pullbackWeekOf(bars, a) : null,
       rs: null, rsChg: null, rsRef: refKeyOf(a) ? (a.type === "krypto" ? "BTC" : "SPY") : null,
       series: { line, dirs }
@@ -1281,7 +1284,7 @@
       if (!pos && c[i] > sma(i) && rsi[i] != null && atr[i] != null && rsi[i] < PBW.rsi) pos = { i: -1, a: atr[i] };
     }
     const wins = trades.filter(t => t.r > 0);
-    const out = { state: "none", above: c[last] > sma(last), rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1],
+    const out = { state: "none", above: c[last] > sma(last), rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1], closedT: bars[last].t,
       stats: trades.length ? { n: trades.length, win: wins.length / trades.length, avg: mean(trades.map(t => t.r)) } : null };
     if (pos && pos.i < 0) {
       const e = out.hasLive ? bars[n - 1].o : c[last];
@@ -1298,10 +1301,9 @@
   // Visas i filtret: köpläge eller pågående affär där säljnivån (5-dagarsmedlet) ligger minst 1 % över priset.
   const PULL_MIN_UP = 0.01, PULL_STRONG_UP = 0.03;
   const pullDayShown = key => { const p = pullOf(key); return !!p && (p.state === "signal" || p.state === "open") && p.upside >= PULL_MIN_UP && !p.stopHitLive; };
-  const pullShown = key => pullDayShown(key) || (pullWOf(key) || {}).state === "signal";
+  const pullShown = key => (pullWOf(key) || {}).state === "signal";
   function pullTags(key) {
     const p = pullOf(key), w = pullWOf(key), t = [];
-    if (p && (p.state === "exit" || pullDayShown(key))) t.push(`<span class="tag pull ${p.state}">${p.state === "signal" && p.upside >= PULL_STRONG_UP ? "Rekyl: starkt köpläge" : PULL_TXT[p.state]}</span>`);
     if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? (isRaket(key) ? "Månadsrekyl + Raketen: starkt köpläge" : "Månadsrekyl: köpläge") : "Månadsrekyl: sälj"}</span>`);
     if (isRaket(key)) t.push(`<span class="tag raket" title="Bland de 20 % starkaste aktierna på 12 månader">🚀 Raketen</span>`);
     return t.join("");
@@ -1658,18 +1660,21 @@
   }, 30000);
 
   // ---------- Bevakning ----------
-  // watch[key] = { w: senast kända riktning på veckan, d: på dagen }
+  // watch[key] = { pw: senast kända månadsrekyl-händelse }. Notiser: månadsrekyl (köpläge och sälj) för bevakade
+  // aktier, och när börsläget (S&P 500 eller Bitcoin) slår om. Flippar per tillgång ger inte längre notis:
+  // i testet sa de inget om fortsättningen.
   let watch = store.get("fr:watch", {}) || {};
   let events = store.get("fr:events", []) || [];
+  let idxSeen = store.get("fr:idxSeen", {}) || {};
   const ASSET_BY_KEY = Object.fromEntries(ASSETS.map(a => [a.key, a]));
   const isWatched = k => Object.prototype.hasOwnProperty.call(watch, k);
-  const watchDir = s => !s ? null : settings.notifyMode === "live" ? s.dir : s.cdir;
-  const watchLine = s => s.line; // samma nivå som tabellen visar: den som gäller vid nästa stängning
   function saveWatch() { store.set("fr:watch", watch); }
-  function baseline(key) {
-    const res = data[key] && data[key].res;
-    return { w: watchDir(res && res.w), d: watchDir(res && res.d) };
+  function pwSig(key) {
+    const p = pullWOf(key);
+    if (!p) return null;
+    return p.state === "signal" ? "s" + p.closedT : p.state === "exit" ? "x" + p.entryT : "";
   }
+  function baseline(key) { return { pw: pwSig(key) }; }
   function rebaselineWatch() { Object.keys(watch).forEach(k => { watch[k] = baseline(k); }); saveWatch(); }
 
   function toggleWatch(key) {
@@ -1679,7 +1684,7 @@
       watch[key] = baseline(key); saveWatch();
       if (notifyState() === "default" && !store.get("fr:askedNotify", false)) {
         store.set("fr:askedNotify", true);
-        showToast({ cls: "", title: `Du bevakar nu ${a.sym}`, body: "Vill du få en datornotis när en bevakad tillgång flippar? Sidan behöver vara öppen, men fliken får ligga i bakgrunden.", actions: [["Tillåt notiser", "perm"]] });
+        showToast({ cls: "", title: `Du bevakar nu ${a.sym}`, body: "Vill du få en datornotis när en bevakad aktie får köpläge eller säljläge i månadsrekylen? Sidan behöver vara öppen, men fliken får ligga i bakgrunden.", actions: [["Tillåt notiser", "perm"]] });
       }
     }
     renderTiles(); renderTable(); renderNotify();
@@ -1689,36 +1694,39 @@
     if (state.mode !== "live") return;
     const found = [];
     Object.keys(watch).forEach(key => {
-      const a = ASSET_BY_KEY[key], d = data[key];
+      const a = ASSET_BY_KEY[key];
       if (!a) { delete watch[key]; return; }
-      if (!d || !d.res) return;
-      ["w", "d"].forEach(tf => {
-        const s = d.res[tf], cur = watchDir(s);
-        if (cur == null) return;
-        const prev = watch[key][tf];
-        if (prev == null) { watch[key][tf] = cur; return; }
-        if (prev !== cur) {
-          watch[key][tf] = cur;
-          if (tf === "w" ? settings.notifyW : settings.notifyD) found.push({ a, tf, s, dir: cur });
-        }
-      });
+      const cur = pwSig(key);
+      if (cur == null) return;
+      const prev = watch[key] && watch[key].pw;
+      watch[key] = { pw: cur };
+      if (prev === undefined || prev === null || prev === cur || !cur) return;
+      const p = pullWOf(key);
+      found.push(p.state === "signal"
+        ? { a, dir: 1, title: `${a.sym}: månadsrekyl, köpläge${isRaket(key) ? " + Raketen" : ""}`, body: `${a.name}. Köp ca ${fmtPrice(p.entry)}, stop loss ${fmtPrice(p.stop)}, sälj efter ${PBW.hold} veckor.`, txt: "Månadsrekyl köpläge", price: p.entry }
+        : { a, dir: -1, title: `${a.sym}: månadsrekyl, sälj`, body: `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${PBW.hold} veckor har gått.`} Resultat enligt regeln ${fmtSigned(p.result * 100)}.`, txt: "Månadsrekyl sälj", price: p.live });
     });
+    IDX.forEach(([k, nm]) => {
+      const x = idxState(k);
+      if (!x) return;
+      const prev = idxSeen[k];
+      idxSeen[k] = x.dir;
+      if (prev == null || prev === x.dir) return;
+      const a = ASSET_BY_KEY[k];
+      found.push({ a, dir: x.dir, title: `Börsläge ${nm}: ${x.dir === 1 ? "risk på" : "risk av"}`, body: x.dir === 1 ? `Trendlinjen på veckografen vände upp. Slår om igen under ${fmtPrice(x.line)}.` : `Trendlinjen på veckografen vände ner. Överväg att minska risken. Slår om igen över ${fmtPrice(x.line)}.`, txt: x.dir === 1 ? "Börsläge risk på" : "Börsläge risk av", price: x.close });
+    });
+    store.set("fr:idxSeen", idxSeen);
     saveWatch();
-    found.forEach(announce);
+    if (!suppressWatch) found.forEach(announce);
   }
 
   let unseen = 0;
-  function announce({ a, tf, s, dir }) {
-    const tfName = tf === "w" ? "veckografen" : "dagsgrafen";
-    const title = `${a.sym} flippade till ${dir === 1 ? "BULLISH" : "BEARISH"}`;
-    const next = watchLine(s);
-    const body = `${a.name} på ${tfName}. Pris ${fmtPrice(s.close)}. Blir ${dir === 1 ? "bearish under" : "bullish över"} ${fmtPrice(next)}.` +
-      (settings.notifyMode === "live" ? " Stapeln har inte stängt än, så flippen kan ändras." : "");
-    events.unshift({ t: Date.now(), key: a.key, sym: a.sym, name: a.name, tf, dir, price: s.close });
+  function announce({ a, dir, title, body, txt, price }) {
+    events.unshift({ t: Date.now(), key: a.key, sym: a.sym, name: a.name, dir, price, txt });
     events = events.slice(0, 30);
     store.set("fr:events", events);
     showToast({ cls: dir === 1 ? "bull" : "bear", title, body, actions: [["Visa", "open:" + a.key]] });
-    desktopNotify(title, body, a.key + ":" + tf, a.key);
+    desktopNotify(title, body, a.key + ":" + txt, a.key);
     if (document.hidden) { unseen++; document.title = `(${unseen}) Flipradar`; }
     renderNotify();
   }
@@ -1778,12 +1786,12 @@
     const n = Object.keys(watch).length;
     $("nWatch").textContent = n;
     const st = notifyState();
-    const where = `Du bevakar <b>${n}</b> ${n === 1 ? "tillgång" : "tillgångar"}. Markera fler med stjärnan i tabellen. Sidan måste vara öppen för att upptäcka flippar, men fliken får ligga i bakgrunden.`;
+    const where = `Du bevakar <b>${n}</b> ${n === 1 ? "tillgång" : "tillgångar"}. Markera fler med stjärnan i tabellen. Du får notis när en bevakad aktie får köpläge eller säljläge i månadsrekylen, och när börsläget slår om. Sidan måste vara öppen, men fliken får ligga i bakgrunden.`;
     const msg = {
       granted: "Datornotiser är <b>på</b>.",
-      default: "Datornotiser är inte påslagna. Flippar visas som rutor här på sidan tills du tillåter notiser.",
-      denied: "Datornotiser är <b>blockerade</b> för den här sidan. Tillåt dem i webbläsarens inställningar för sidan (ikonen till vänster om adressfältet). Har du öppnat Flipradar som fil kan webbläsaren blockera notiser helt; då visas flippar som rutor här på sidan.",
-      unsupported: "Den här webbläsaren eller vyn kan inte visa datornotiser. Flippar visas som rutor här på sidan."
+      default: "Datornotiser är inte påslagna. Notiser visas som rutor här på sidan tills du tillåter dem.",
+      denied: "Datornotiser är <b>blockerade</b> för den här sidan. Tillåt dem i webbläsarens inställningar för sidan (ikonen till vänster om adressfältet). Har du öppnat Flipradar som fil kan webbläsaren blockera notiser helt; då visas notiserna som rutor här på sidan.",
+      unsupported: "Den här webbläsaren eller vyn kan inte visa datornotiser. Notiserna visas som rutor här på sidan."
     }[st];
     $("notifyStatus").innerHTML = `${msg} ${where}`;
     $("btnPerm").hidden = st !== "default";
@@ -1791,14 +1799,14 @@
     ev.innerHTML = events.length ? events.slice(0, 10).map(e => `<li><button data-open="${esc(e.key)}">
         <span class="t">${new Date(e.t).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
         <span class="s">${esc(e.sym)}</span>
-        <span class="${e.dir === 1 ? "up" : "down"}">${e.dir === 1 ? "Bullish" : "Bearish"} · ${e.tf === "w" ? "vecka" : "dag"}</span>
+        <span class="${e.dir === 1 ? "up" : "down"}">${e.txt ? esc(e.txt) : (e.dir === 1 ? "Bullish" : "Bearish") + " · " + (e.tf === "w" ? "vecka" : "dag")}</span>
         <span class="muted">${fmtPrice(e.price)}</span></button></li>`).join("")
-      : `<li class="empty-ev">Inga flippar än. Här listas de när de händer.</li>`;
+      : `<li class="empty-ev">Inga notiser än. Här listas köplägen och säljlägen i månadsrekylen för dina bevakade aktier, och när börsläget slår om.</li>`;
   }
   document.getElementById("eventList").addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (b) openAsset(b.dataset.open); });
   document.getElementById("btnPerm").addEventListener("click", askPermission);
   document.getElementById("btnTest").addEventListener("click", () => {
-    const title = "Testnotis från Flipradar", body = "Så här ser det ut när en bevakad tillgång flippar.";
+    const title = "Testnotis från Flipradar", body = "Så här ser det ut när en bevakad aktie får köpläge i månadsrekylen.";
     const sent = desktopNotify(title, body, "flipradar-test");
     showToast({ cls: "bull", title, body: body + (sent ? " En datornotis skickades också." : " Datornotiser är inte påslagna, så bara den här rutan visas.") });
   });
@@ -1920,8 +1928,6 @@
     }
     $("paramsTxt").textContent = `ATR ${settings.atrLen} × ${String(settings.mult).replace(".", ",")}`;
     $("sumMeta").textContent = `ATR ${settings.atrLen} × ${String(settings.mult).replace(".", ",")} · ${apiKey ? "API-nyckel inlagd" : "Ingen API-nyckel"}`;
-    $("freshSub").textContent = `inom ${settings.freshN} staplar`;
-    $("nearSub").textContent = `inom ${String(settings.nearPct).replace(".", ",")} % från linjen`;
     renderBanners();
   }
 
@@ -1938,15 +1944,27 @@
     $("banners").hidden = out.length === 0;
   }
 
+  // Börsläge: trendlinjen på veckografen (stängd vecka) för S&P 500 och Bitcoin
+  const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]];
+  function idxState(key) {
+    const d = data[key], s = d && d.res && d.res.w;
+    if (!s || s.cdir == null) return null;
+    return { dir: s.cdir, line: s.cline, since: s.flipTime, close: s.close };
+  }
+  function renderIdx() {
+    const html = IDX.map(([k, nm]) => {
+      const x = idxState(k);
+      if (!x) return `<div class="idxrow"><span class="nm">${nm}</span><span class="since">laddar…</span></div>`;
+      return `<div class="idxrow"><span class="nm">${nm}</span><b class="${x.dir === 1 ? "on" : "off"}">${x.dir === 1 ? "Risk på" : "Risk av"}</b><span class="since">${x.since ? "sedan " + fmtDate(x.since) + " · " : ""}${x.dir === 1 ? "slår om under" : "slår om över"} ${fmtPrice(x.line)}</span></div>`;
+    }).join("");
+    $("idxBody").innerHTML = html;
+  }
   function renderTiles() {
     const rows = buildRows().filter(baseMatch).filter(r => r.s);
-    $("nBull").textContent = rows.filter(r => r.s.dir === 1).length;
-    $("nBear").textContent = rows.filter(r => r.s.dir === -1).length;
-    $("nFresh").textContent = rows.filter(r => isFresh(r.s)).length;
-    $("nNear").textContent = rows.filter(r => isNear(r.s)).length;
     $("nPull").textContent = buildRows().filter(baseMatch).filter(r => pullShown(r.a.key)).length;
     $("nRaket").textContent = buildRows().filter(baseMatch).filter(r => isRaket(r.a.key)).length;
-    document.querySelectorAll(".tile").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
+    document.querySelectorAll(".tile[data-quick]").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
+    renderIdx();
     renderMarket();
   }
 
@@ -1977,7 +1995,7 @@
 
   function assetCell(a) {
     const tag = a.type === "krypto" ? "Krypto" : a.se ? (a.etf ? "ETP · SE" : "Aktie · SE") : a.etf ? "ETF" : "Aktie";
-    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid flip"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span>${pullTags(a.key)}</div></td>`;
+    return `<td class="asset"><div class="asset-cell"><button class="star" data-watch="${esc(a.key)}" aria-pressed="${isWatched(a.key)}" aria-label="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka"} ${esc(a.name)}" title="${isWatched(a.key) ? "Sluta bevaka" : "Bevaka och få notis vid köpläge och säljläge i månadsrekylen"}">${isWatched(a.key) ? "★" : "☆"}</button><span class="sym">${esc(a.sym)}</span><span class="nm">${esc(a.name)}</span><span class="tag">${tag}</span>${pullTags(a.key)}</div></td>`;
   }
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
@@ -2023,7 +2041,7 @@
       th.querySelector(".arrow").textContent = on ? (state.sortDir === 1 ? "▲" : "▼") : "";
     });
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="11" class="empty">${state.watchOnly && !Object.keys(watch).length ? "Du bevakar inget än. Klicka på stjärnan framför en tillgång för att bevaka den." : "Inga tillgångar matchar filtren."}${state.cat !== "alla" && ((state.market === "krypto") !== state.cat.startsWith("k-")) && state.market !== "alla" ? " Kategorin hör till en annan marknad än den du valt." : ""}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="empty">${state.watchOnly && !Object.keys(watch).length ? "Du bevakar inget än. Klicka på stjärnan framför en tillgång för att bevaka den." : "Inga tillgångar matchar filtren."}${state.cat !== "alla" && ((state.market === "krypto") !== state.cat.startsWith("k-")) && state.market !== "alla" ? " Kategorin hör till en annan marknad än den du valt." : ""}</td></tr>`;
       return;
     }
     const html = [];
@@ -2031,7 +2049,7 @@
       const { a, d, s } = r;
       if (!s) {
         const msg = d.status === "loading" ? (d.msg || "Hämtar…") : (d.status === "nokey" || d.status === "plan") ? d.msg : d.status === "err" ? "Kunde inte hämta: " + d.msg : "För lite historik";
-        html.push(`<tr>${assetCell(a)}<td colspan="10" class="msg">${esc(msg)}</td></tr>`);
+        html.push(`<tr>${assetCell(a)}<td colspan="7" class="msg">${esc(msg)}</td></tr>`);
         continue;
       }
       const open = state.open === a.key;
@@ -2041,12 +2059,9 @@
         <td class="num">${fmtPrice(s.close)}</td>
         <td><span class="pill ${s.dir === 1 ? "bull" : "bear"}${s.dir !== s.cdir ? " prelim" : ""}"${s.dir !== s.cdir ? ` title="Priset har korsat linjen men stapeln har inte stängt än. Flippen är obekräftad."` : ""}>${s.dir === 1 ? "Bull" : "Bear"}</span></td>
         <td class="num ${s.dir === 1 ? "up" : "down"}">${s.vol && s.vol.level >= 4 ? `<span class="volwarn" title="Mycket brett band: linjen ligger ${nf0.format(s.vol.bw)} % från priset när den sätts, så den reagerar sent just nu">!</span>` : ""}${fmtPrice(s.line)}</td>
-        <td class="num opt ${isNear(s) ? "warn" : ""}">${fmtPct(s.dist)}</td>
-        <td class="num opt-m">${fmtSince(s, state.tf)}${fresh ? '<span class="new">NY</span>' : ""}</td>
+        <td class="num opt">${fmtPct(s.dist)}</td>
+        <td class="num opt-m">${fmtSince(s, state.tf)}</td>
         <td class="num opt ${s.sinceFlip == null ? "" : s.sinceFlip >= 0 ? "up" : "down"}">${fmtSigned(s.sinceFlip)}</td>
-        <td class="opt">${rsCell(s)}</td>
-        <td class="opt">${extCell(s)}</td>
-        <td class="opt opt-wide">${vdCell(d.res)}</td>
         <td class="opt opt-wide"><canvas class="spark" data-sym="${esc(a.key)}"></canvas></td>
       </tr>`);
       if (open) html.push(detailRow(a, d));
@@ -2075,10 +2090,9 @@
       ["Tid sedan flip", fmtSince(s, state.tf)],
       ["Sedan flip", fmtSigned(s.sinceFlip)],
       ["Vecka", w ? (w.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(w.line) : "–"],
-      ["Dag", dd ? (dd.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(dd.line) : "–"],
-      ["Samstämmighet", confOf(d.res) === 2 ? '<span class="up">Bull</span>' : confOf(d.res) === -2 ? '<span class="down">Bear</span>' : "Blandad"]
+      ["Dag", dd ? (dd.dir === 1 ? "Bullish · " : "Bearish · ") + fmtPrice(dd.line) : "–"]
     ];
-    return `<tr class="detail"><td colspan="11">
+    return `<tr class="detail"><td colspan="8">
       <div class="detail-grid">
         <div class="chart-box">
           <div class="chart-head"><h3>${esc(a.name)} <span class="muted">${esc(a.sym)} · ${tfName}</span></h3>
@@ -2106,17 +2120,8 @@
   function insightCards(a, s, tfName) {
     const res = data[a.key].res || {}, w = res.w, dd = res.d, b = w || s, rows = [];
     const trendRow = (key, x, name, unit) => x && rows.push(sigRow(key, `Trend, ${name}`, x.dir === 1 ? "pos" : "neg", x.dir === 1 ? "Positivt · uppåttrend" : "Negativt · nedåttrend",
-      `Trendlinjen på ${name}grafen. ${x.dir === 1 ? `Blir negativ om en ${unit} stänger under ${fmtPrice(x.line)}.` : `Blir positiv om en ${unit} stänger över ${fmtPrice(x.line)}.`} Trenden skyddar mot stora nedgångar men förutsäger inte uppgång: i våra test steg aktier lika ofta i nedåttrend som i uppåttrend.`));
-    trendRow("tw", w, "vecka", "vecka"); trendRow("td", dd, "dag", "dag");
-    // Kort rekyl (dag)
-    const p = pullOf(a.key);
-    if (p) {
-      const [cls, txt] = p.state === "signal" ? (p.upside >= PULL_STRONG_UP ? ["pos", "Starkt köpläge · tyder på kortsiktig uppgång"] : p.upside >= PULL_MIN_UP ? ["pos", "Köpläge · tyder på kortsiktig uppgång"] : ["neu", "Köpläge, men för liten uppgång"])
-        : p.state === "open" ? ["neu", `Pågår · dag ${p.held} av ${PB.maxDays}`] : p.state === "exit" ? ["neg", p.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
-      rows.push(sigRow("pull", "Rekyl, några dagar", cls, txt,
-        `Köpläge när dagstrenden är uppåt och priset fallit kraftigt på kort tid (RSI(2) under 10). Affären varar oftast 2–5 dagar. Test på 234 aktier över tio år, cirka 10 800 affärer: 63–64 % gick med vinst och snittet var +0,2 till +0,5 % per affär efter courtage. Fördelen är liten, och 2018 och 2022 gick regeln minus. Valutaväxling är inte inräknad. Starkt köpläge betyder minst 3 % upp till säljnivån: då var snittet högre (+0,6 till +0,8 %) men de sämsta affärerna större.${p.stats ? ` På ${a.sym}: ${p.stats.n} affärer, ${nf0.format(p.stats.win * 100)} % med vinst.` : ""} Just nu: RSI(2) ${p.rsi == null ? "–" : nf0.format(p.rsi)}.`,
-        p.state === "none" ? null : planDay(a, p)));
-    }
+      `Trendlinjen på ${name}grafen. ${x.dir === 1 ? `Blir negativ om en ${unit} stänger under ${fmtPrice(x.line)}.` : `Blir positiv om en ${unit} stänger över ${fmtPrice(x.line)}.`} Visas som riskinformation, inte som köpsignal. I vårt test på 216 aktier 2017–2026 gick aktier i nedåttrend lika bra som aktier i uppåttrend de följande 4 och 13 veckorna. Att sälja vid negativ trend minskade den största nedgången lite per aktie (median −37 % mot −44 %), men förlorade mot köp och behåll i 70–90 % av aktierna. Trenden fungerar bättre på hela marknaden: se Börsläge högst upp.`));
+    trendRow("tw", w, "vecka", "vecka");
     // Månadsrekyl (vecka)
     const pw = pullWOf(a.key);
     if (pw) {
@@ -2140,29 +2145,19 @@
       const soon = erDays != null && erDays >= 0 && erDays <= 7, inMonth = erDays != null && erDays >= 0 && erDays <= 28;
       rows.push(sigRow("er", "Nästa rapport", soon ? "neg" : "neu",
         erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · större risk" : inMonth ? " · inom en månadsrekyl" : ""}`,
-        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test gick 48 % av de korta rekylaffärerna som låg över en rapport med stor kursrörelse med vinst, mot 64 % för övriga, och de sämsta förlusterna var upp till dubbelt så stora. Snittresultatet blev varken tydligt bättre eller sämre. Datumet kommer från Yahoo och kan ändras."));
+        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test vann 48–50 % av månadsrekylerna som hade en rapport med stor kursrörelse under affären, mot 57–63 % för övriga. Snittresultatet blev inte tydligt sämre, men utfallen spreds mer åt båda hållen. Datumet kommer från Yahoo och kan ändras."));
     }
     const newsQ = encodeURIComponent(a.type === "krypto" ? `${a.name} ${a.sym} crypto` : `${a.name} ${a.se ? "aktie" : "stock"}`);
     rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("Öppnar de senaste nyheterna om tillgången. Läs dem innan du köper på en rekyl: ett kursfall med en tydlig dålig nyhet bakom (vinstvarning, utredning, tappad kund) är något annat än ett fall utan orsak. Det här går inte att testa i efterhand, så det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
-    // Prisnivå
-    const e = b.ext;
-    if (e) rows.push(sigRow("ext", "Prisnivå", e.level < 0 ? "pos" : e.level > 0 ? "neg" : "neu",
-      e.level < 0 ? "Billigt mot sin historik" : e.level > 0 ? "Uttänjt · var försiktig med nya köp" : "Neutralt",
-      `Jämför priset med 200-veckorsmedlet och vecko-RSI. Vecko-RSI ${e.rsi == null ? "–" : nf0.format(e.rsi)}${e.ratio ? `, priset ${fmtSigned((e.ratio - 1) * 100)} mot 200-veckorsmedlet` : ""}. Till för att köpa och sälja stegvis, inte en signal. Har prickat stora bottnar i BTC bättre än toppar.`));
-    // Styrka
-    if (b.rs) rows.push(sigRow("rs", `Styrka mot ${b.rsRef}`, b.rs.dir === 1 ? "pos" : "neg", b.rs.dir === 1 ? `Starkare än ${b.rsRef}` : `Svagare än ${b.rsRef}`,
-      `Visar om ${a.sym} har gått bättre eller sämre än ${b.rsRef} på senare tid. Det beskriver läget men förutsäger inte fortsättningen.`));
-    // Rörlighet
-    const v = b.vol;
-    if (v) rows.push(sigRow("vol", "Rörlighet", v.level === 4 ? "neg" : "neu", v.level === 4 ? "Mycket hög · trendlinjen reagerar sent" : v.level === 3 ? "Hög" : "Normal",
-      `Trendlinjen ligger ${nf0.format(v.bw)} % från priset när den sätts. Ju högre rörlighet, desto mer hinner priset falla innan trenden slår om.`));
-    // Historik
-    const bt = s.bt;
-    if (bt) rows.push(sigRow("bt", "Historik", "neu", `Följt trendlinjen ${fmtSigned(bt.ret * 100)} · köpt och behållit ${fmtSigned(bt.bh * 100)}`,
-      `Sedan ${fmtDate(bt.from)} på ${tfName}en: köp när trenden blir positiv, sälj när den blir negativ, 0,1 % avgift. Största nedgång ${nf0.format(bt.mdd * 100)} % med linjen mot ${nf0.format(bt.bhDd * 100)} % för köp och behåll. ${bt.trades} affärer. Historiken säger inget säkert om framtiden.`));
-    // Risk
-    rows.push(sigRow("risk", "Positionsstorlek", "neu", s.dir === 1 ? `Stopp vid trendlinjen ${fmtPrice(s.line)}` : "Ingen köpsignal från trendlinjen",
-      "Räknar ut hur mycket du kan köpa för om du vill riskera en viss andel av kapitalet, med stopp vid trendlinjen. Ju längre bort stoppet ligger, desto mindre position.", riskCard(a, s)));
+    // Risknivå och positionsstorlek (stopp som månadsrekylen: 2 × ATR(14) på veckografen)
+    const v = (w || s).vol, wb = data[a.key].w;
+    if (v) {
+      const atrW = wb && wb.length > 20 ? atrRma(wb, 14)[wb.length - 1] : null;
+      rows.push(sigRow("risk", "Risknivå", v.level === 4 ? "neg" : "neu",
+        v.level === 4 ? "Mycket hög · ta en mindre position" : v.level === 3 ? "Hög" : v.level === 2 ? "Normal" : "Låg",
+        `Hur mycket ${a.sym} brukar röra sig. Förutsäger inte uppgång eller nedgång, men hur stora utfallen kan bli: i vårt test var spridningen på 13 veckor cirka 11 % för låg risknivå och 30–80 % för mycket hög. Positionsstorleken räknas med samma stopp som månadsrekylen (2 × ATR(14) på veckografen), så en rörlig aktie ger en mindre position.`,
+        riskCard(a, s, atrW)));
+    }
     return rows.join("");
   }
 
@@ -2199,7 +2194,7 @@
   // Köpplaner för rekyl: kort (dag) och en månad (vecka). Bara det som behövs för att lägga ordern.
   function sizeRow(stopFrac) {
     const cap = settings.capital, risk = settings.riskPct / 100, pos = Math.min(1, risk / stopFrac);
-    return `<div class="kv"><span>Köp för ${tipBtn(`Räknat så att du förlorar cirka ${nf2.format(Math.min(risk, stopFrac) * 100)} % av kapitalet om stoppet går. Kapital och risk ändrar du under Positionsstorlek.`)}</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>`;
+    return `<div class="kv"><span>Köp för ${tipBtn(`Räknat så att du förlorar cirka ${nf2.format(Math.min(risk, stopFrac) * 100)} % av kapitalet om stoppet går. Kapital och risk ändrar du under Risknivå.`)}</span><b>${nf0.format(cap * pos)} · ${nf0.format(pos * 100)} % av kapitalet</b></div>`;
   }
   function erWarn(a, days) {
     const er = data[a.key].er, n = er ? Math.ceil((er - Date.now()) / DAY) : null;
@@ -2258,23 +2253,20 @@
       ${p.why === "stop" ? "" : `<div class="kv"><span>Sälj</span><b>${kr ? "nu" : "när börsen öppnar på måndag"}</b></div>`}</section>`;
   }
 
-  function riskCard(a, s) {
+  function riskCard(a, s, atrW) {
     const cap = settings.capital, risk = settings.riskPct / 100;
     const inputs = `<div class="rform">
         <label>Kapital<input type="number" data-risk="capital" min="0" step="any" value="${cap}"></label>
         <label>Risk per affär (%)<input type="number" data-risk="riskPct" min="0.1" max="10" step="0.1" value="${settings.riskPct}"></label>
       </div>`;
-    if (s.dir !== 1) {
-      return `<section class="card"><h4>Risk och positionsstorlek</h4>${inputs}
-        <p class="muted small">Trendlinjen är bearish, så det finns ingen köpsignal. När den blir bullish räknas storleken ut med stopp vid den nya flipnivån.</p></section>`;
-    }
-    const stop = (s.close - s.line) / s.close;
+    if (!atrW || !s.close) return `<section class="card"><h4>Positionsstorlek</h4>${inputs}<p class="muted small">För lite veckohistorik.</p></section>`;
+    const stopPx = s.close - 2 * atrW, stop = (s.close - stopPx) / s.close;
     const posPct = Math.min(1, risk / stop);
-    const capped = risk / stop > 1;
-    return `<section class="card"><h4>Risk och positionsstorlek</h4>${inputs}
-      <div class="kv"><span>Stopp vid flipnivån</span><b>${fmtPrice(s.line)} · ${nf2.format(stop * 100)} % bort</b></div>
+    return `<section class="card"><h4>Positionsstorlek</h4>${inputs}
+      <div class="kv"><span>Stopp (2 × ATR vecka)</span><b>${fmtPrice(stopPx)} · ${nf2.format(stop * 100)} % under priset</b></div>
       <div class="kv"><span>Köp för</span><b class="up">${nf0.format(cap * posPct)} · ${nf2.format(posPct * 100)} % av kapitalet</b></div>
-      <div class="kv"><span>Förlust om stoppet går</span><b>ca ${nf0.format(cap * risk * (capped ? stop / risk : 1))} · ${nf2.format(Math.min(risk, stop) * 100)} %</b></div></section>`;
+      <div class="kv"><span>Förlust om stoppet går</span><b>ca ${nf0.format(cap * Math.min(risk, stop))} · ${nf2.format(Math.min(risk, stop) * 100)} %</b></div>
+      <p class="muted small">Kursen kan öppna under stoppet, till exempel efter en rapport. I testet förlorade de sämsta 5 % av månadsrekylerna 12–21 %.</p></section>`;
   }
 
   function btCard(a, s, tfName) {
@@ -2823,7 +2815,7 @@
     setTimeout(() => $("inKey").focus(), 250);
   });
 
-  document.querySelectorAll(".tile").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tile[data-quick]").forEach(t => t.addEventListener("click", () => {
     state.quick = state.quick === t.dataset.quick ? null : t.dataset.quick;
     if (state.quick === "fresh" && state.sortKey !== "barsSince") { state.sortKey = "barsSince"; state.sortDir = 1; }
     if (state.quick === "near" && state.sortKey !== "dist") { state.sortKey = "dist"; state.sortDir = 1; }
