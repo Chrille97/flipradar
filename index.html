@@ -89,7 +89,7 @@
   .banner.info strong { color: var(--accent); }
 
   /* Summary tiles */
-  .tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
   .tile {
     text-align: left;
     background: var(--panel);
@@ -109,7 +109,8 @@
   .tile.fresh .val { color: var(--accent); }
   .tile.near .val { color: var(--warn); }
   .tile.pull .val { color: var(--accent); }
-  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile.pull { grid-column: 1 / -1; } }
+  .tile.raket .val { color: #f5a623; }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
   /* Controls */
   .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -280,6 +281,7 @@
   .sym { font-family: var(--font-num); font-weight: 500; font-size: 13px; min-width: 3.2em; }
   .nm { color: var(--muted); font-size: 13px; }
   .tag.pull { color: var(--accent); border-color: var(--accent); }
+  .tag.raket { color: #f5a623; border-color: #f5a623; }
   .tag.pull.exit { color: var(--bear, #ff3b5c); border-color: currentColor; }
   .card.pullcard.on { border-color: var(--accent); }
   .card.pullcard ol { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; }
@@ -528,6 +530,7 @@
     <button class="tile fresh" id="tFresh" data-quick="fresh" aria-pressed="false"><span class="lbl">Nyss flippade</span><span class="val" id="nFresh">–</span><span class="sub" id="freshSub">inom 3 staplar</span></button>
     <button class="tile near" id="tNear" data-quick="near" aria-pressed="false"><span class="lbl">Nära flip</span><span class="val" id="nNear">–</span><span class="sub" id="nearSub">inom 3 % från linjen</span></button>
     <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Rekyltrade: tillgångar i upptrend som just fallit kraftigt. Kort rekyl på dagsgrafen (några dagar) och månadsrekyl på veckografen (fyra veckor)."><span class="lbl">Rekyltrade</span><span class="val" id="nPull">–</span><span class="sub">köplägen på dag och vecka</span></button>
+    <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Bäst som filter för månadsrekylen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
   </section>
 
   <section class="market" aria-label="Marknaden">
@@ -1299,7 +1302,8 @@
   function pullTags(key) {
     const p = pullOf(key), w = pullWOf(key), t = [];
     if (p && (p.state === "exit" || pullDayShown(key))) t.push(`<span class="tag pull ${p.state}">${p.state === "signal" && p.upside >= PULL_STRONG_UP ? "Rekyl: starkt köpläge" : PULL_TXT[p.state]}</span>`);
-    if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? "Månadsrekyl: köpläge" : "Månadsrekyl: sälj"}</span>`);
+    if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? (isRaket(key) ? "Månadsrekyl + Raketen: starkt köpläge" : "Månadsrekyl: köpläge") : "Månadsrekyl: sälj"}</span>`);
+    if (isRaket(key)) t.push(`<span class="tag raket" title="Bland de 20 % starkaste aktierna på 12 månader">🚀 Raketen</span>`);
     return t.join("");
   }
   const PULL_TXT = { signal: "Rekyl: köpläge", open: "Rekyl: pågår", exit: "Rekyl: sälj" };
@@ -1325,8 +1329,34 @@
         s.rsChg = s.rs ? s.rs.chg : null;
       });
     });
+    computeRaket();
     if (!suppressWatch) checkWatch();
   }
+  // ---------- Raketen (momentum) ----------
+  // Kursutveckling från 52 till 4 veckor sedan, på stängda veckor. Aktierna rangordnas mot andra aktier på samma
+  // marknad (USA respektive Sverige). Den starkaste femtedelen är Raketen. ETF:er och krypto ingår inte (inte testat).
+  const RK = { from: 52, skip: 4, top: 0.2, minN: 10 };
+  function computeRaket() {
+    const groups = { US: [], SE: [] };
+    ASSETS.forEach(a => {
+      const d = data[a.key];
+      d.raket = null;
+      if (a.type !== "aktie" || a.etf || d.status !== "ok" || !d.w) return;
+      const b = d.w, n = b.length;
+      if (!n) return;
+      const last = barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2;
+      if (last - RK.from < 0) return;
+      const m = b[last - RK.skip].c / b[last - RK.from].c - 1;
+      if (isFinite(m)) groups[a.se ? "SE" : "US"].push({ key: a.key, m });
+    });
+    Object.entries(groups).forEach(([g, L]) => {
+      if (L.length < RK.minN) return;
+      L.sort((x, y) => x.m - y.m);
+      L.forEach((x, i) => { data[x.key].raket = { mom: x.m, pct: i / (L.length - 1), top: i / (L.length - 1) >= 1 - RK.top, n: L.length, place: L.length - i, g }; });
+    });
+  }
+  const raketOf = key => (data[key] && data[key].raket) || null;
+  const isRaket = key => { const r = raketOf(key); return !!r && r.top; };
   // Räkna om utan att det ger notiser (t.ex. när indikatorinställningarna ändras)
   function recomputeQuiet() {
     suppressWatch = true; computeAll(); suppressWatch = false;
@@ -1844,6 +1874,7 @@
       if (state.quick === "fresh" && !isFresh(s)) return false;
       if (state.quick === "near" && !isNear(s)) return false;
       if (state.quick === "pull" && !pullShown(r.a.key)) return false;
+      if (state.quick === "raket" && !isRaket(r.a.key)) return false;
       if (state.rs !== "alla" && !(s && s.rs && s.rs.dir === (state.rs === "strong" ? 1 : -1))) return false;
       if (state.minScore && !(s && s.scoreN != null && s.scoreN >= state.minScore)) return false;
       if (state.ext === "stretched" && !(s && s.extLevel > 0)) return false;
@@ -1914,6 +1945,7 @@
     $("nFresh").textContent = rows.filter(r => isFresh(r.s)).length;
     $("nNear").textContent = rows.filter(r => isNear(r.s)).length;
     $("nPull").textContent = buildRows().filter(baseMatch).filter(r => pullShown(r.a.key)).length;
+    $("nRaket").textContent = buildRows().filter(baseMatch).filter(r => isRaket(r.a.key)).length;
     document.querySelectorAll(".tile").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
     renderMarket();
   }
@@ -1950,7 +1982,7 @@
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
   const TREND_NAMES = { bull: "Bull", bear: "Bear", aligned: "V+D samstämmiga" };
-  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Rekyltrade" };
+  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Rekyltrade", raket: "Raketen" };
   function activeFilterList() {
     const f = [];
     if (state.market !== "alla") f.push(["market", "Marknad", MARKET_NAMES[state.market]]);
@@ -2093,6 +2125,14 @@
       rows.push(sigRow("pullw", "Rekyl, en månad", cls, txt,
         `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. Test på 234 aktier över tio år, cirka 1 800 affärer: 59–61 % gick med vinst och snittet var +2,3 till +3,3 % per affär, mot +1,3 till +1,9 % för ett köp vilken vecka som helst över 40-veckorsmedlet. Regeln gick plus alla år 2017–2026 och slog jämförelsen nio år av tio. De sämsta 5 % av affärerna förlorade 13–16 % eller mer, eftersom kursen kan öppna under stoppet. Testat på aktier, inte krypto.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
         pw.state === "none" ? null : planWeek(a, pw)));
+    }
+    // Raketen
+    const rk = raketOf(a.key);
+    if (rk) {
+      const mkt = rk.g === "SE" ? "svenska" : "amerikanska";
+      rows.push(sigRow("raket", "Raketen", rk.top ? "pos" : "neu",
+        rk.top ? `🚀 Med · plats ${rk.place} av ${rk.n} ${mkt} aktier` : `Inte med · plats ${rk.place} av ${rk.n} ${mkt} aktier`,
+        `Raketen är den starkaste femtedelen av aktierna på samma marknad, mätt som kursutvecklingen från 12 månader till 1 månad sedan (${a.sym}: ${fmtSigned(rk.mom * 100)}). Starka aktier har en tendens att fortsätta vara starka, det mest bekräftade mönstret i aktieforskningen. Bäst som filter för månadsrekylen: i vårt test på tio år gav en månadsrekyl i en Raketen-aktie +3,0 till +5,4 % per affär i USA och +2,7 till +3,3 % i Sverige, mot +0,6 till +2,2 % för aktier i mitten av rangordningen. Raketen var bättre än övriga de flesta år (USA 7 av 10, Sverige 8 av 10). Risken är högre: den sämsta affären förlorade 45 %, och starka aktier kan vända snabbt. Testet gjordes på dagens aktielista, vilket gör resultatet något för bra, mest i USA. Testat på aktier, inte krypto.`));
     }
     // Rapport och nyheter (informationslagret)
     const er = data[a.key].er, erDays = er ? Math.ceil((er - Date.now()) / DAY) : null;
