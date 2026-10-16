@@ -120,13 +120,15 @@
   .plan .pform input { width: 110px; margin-left: 6px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
   .plan .pform input.short { width: 56px; }
   .plan table { min-width: 0; width: 100%; }
-  .plan td { padding: 7px 8px; border-top: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+  .plan td { padding: 7px 8px; border-top: 1px solid var(--line); font-size: 13px; vertical-align: top; white-space: normal; }
   .plan td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .plan .act { font-weight: 600; white-space: nowrap; }
   .plan .act.buy { color: var(--bull); } .plan .act.sell { color: var(--bear); } .plan .act.hold { color: var(--text); } .plan .act.skip { color: var(--faint); }
-  .plan .sym { font-weight: 600; cursor: pointer; } .plan .sym:hover { color: var(--accent); }
+  .plan .pname { font-weight: 600; cursor: pointer; } .plan .pname:hover { color: var(--accent); }
+  .plan th { text-align: left; font: 600 11px/1.3 var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 6px 8px; }
+  .plan th.num { text-align: right; }
+  @media (max-width: 720px) { .plan table, .plan tbody, .plan tr, .plan td { display: block; } .plan thead { display: none; } .plan tr { border-top: 1px solid var(--line); padding: 6px 0; } .plan td { border: 0; padding: 2px 4px; } .plan td.opt { display: block !important; color: var(--muted); white-space: normal; } .plan td.num { text-align: left; } }
   .plan .pnote { font-size: 12px; color: var(--muted); margin: 0; }
-  @media (max-width: 720px) { .plan td.opt { display: none; } }
   .tile.idx:hover { border-color: var(--line); }
   .tile.idx .lbl { display: flex; align-items: center; gap: 8px; position: relative; }
   .idxrow { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
@@ -458,9 +460,14 @@
   .acc-h { display: flex; align-items: baseline; gap: 12px; padding: 10px 14px 10px 32px; }
   .tip { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line-strong); background: none; color: var(--muted); font: 600 11px/1 var(--font-ui); cursor: help; flex: none; padding: 0; align-self: center; }
   .tip:hover, .tip:focus { color: var(--accent); border-color: var(--accent); outline: none; }
-  .tip:hover::after, .tip:focus::after { content: attr(data-tip); position: absolute; left: 14px; top: calc(100% - 2px); z-index: 30; width: min(440px, 80vw); background: var(--panel-2, #1b222b); border: 1px solid var(--line-strong); border-radius: 6px; padding: 10px 12px; font: 400 13px/1.45 var(--font-ui); letter-spacing: 0; text-transform: none; color: var(--text); text-align: left; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
+  .tip:hover::after, .tip:focus::after { display: none; content: attr(data-tip); position: absolute; left: 14px; top: calc(100% - 2px); z-index: 30; width: min(440px, 80vw); background: var(--panel-2, #1b222b); border: 1px solid var(--line-strong); border-radius: 6px; padding: 10px 12px; font: 400 13px/1.45 var(--font-ui); letter-spacing: 0; text-transform: none; color: var(--text); text-align: left; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
   .kv { position: relative; }
   .kv .tip { margin-left: 6px; vertical-align: middle; }
+  #tipPop { position: fixed; z-index: 1000; width: min(420px, calc(100vw - 24px)); background: var(--panel-2, #1b222b); border: 1px solid var(--line-strong); border-radius: 8px; padding: 12px 14px; font: 400 13px/1.5 var(--font-ui); color: var(--text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); pointer-events: none; text-align: left; text-transform: none; letter-spacing: 0; }
+  #tipPop[hidden] { display: none; }
+  #tipPop h5 { margin: 10px 0 2px; font: 600 11px/1.3 var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  #tipPop h5:first-child { margin-top: 0; }
+  #tipPop p { margin: 0; }
   .acc .card { border: 0; padding: 2px 14px 14px; max-width: 620px; }
   .acc .card > h4 { display: none; }
   .verdict { margin-top: 14px; border: 1px solid var(--line-strong); border-left-width: 4px; border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; background: var(--bg); }
@@ -552,7 +559,7 @@
   <div id="banners"></div>
 
   <section class="tiles" aria-label="Sammanfattning">
-    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="Trendlinjen på veckografen för hela marknaden: S&amp;P 500 (fonden SPY) för aktier och Bitcoin för krypto. Risk på betyder uppåttrend: var investerad och ta köplägena i Köp dippen. Risk av betyder nedåttrend: överväg att minska risken, till exempel genom att inte öppna nya affärer eller flytta en indexfond till sparkonto tills linjen vänder upp. Börsläget skyddar mot större nedgångar men ger inga köplägen. Det köper ofta tillbaka dyrare än det sålde och ger ibland falsklarm, så det kostar avkastning. Test S&amp;P 500: största nedgången blev −18 % i stället för −32 % (2017–2021) och −9 % i stället för −25 % (2022–2026), men avkastningen blev +76 % mot +112 % och +26 % mot +61 % för köp och behåll. Bitcoin: största nedgången blev −62 % i stället för −79 % och −26 % i stället för −66 %. Avkastningen blev lägre 2017–2021 (+792 % mot +1 795 %) men högre 2022–2026 (+237 % mot +94 %). OMXS30 visas men är inte testad än: indexets historik hämtas av den nattliga körningen.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
+    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="# Vad det är&#10;Trendlinjen på veckografen för hela marknaden: S&amp;P 500, OMXS30 och Bitcoin.&#10;&#10;# Så använder du det&#10;Risk på: var investerad.&#10;Risk av: överväg att flytta indexdelen till sparkonto tills läget är risk på igen.&#10;&#10;# Testat 2017–2026&#10;S&amp;P 500: största nedgången −18 % i stället för −32 % (2017–21) och −9 % i stället för −25 % (2022–26). Men avkastningen blev lägre: +76 % mot +112 % och +26 % mot +61 %.&#10;Bitcoin: största nedgången −62 % i stället för −79 % och −26 % i stället för −66 %.&#10;&#10;# Tänk på&#10;Skyddar mot stora fall men ger inga köplägen. Köper ofta tillbaka dyrare än det sålde. OMXS30 är inte testat än.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
     <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Köp dippen: en av årets starkaste aktier (Raketen) har just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor. Troligen en liten fördel (+0,8 procentenheter per affär mot att äga samma aktier), men inte bevisad: använd en begränsad lekkassa."><span class="lbl">Köp dippen</span><span class="val" id="nPull">–</span><span class="sub">köplägen just nu</span></button>
     <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Används för Köp dippen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
     <button class="tile sell" id="tSell" data-quick="sell" aria-pressed="false" title="Säljråd: tillgångar där det testade rådet just nu är att sälja eller minska: sälj studsen, dippköp som är klara, samt index och krypto vid risk av."><span class="lbl">Sälj</span><span class="val" id="nSell">–</span><span class="sub">säljråd just nu</span></button>
@@ -578,7 +585,7 @@
 
   <section class="market" aria-label="Marknaden">
     <div class="card">
-      <div class="mhead"><h4>Marknadsbredd <button type="button" class="tip" aria-label="Mer information" data-tip="Andel tillgångar vars trendlinje är bullish. En bild av läget, inte en signal: i vårt test sa bredden inget om hur börsen gick de följande 4 eller 13 veckorna. Mycket låg bredd (under 30 %) följdes av uppgång, men det hände bara ett fåtal gånger, mest 2020 och 2022.">i</button></h4><span class="muted small" id="bSub">Andel tillgångar där trendlinjen är bullish</span></div>
+      <div class="mhead"><h4>Marknadsbredd <button type="button" class="tip" aria-label="Mer information" data-tip="# Vad det är&#10;Andelen tillgångar vars trendlinje är bullish.&#10;&#10;# Tänk på&#10;En bild av läget, inte en signal. I testet sa bredden inget om hur börsen gick de följande 4 eller 13 veckorna.">i</button></h4><span class="muted small" id="bSub">Andel tillgångar där trendlinjen är bullish</span></div>
       <div class="bstats" id="bStats"></div>
       <canvas id="breadthCanvas" class="breadth" aria-label="Andel bullish tillgångar över tid"></canvas>
     </div>
@@ -1413,11 +1420,11 @@
   //  Behåll vinnaren: aktie över 30 % över 40-veckorsmedlet gick sedan bättre (8 av 8 delar). Sälj inte bara för att den stigit.
   //  Trendflip till bear per aktie gav ingen fördel att sälja. Index och Bitcoin: börsläget (skydd mot stora fall).
   const SELL_TIP = {
-    studs: "Sälj studsen: aktien ligger under sitt 40-veckorsmedel (svag trend) men steg kraftigt den senaste veckan (vecko-RSI(2) över 90). Äger du den är det ett bra tillfälle att sälja och flytta pengarna till indexfonden. I testet 2017–2026 gick sådana aktier sämre än snittet av aktierna de följande fyra veckorna, i både Sverige (−0,2 och −0,8 procentenheter) och USA (−0,5 och −1,1), i båda perioderna. Effekten är liten och efter 13 veckor försvann den, så räkna med en liten fördel, inte en garanti.",
-    vinnare: "Behåll vinnaren: aktien ligger mer än 30 % över sitt 40-veckorsmedel eller tillhör Raketen. Det är frestande att ta hem vinsten, men i testet gick sådana aktier bättre än snittet efteråt: +0,6 till +2,0 procentenheter de följande fyra veckorna i alla delar av testet. Att sälja vinnare för tidigt är ett av de vanligaste misstagen bland privatpersoner. Sälj av andra skäl, till exempel om du behöver pengarna eller vill sprida risken.",
-    dipp: "Köp dippen-affärer säljs efter fyra veckor eller när stop loss går. Det är den testade regeln, se Köp dippen.",
-    index: "För index och Bitcoin styr börsläget: vid risk av har en försäljning till sparkonto ungefär halverat de största nedgångarna (S&P 500: −18 % i stället för −32 %, Bitcoin: −26 % i stället för −66 % 2022–2026), men kostat avkastning eftersom återköpet ofta sker dyrare.",
-    ingen: "Ingen testad säljsignal just nu. Att sälja när trendlinjen slår om till bear gav ingen fördel i testet: aktierna gick lika bra som snittet efteråt. Har du ingen annan anledning att sälja kan du behålla."
+    studs: "# Vad det är\nAktien ligger under sitt 40-veckorsmedel (svag trend) men steg kraftigt förra veckan (vecko-RSI(2) över 90).\n\n# Så gör du\nÄger du aktien: sälj och flytta pengarna till indexfonden.\n\n# Testat 2017–2026\nSådana aktier gick sämre än snittet de följande fyra veckorna i både Sverige (−0,2 och −0,8 procentenheter) och USA (−0,5 och −1,1), i båda perioderna.\n\n# Tänk på\nLiten fördel. Efter 13 veckor var skillnaden borta.",
+    vinnare: "# Vad det är\nAktien ligger mer än 30 % över sitt 40-veckorsmedel eller tillhör Raketen.\n\n# Så gör du\nSälj inte bara för att den har stigit.\n\n# Testat 2017–2026\nSådana aktier gick bättre än snittet efteråt: +0,6 till +2,0 procentenheter de följande fyra veckorna, i alla delar av testet.\n\n# Tänk på\nAtt sälja vinnare för tidigt är ett av de vanligaste misstagen. Sälj av andra skäl, till exempel om du behöver pengarna eller vill sprida risken.",
+    dipp: "# Regel\nDippköp säljs efter fyra veckor, eller tidigare om stop loss går.\n\n# Varför\nDet är regeln som testades. Se Köp dippen.",
+    index: "# Regel\nFör breda index och Bitcoin styr börsläget. Risk av: minska eller sälj till sparkonto.\n\n# Testat 2017–2026\nHalverade ungefär de största nedgångarna (S&P 500: −18 % i stället för −32 %; Bitcoin 2022–26: −26 % i stället för −66 %).\n\n# Tänk på\nKostar avkastning, eftersom återköpet ofta sker dyrare.",
+    ingen: "# Läge\nIngen testad säljsignal just nu.\n\n# Varför inte trenden?\nAtt sälja när trendlinjen slår om till bear gav ingen fördel i testet: aktierna gick lika bra som snittet efteråt.\n\n# Så gör du\nHar du ingen annan anledning att sälja kan du behålla."
   };
   function sellOf(key) {
     const a = ASSET_BY_KEY[key], d = data[key];
@@ -1428,12 +1435,12 @@
         : { lvl: "hold", txt: `Behåll · dippköp vecka ${p.held} av ${PBW.hold}`, tip: SELL_TIP.dipp };
     const BROAD = ["SPY", "QQQ", "IWM", "DIA", "OMXS30@XSTO"];
     const idxLike = BROAD.includes(key) || a.type === "krypto";
-    if (a.etf && !idxLike) return { lvl: "none", txt: "Ingen testad säljsignal", tip: "För bransch- och råvarufonder finns ingen testad säljsignal. Börsläget är bara testat på breda index (S&P 500, Nasdaq 100, Russell 2000) och Bitcoin." };
+    if (a.etf && !idxLike) return { lvl: "none", txt: "Ingen testad säljsignal", tip: "# Läge\nIngen testad säljsignal för bransch- och råvarufonder.\n\n# Varför\nBörsläget är bara testat på breda index (S&P 500, Nasdaq 100, Russell 2000) och Bitcoin." };
     if (idxLike) {
       const ref = a.type === "krypto" ? idxState("c:BTC") : (d.res.w ? { dir: d.res.w.cdir, line: d.res.w.cline } : null);
       if (!ref || ref.dir == null) return null;
       const nm = a.type === "krypto" ? "Börsläge Bitcoin" : "Trend vecka";
-      return ref.dir === -1 ? { lvl: "sell", txt: `Minska · ${nm} risk av`, tip: SELL_TIP.index + (a.type === "krypto" && a.sym !== "BTC" ? " För altcoins finns ingen egen testad säljsignal, så Bitcoins läge används." : "") }
+      return ref.dir === -1 ? { lvl: "sell", txt: `Minska · ${nm} risk av`, tip: SELL_TIP.index + (a.type === "krypto" && a.sym !== "BTC" ? "\n\n# Altcoins\nIngen egen testad säljsignal, så Bitcoins läge används." : "") }
         : { lvl: "keep", txt: `Behåll · ${nm} risk på`, tip: SELL_TIP.index };
     }
     if (!p || p.sma == null || p.rsi == null) return null;
@@ -2061,7 +2068,7 @@
     $("idxBody").innerHTML = html;
   }
   // ---------- Kontoplan: indexfond som kärna och månadsrekyl i Raketen-aktier vid sidan om ----------
-  const PLAN_TIP = "Så här använder du Flipradar. Huvuddelen av pengarna ligger i en indexfond. En mindre del, lekkassan, används till Köp dippen: lekkassan delas lika mellan högst så många affärer som du anger, varje köpläge får en lika stor del, och efter fyra veckor (eller om stop loss går) säljer du och för tillbaka pengarna. Ärligt test 2017–2026, efter courtage: ett dippköp slog att bara äga samma aktier med i snitt +0,8 procentenheter per affär i Sverige, men osäkerheten är stor (mellan −0,6 och +2,1), så fördelen är inte bevisad. En procentenhet är skillnaden mellan två procenttal: steg aktierna du kunde ha ägt i stället 2,0 % under samma fyra veckor och dippköpet 2,8 %, blev dippköpet 0,8 procentenheter bättre. Med cirka 14 svenska köplägen per år blir det ungefär +2 % av lekkassan per år, eller noll om fördelen inte finns. Därför bör lekkassan vara en del du kan tänka dig att den bara följer index eller går sämre. På amerikanska aktier tar valutaväxlingen cirka 0,5 % tur och retur, ungefär hälften av fördelen.";
+  const PLAN_TIP = "# Vad den visar\nVad du ska göra den här veckan med ditt kapital.\n\n# Så fungerar den\nHuvuddelen ligger i en indexfond. Lekkassan delas lika mellan högst så många affärer som du anger. Varje köpläge får en lika stor del. Efter fyra veckor, eller om stop loss går, säljer du och pengarna går tillbaka till indexfonden.\n\n# Testat 2017–2026\nDippköp i Raketen-aktier slog att äga samma aktier med +0,8 procentenheter per affär i Sverige, efter courtage (osäkerhet −0,6 till +2,1). Ungefär +2 % av lekkassan per år, eller noll.\n\n# Tänk på\nVälj en lekkassa du klarar av att den bara följer index eller går sämre. Amerikanska aktier: valutaväxlingen tar cirka 0,5 % tur och retur.";
   function renderPlan() {
     const m = settings.planMkt === "US" ? "US" : "SE", slots = Math.max(1, Math.min(20, Math.round(settings.slots || 5)));
     const cap = settings.capital, playPct = Math.max(0, Math.min(100, settings.playPct == null ? 20 : settings.playPct));
@@ -2073,25 +2080,26 @@
     const exits = L.filter(x => x.p.state === "exit");
     const sigs = L.filter(x => x.p.state === "signal").sort((x, y) => (raketOf(y.a.key) || {}).pct - (raketOf(x.a.key) || {}).pct);
     const used = Math.min(slots, open.length), free = slots - used;
-    const nm = x => `<span class="sym" data-open-asset="${esc(x.a.key)}">${esc(x.a.sym)}</span> <span class="muted small">${esc(x.a.name)}</span>`;
+    const nm = x => `<span class="pname" data-open-asset="${esc(x.a.key)}">${esc(x.a.name)}</span> <span class="muted small">${esc(x.a.sym)}</span>`;
+    const kr = v => nf0.format(v) + " kr";
     const rows = [];
-    exits.forEach(x => rows.push(`<tr><td>${nm(x)}</td><td class="act sell">Sälj</td><td class="opt">${x.p.why === "stop" ? "Stop loss gick" : "Fyra veckor har gått"} · resultat ${fmtSigned(x.p.result * 100)}</td><td class="num">tillbaka till indexfonden</td></tr>`));
+    exits.forEach(x => rows.push(`<tr><td>${nm(x)}</td><td class="act sell">Sälj på måndag</td><td class="opt">${x.p.why === "stop" ? "Stop loss har gått" : "Fyra veckor har gått"}. Resultat ${fmtSigned(x.p.result * 100)}. Pengarna tillbaka till indexfonden.</td><td class="num">–</td></tr>`));
     open.forEach((x, i) => {
-      const r = x.p.live / x.p.entry - 1;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act hold">${i < slots ? "Behåll" : "Behåll (fler än max)"}</td><td class="opt">vecka ${x.p.held} av ${PBW.hold} · köpt ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} · <span class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</span></td><td class="num">ca ${nf0.format(per)}</td></tr>`);
+      const r = x.p.live / x.p.entry - 1, left = PBW.hold - x.p.held;
+      rows.push(`<tr><td>${nm(x)}</td><td class="act hold">Behåll${i < slots ? "" : " (fler än max)"}</td><td class="opt">Köptes på dipp för ${x.p.held} ${x.p.held === 1 ? "vecka" : "veckor"} sedan för ${fmtPrice(x.p.entry)}. Säljs ${left <= 0 ? "nu" : `om ${left} ${left === 1 ? "vecka" : "veckor"}`}, eller om kursen går under stop loss ${fmtPrice(x.p.stop)}. Hittills <span class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</span>.</td><td class="num">${kr(per)}</td></tr>`);
     });
     sigs.forEach((x, i) => {
       const buy = i < free;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? "Köp" : "Står över · max antal affärer"}</td><td class="opt">${x.p.entryKnown ? "nu" : x.a.se ? "vid börsens öppning måndag" : "vid öppning måndag"} · ca ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} %)${erWarn(x.a, 28) ? ' · rapport inom 4 veckor' : ""}</td><td class="num">${buy ? "ca " + nf0.format(per) : "–"}</td></tr>`);
+      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? (x.p.entryKnown ? "Köp nu" : "Köp på måndag") : "Stå över"}</td><td class="opt">${buy ? `Raketen-aktie som dippat. Köp för cirka ${fmtPrice(x.p.entry)} och lägg stop loss på ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} % under).${erWarn(x.a, 28) ? " Rapport inom fyra veckor." : ""}` : "Köpläge, men du har redan max antal affärer."}</td><td class="num">${buy ? kr(per) : "–"}</td></tr>`);
     });
     const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
     const idxAmt = cap - inStocks * per;
-    rows.push(`<tr><td><b>Indexfond</b> <span class="muted small">${idxName}</span></td><td class="act hold">${ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">${ix ? (ix.dir === 1 ? "Börsläge risk på" : "Börsläge risk av: indexdelen kan flyttas till sparkonto tills läget vänder") : "Börsläge saknas än för " + idxName}</td><td class="num">ca ${nf0.format(idxAmt)}</td></tr>`);
+    rows.push(`<tr><td><span class="pname">Indexfond</span> <span class="muted small">${idxName}</span></td><td class="act hold">${ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">Resten av kapitalet. ${ix ? (ix.dir === 1 ? "Börsläge risk på." : "Börsläge risk av: kan flyttas till sparkonto tills läget vänder.") : "Börsläge saknas än för " + idxName + "."}</td><td class="num">${kr(idxAmt)}</td></tr>`);
     $("planCard").innerHTML = `<div class="phead"><h4>Kontoplan ${tipBtn(PLAN_TIP)}</h4>
         <div class="seg" role="group" aria-label="Marknad för kontoplanen"><button data-plan="SE" aria-pressed="${m === "SE"}">Sverige</button><button data-plan="US" aria-pressed="${m === "US"}">USA</button></div>
         <div class="pform"><label>Kapital<input type="number" data-plan-in="capital" min="0" step="any" value="${cap}"></label><label>Lekkassa (%)<input class="short" type="number" data-plan-in="playPct" min="0" max="100" step="5" value="${playPct}"></label><label>Max affärer samtidigt<input class="short" type="number" data-plan-in="slots" min="1" max="20" step="1" value="${slots}"></label></div></div>
-      <table><tbody>${rows.join("")}</tbody></table>
-      <p class="pnote">Lekkassa ${nf0.format(play)} av ${nf0.format(cap)} (${nf0.format(playPct)} %) · ${inStocks} av max ${slots} affärer används · varje affär ca ${nf0.format(per)}${m === "US" ? " · valutaväxlingen tar ca 0,5 % tur och retur på amerikanska aktier" : ""}. ${!open.length && !sigs.length && !exits.length ? "Inga köplägen just nu: allt ligger i indexfonden." : ""} Affärer som pågår räknas enligt regeln från signalveckan, oavsett om du själv köpte.</p>`;
+      <table><thead><tr><th>Innehav</th><th>Gör så här</th><th class="opt">Varför</th><th class="num">Belopp</th></tr></thead><tbody>${rows.join("")}</tbody></table>
+      <p class="pnote">Lekkassa ${kr(play)} av ${kr(cap)} · ${inStocks} av max ${slots} affärer används · varje affär cirka ${kr(per)}${m === "US" ? " · valutaväxlingen tar cirka 0,5 % tur och retur" : ""}. ${!open.length && !sigs.length && !exits.length ? "Inga köplägen just nu: allt ligger i indexfonden." : "Planen följer reglerna. Har du inte köpt en affär som står som Behåll kan du hoppa över den raden."}</p>`;
   }
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-plan]"); if (b) { settings.planMkt = b.dataset.plan; store.set("fr:settings", settings); renderPlan(); return; }
@@ -2267,7 +2275,7 @@
   function insightCards(a, s, tfName) {
     const res = data[a.key].res || {}, w = res.w, dd = res.d, b = w || s, rows = [];
     const trendRow = (key, x, name, unit) => x && rows.push(sigRow(key, `Trend, ${name}`, x.dir === 1 ? "pos" : "neg", x.dir === 1 ? "Positivt · uppåttrend" : "Negativt · nedåttrend",
-      `Trendlinjen på ${name}grafen. ${x.dir === 1 ? `Blir negativ om en ${unit} stänger under ${fmtPrice(x.line)}.` : `Blir positiv om en ${unit} stänger över ${fmtPrice(x.line)}.`} Visas som riskinformation, inte som köpsignal. I vårt test på 216 aktier 2017–2026 gick aktier i nedåttrend lika bra som aktier i uppåttrend de följande 4 och 13 veckorna. Att sälja vid negativ trend minskade den största nedgången lite per aktie (median −37 % mot −44 %), men förlorade mot köp och behåll i 70–90 % av aktierna. Trenden fungerar bättre på hela marknaden: se Börsläge högst upp.`));
+      `# Vad det är\nTrendlinjen på ${name}grafen. ${x.dir === 1 ? `Blir negativ om en ${unit} stänger under ${fmtPrice(x.line)}.` : `Blir positiv om en ${unit} stänger över ${fmtPrice(x.line)}.`}\n\n# Så använder du det\nSom riskinformation, inte som köpsignal.\n\n# Testat 2017–2026\nAktier i nedåttrend gick lika bra som aktier i uppåttrend de följande 4 och 13 veckorna. Att sälja vid nedåttrend minskade största nedgången lite (median −37 % mot −44 %) men förlorade mot köp och behåll i 70–90 % av aktierna.\n\n# Tänk på\nTrenden fungerar bättre på hela marknaden: se Börsläge.`));
     trendRow("tw", w, "vecka", "vecka");
     // Månadsrekyl (vecka)
     const pw = pullWOf(a.key);
@@ -2275,7 +2283,7 @@
       const [cls, txt] = pw.state === "signal" ? (raketAtSignal(a.key) ? ["pos", "Köpläge · en av årets starkaste aktier har dippat"] : ["neu", "Svag dipp · aktien är inte i Raketen"])
         : pw.state === "open" ? ["neu", `Pågår · vecka ${pw.held} av ${PBW.hold}`] : pw.state === "exit" ? ["neg", pw.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
       rows.push(sigRow("pullw", "Köp dippen", cls, txt,
-        `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. Det ärliga måttet är om affären slog att bara äga samma aktier under samma veckor, efter courtage (0,3 % tur och retur). Alla dippar: ingen fördel, +0,1 procentenheter per affär i Sverige. Bara dippar i Raketen-aktier: +0,8 procentenheter per affär, men osäkerheten är stor (mellan −0,6 och +2,1), så fördelen är inte bevisad. Därför är bara dippar i Raketen-aktier köplägen. En procentenhet är skillnaden mellan två procenttal: steg aktierna du kunde ha ägt i stället 2,0 % under samma fyra veckor och dippköpet 2,8 %, blev dippköpet 0,8 procentenheter bättre. De sämsta 5 % av affärerna förlorade 12–21 %, eftersom kursen kan öppna under stoppet. Visas bara för aktier: på krypto gav regeln förlust.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
+        `# Vad det är\nEn aktie i Raketen (årets starkaste femtedel) som fallit kraftigt den senaste veckan men fortfarande ligger över sitt 40-veckorsmedel (vecko-RSI(2) under 10).\n\n# Så gör du\nKöp när börsen öppnar på måndag. Lägg stop loss direkt på nivån i planen. Sälj efter fyra veckor.\n\n# Testat 2017–2026\nEfter courtage: +0,8 procentenheter per affär bättre än att äga samma aktier i Sverige (osäkerhet −0,6 till +2,1). Dippar i aktier utanför Raketen: ingen fördel (+0,1).\n\n# Tänk på\nFördelen är liten och inte bevisad. De sämsta 5 % av affärerna förlorade 12–21 %, eftersom kursen kan öppna under stoppet. Gäller bara aktier: på krypto gav regeln förlust.${pw.stats ? `\n\n# På ${a.sym}\n${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
         pw.state === "none" ? null : planWeek(a, pw)));
     }
     // Säljråd
@@ -2287,7 +2295,7 @@
       const mkt = rk.g === "SE" ? "svenska" : "amerikanska";
       rows.push(sigRow("raket", "Raketen", rk.top ? "pos" : "neu",
         rk.top ? `🚀 Med · plats ${rk.place} av ${rk.n} ${mkt} aktier` : `Inte med · plats ${rk.place} av ${rk.n} ${mkt} aktier`,
-        `Raketen är den starkaste femtedelen av aktierna på samma marknad, mätt som kursutvecklingen från 12 månader till 1 månad sedan (${a.sym}: ${fmtSigned(rk.mom * 100)}). Starka aktier tenderar att fortsätta vara starka, det mest bekräftade mönstret i aktieforskningen. I Flipradar används Raketen som filter för Köp dippen. Efter courtage slog ett dippköp i en Raketen-aktie att bara äga samma aktier med +0,8 procentenheter per affär i Sverige (osäkerhet −0,6 till +2,1) och +0,9 i USA inklusive valutaväxling (osäkerhet −0,4 till +2,3). Troligen en liten fördel, men inte bevisad: det krävs ungefär 40 år av signaler för att säkert visa en fördel av den storleken. En procentenhet är skillnaden mellan två procenttal: steg aktierna du kunde ha ägt i stället 2,0 % under samma fyra veckor och dippköpet 2,8 %, blev dippköpet 0,8 procentenheter bättre. Risken är högre än i index: den sämsta affären förlorade 45 %. Testet gjordes på dagens aktielista, vilket gör resultatet något för bra. Gäller bara aktier.`));
+        `# Vad det är\nDen starkaste femtedelen av aktierna på samma marknad, mätt som kursutvecklingen från 12 till 1 månad sedan. ${a.sym}: ${fmtSigned(rk.mom * 100)}.\n\n# Varför\nStarka aktier tenderar att fortsätta vara starka. Det är det mest bekräftade mönstret i aktieforskningen.\n\n# I Flipradar\nAnvänds som filter: bara dippar i Raketen-aktier är köplägen.\n\n# Testat 2017–2026\nDippköp i Raketen-aktie efter courtage: +0,8 procentenheter per affär mot att äga samma aktier i Sverige (osäkerhet −0,6 till +2,1) och +0,9 i USA inklusive valutaväxling. Troligen en liten fördel, men inte bevisad.\n\n# Tänk på\nHögre risk än index: den sämsta affären förlorade 45 %. Testet gjordes på dagens aktielista, så resultatet är något för bra. Gäller bara aktier.`));
     }
     // Rapport och nyheter (informationslagret)
     const er = data[a.key].er, erDays = er ? Math.ceil((er - Date.now()) / DAY) : null;
@@ -2295,17 +2303,17 @@
       const soon = erDays != null && erDays >= 0 && erDays <= 7, inMonth = erDays != null && erDays >= 0 && erDays <= 28;
       rows.push(sigRow("er", "Nästa rapport", "neu",
         erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · inom en vecka" : inMonth ? " · inom ett dippköp" : ""}`,
-        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test med verkliga rapportdatum (37 svenska bolag) gick dippköp med en rapport under affären inte sämre än övriga: +3,8 % mot +0,8 % per affär, och de sämsta utfallen var inte större. Därför är rapporten information, inte ett skäl att stå över. Datumet kommer från Yahoo och kan ändras."));
+        "# Vad det är\nDatum för bolagets nästa rapport (från Yahoo, kan ändras).\n\n# Testat\nMed verkliga rapportdatum för 37 svenska bolag gick dippköp med en rapport under affären inte sämre: +3,8 % mot +0,8 % per affär, och de sämsta utfallen var inte större.\n\n# Tänk på\nEn rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. Information, inte ett skäl att stå över."));
     }
     const newsQ = encodeURIComponent(a.type === "krypto" ? `${a.name} ${a.sym} crypto` : `${a.name} ${a.se ? "aktie" : "stock"}`);
-    rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("Öppnar de senaste nyheterna om tillgången. Läs dem innan du köper dippen: ett kursfall med en tydlig dålig nyhet bakom (vinstvarning, utredning, tappad kund) är något annat än ett fall utan orsak. Det här går inte att testa i efterhand, så det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
+    rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("# Vad det är\nLänkar till de senaste nyheterna om tillgången.\n\n# Så använder du det\nLäs dem innan du köper dippen. Ett fall med en tydlig dålig nyhet bakom, som vinstvarning, utredning eller tappad kund, är något annat än ett fall utan orsak.\n\n# Tänk på\nGår inte att testa i efterhand. Det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
     // Risknivå och positionsstorlek (samma stopp som Köp dippen: 2 × ATR(14) på veckografen)
     const v = (w || s).vol, wb = data[a.key].w;
     if (v) {
       const atrW = wb && wb.length > 20 ? atrRma(wb, 14)[wb.length - 1] : null;
       rows.push(sigRow("risk", "Risknivå", v.level === 4 ? "neg" : "neu",
         v.level === 4 ? "Mycket hög · ta en mindre position" : v.level === 3 ? "Hög" : v.level === 2 ? "Normal" : "Låg",
-        `Hur mycket ${a.sym} brukar röra sig. Förutsäger inte uppgång eller nedgång, men hur stora utfallen kan bli: i vårt test var spridningen på 13 veckor cirka 11 % för låg risknivå och 30–80 % för mycket hög. Positionsstorleken räknas med samma stopp som Köp dippen (2 × ATR(14) på veckografen), så en rörlig aktie ger en mindre position.`,
+        `# Vad det är\nHur mycket ${a.sym} brukar röra sig.\n\n# Så använder du det\nVid hög risknivå: köp för ett mindre belopp. Positionsstorleken nedan räknas med samma stopp som Köp dippen (2 × ATR(14) på veckografen).\n\n# Testat\nFörutsäger inte uppgång eller nedgång, bara hur stora utfallen blir. Spridningen på 13 veckor var cirka 11 % vid låg risknivå och 30–80 % vid mycket hög.`,
         riskCard(a, s, atrW)));
     }
     return rows.join("");
@@ -2318,7 +2326,32 @@
     return `<details class="acc" data-acc="${key}"${accOpen.has(key) ? " open" : ""}><summary><span class="acc-t">${m ? m[1] : key}</span><span class="acc-s">${sum}</span></summary>${html}</details>`;
   }
   // i-knappen ska bara visa förklaringen, inte fälla ut raden
-  document.addEventListener("click", e => { if (e.target.closest && e.target.closest(".tip")) e.preventDefault(); });
+  // Förklaringsrutan: "# Rubrik" på första raden i ett stycke blir rubrik, tom rad delar stycken
+  const tipPop = document.createElement("div"); tipPop.id = "tipPop"; tipPop.hidden = true; document.body.appendChild(tipPop);
+  let tipFor = null;
+  function fmtTip(t) {
+    return String(t).split(/\n\s*\n/).map(b => {
+      const m = b.match(/^# ([^\n]+)\n?([\s\S]*)$/);
+      return m ? `<h5>${esc(m[1])}</h5>${m[2].trim() ? `<p>${esc(m[2].trim()).replace(/\n/g, "<br>")}</p>` : ""}` : `<p>${esc(b.trim()).replace(/\n/g, "<br>")}</p>`;
+    }).join("");
+  }
+  function showTip(btn) {
+    tipFor = btn; tipPop.innerHTML = fmtTip(btn.getAttribute("data-tip") || ""); tipPop.hidden = false;
+    const r = btn.getBoundingClientRect(), w = tipPop.offsetWidth, h = tipPop.offsetHeight;
+    let x = Math.min(Math.max(12, r.left - 12), window.innerWidth - w - 12), y = r.bottom + 6;
+    if (y + h > window.innerHeight - 8 && r.top - h - 6 > 8) y = r.top - h - 6;
+    tipPop.style.left = x + "px"; tipPop.style.top = Math.max(8, y) + "px";
+  }
+  function hideTip() { tipFor = null; tipPop.hidden = true; }
+  document.addEventListener("mouseover", e => { const b = e.target.closest && e.target.closest(".tip"); if (b && b !== tipFor) showTip(b); else if (!b && tipFor) hideTip(); });
+  document.addEventListener("focusin", e => { const b = e.target.closest && e.target.closest(".tip"); if (b) showTip(b); });
+  document.addEventListener("focusout", e => { if (e.target.closest && e.target.closest(".tip")) hideTip(); });
+  window.addEventListener("scroll", () => { if (tipFor) hideTip(); }, { passive: true });
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest(".tip");
+    if (b) { e.preventDefault(); if (tipFor === b && !tipPop.hidden) hideTip(); else showTip(b); }
+    else if (tipFor) hideTip();
+  });
   document.addEventListener("toggle", e => {
     const d = e.target; if (!d.dataset || !d.dataset.acc) return;
     if (d.open) accOpen.add(d.dataset.acc); else accOpen.delete(d.dataset.acc);
