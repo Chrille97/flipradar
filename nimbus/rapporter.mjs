@@ -2,7 +2,7 @@
 // Körs av .github/workflows/rapporter.yml. Kan köras om: fortsätter där den slutade.
 // Steg 1: hitta rapporterna i Cisions månadsförteckningar (sitemaps), 2016 och framåt.
 // Steg 2: hämta texten i varje rapport.
-// Steg 3: AI svarar på några ja/nej-frågor per rapport, så långt gratiskvoten räcker. Nästa körning tar resten.
+// Steg 3: AI (Google Gemini, gratisnivån) svarar på några frågor per rapport, så långt dagens kvot räcker. Nästa körning tar resten.
 // Påverkar inte Flipradar-sidan. Allt sparas i nimbus/reports/.
 import fs from "node:fs";
 import path from "node:path";
@@ -11,9 +11,10 @@ import zlib from "node:zlib";
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const OUT = path.join(DIR, "reports"), TXT = path.join(OUT, "text");
 const CISION = process.env.CISION_URL || "https://news.cision.com";
-const MODELS = process.env.MODELS_URL || "https://models.github.ai/inference/chat/completions";
-const MODEL_LIST = (process.env.MODEL_LIST || "openai/gpt-4.1-mini,openai/gpt-4o-mini").split(",");
-const TOKEN = process.env.GITHUB_TOKEN || "";
+// Googles OpenAI-kompatibla gränssnitt. Nyckeln läggs som hemlighet GEMINI_API_KEY i repot.
+const MODELS = process.env.MODELS_URL || "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const MODEL_LIST = (process.env.MODEL_LIST || "gemini-2.5-flash,gemini-2.5-flash-lite").split(",");
+const TOKEN = process.env.GEMINI_API_KEY || "";
 const FIRST = Number(process.env.FIRST_YEAR || 2016);
 const BUDGET_MS = Number(process.env.BUDGET_MIN || 100) * 60000, T0 = Date.now();
 const UA = "Mozilla/5.0 (compatible; Flipradar-research; +https://github.com/Chrille97/flipradar)";
@@ -127,13 +128,16 @@ async function ask(model, text) {
     body: JSON.stringify({ model, temperature: 0, max_tokens: 400, response_format: { type: "json_object" },
       messages: [{ role: "system", content: PROMPT }, { role: "user", content: text.slice(0, 7000) }] }),
   }); } catch (e) { return { error: "nätverksfel: " + [e.message, e.cause?.code, e.cause?.message].filter(Boolean).join(" · ") }; }
+  const body = await r.text();
   if (r.status === 429) return { quota: true, retry: Number(r.headers.get("retry-after") || 0) };
-  if (!r.ok) return { error: `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}` };
-  const j = await r.json(), c = j?.choices?.[0]?.message?.content || "";
+  if (r.status === 404) return { noModel: true, error: `modellen finns inte: ${body.slice(0, 150)}` };
+  if (!r.ok) return { error: `HTTP ${r.status}: ${body.slice(0, 200)}` };
+  let j; try { j = JSON.parse(body); } catch { return { error: `oväntat svar (HTTP ${r.status}): ${body.slice(0, 120)}` }; }
+  const c = j?.choices?.[0]?.message?.content || "";
   try { return { data: JSON.parse(c.slice(c.indexOf("{"), c.lastIndexOf("}") + 1)) }; } catch { return { error: "kunde inte tolka svaret: " + c.slice(0, 120) }; }
 }
 async function classify(state) {
-  if (!TOKEN) { console.log("Ingen GITHUB_TOKEN, hoppar över AI-steget."); return; }
+  if (!TOKEN) { state.lastAiError = "Ingen GEMINI_API_KEY. Lägg in nyckeln som hemlighet i repot."; console.log(state.lastAiError); return; }
   const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && !excluded(r) && (r.aiErr || 0) < 3);
   console.log(`AI läser ${todo.length} rapporter`);
   let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0;
@@ -146,6 +150,7 @@ async function classify(state) {
       if (res.retry && res.retry < 120) { await sleep(res.retry * 1000); continue; }
       console.log(`Kvoten slut för ${MODEL_LIST[mi]}`); mi++; quotaHits++; continue;
     }
+    if (res.noModel) { console.log(res.error); state.lastAiError = res.error; mi++; continue; }
     if (res.error) {
       state.lastAiError = res.error; console.log(id, res.error); await sleep(4000);
       if (++errRow >= 5) { console.log("Fem fel i rad, avbryter AI-steget. Se lastAiError i summary.json."); break; }
@@ -153,9 +158,9 @@ async function classify(state) {
       continue;
     }
     errRow = 0;
-    r.ai = { ...res.data, model: MODEL_LIST[mi] }; n++;
+    r.ai = { ...res.data, model: MODEL_LIST[mi] }; n++; state.lastAiError = null;
     if (n % 20 === 0) { wr(path.join(OUT, "state.json"), state); console.log(`  ${n} klara`); }
-    await sleep(4500); // under 15 anrop per minut
+    await sleep(7000); // under 10 anrop per minut (gratisnivån)
   }
   state.modelIdx = 0; // ny dag, ny kvot
   console.log(`AI klar med ${n} rapporter den här körningen.`);
