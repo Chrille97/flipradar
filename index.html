@@ -1329,7 +1329,7 @@
       if (!pos && c[i] > sma(i) && rsi[i] != null && atr[i] != null && rsi[i] < PBW.rsi) pos = { i: -1, a: atr[i] };
     }
     const wins = trades.filter(t => t.r > 0);
-    const out = { state: "none", above: c[last] > sma(last), closeW: c[last], rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1], closedT: bars[last].t,
+    const out = { state: "none", above: c[last] > sma(last), closeW: c[last], rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1], liveT: bars[n - 1].t, closedT: bars[last].t,
       stats: trades.length ? { n: trades.length, win: wins.length / trades.length, avg: mean(trades.map(t => t.r)) } : null };
     if (pos && pos.i < 0) {
       const e = out.hasLive ? bars[n - 1].o : c[last];
@@ -1341,6 +1341,7 @@
     }
     return out;
   }
+  const sellDayOf = t0 => fmtDate(t0 + ((PBW.hold - 1) * 7 + 4) * DAY);
   const pullWOf = key => { const d = data[key]; return d && d.res && d.res.w ? d.res.w.pullW : null; };
   const pullOf = key => { const d = data[key]; return d && d.res && d.res.d ? d.res.d.pull : null; };
   // Visas i filtret: köpläge eller pågående affär där säljnivån (5-dagarsmedlet) ligger minst 1 % över priset.
@@ -2090,7 +2091,11 @@
     });
     sigs.forEach((x, i) => {
       const buy = i < free;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? (x.p.entryKnown ? "Köp nu" : "Köp på måndag") : "Stå över"}</td><td class="opt">${buy ? `Raketen-aktie som dippat. Köp för cirka ${fmtPrice(x.p.entry)} och lägg stop loss på ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} % under).${erWarn(x.a, 28) ? " Rapport inom fyra veckor." : ""}` : "Köpläge, men du har redan max antal affärer."}</td><td class="num">${buy ? kr(per) : "–"}</td></tr>`);
+      const ch = x.p.live / x.p.entry - 1;
+      const why = !buy ? "Köpläge, men du har redan max antal affärer."
+        : x.p.entryKnown ? `Raketen-aktie som dippat. Köpläget gällde från måndagens öppning: regelns köpkurs ${fmtPrice(x.p.entry)}, nu ${fmtPrice(x.p.live)} (<span class="${ch >= 0 ? "up" : "down"}">${fmtSigned(ch * 100)}</span>). Stop loss ${fmtPrice(x.p.stop)}. Säljs ${sellDayOf(x.p.liveT)}. Köper du nu är det till ett annat pris än testet.`
+        : `Raketen-aktie som dippat. Köp för cirka ${fmtPrice(x.p.entry)} och lägg stop loss på ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} % under).${erWarn(x.a, 28) ? " Rapport inom fyra veckor." : ""}`;
+      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? (x.p.entryKnown ? "Köpläge sedan måndag" : "Köp på måndag") : "Stå över"}</td><td class="opt">${why}</td><td class="num">${buy ? kr(per) : "–"}</td></tr>`);
     });
     const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
     const idxAmt = cap - inStocks * per;
@@ -2414,9 +2419,9 @@
     if (p.state === "signal") {
       const sp = p.stopDist / p.entry;
       return `<section class="card">
-        <div class="kv"><span>Köp</span><b>${p.entryKnown ? "nu" : kr ? "efter veckoskiftet" : "när börsen öppnar på måndag"} · ca ${fmtPrice(p.entry)}</b></div>
+        <div class="kv"><span>Köp</span><b>${p.entryKnown ? `köpläget gällde från veckans öppning · regelns köpkurs ${fmtPrice(p.entry)} · nu ${fmtPrice(p.live)} (${fmtSigned((p.live / p.entry - 1) * 100)})` : (kr ? "efter veckoskiftet" : "när börsen öppnar på måndag") + " · ca " + fmtPrice(p.entry)}</b></div>
         <div class="kv"><span>Stop loss ${tipBtn(`Lägg stoppet direkt efter köpet: din köpkurs minus ${fmtPrice(p.stopDist)}. Stoppet flyttas inte.`)}</span><b class="down">${fmtPrice(p.stop)} · ${nf2.format(sp * 100)} % under</b></div>
-        <div class="kv"><span>Sälj</span><b>efter ${PBW.hold} veckor</b></div>
+        <div class="kv"><span>Sälj</span><b>efter ${PBW.hold} veckor${p.entryKnown ? " · " + sellDayOf(p.liveT) : ""}</b></div>
         ${sizeRow(sp)}${erWarn(a, 28)}</section>`;
     }
     if (p.state === "open") {
