@@ -111,6 +111,20 @@
   .tile.pull .val { color: var(--accent); }
   .tile.raket .val { color: #f5a623; }
   .tile.idx { position: relative; cursor: default; }
+  .plan { margin-top: 10px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); display: grid; gap: 10px; }
+  .plan .phead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .plan h4 { margin: 0; display: flex; align-items: center; gap: 8px; position: relative; font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px; color: var(--accent); }
+  .plan .pform { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; color: var(--muted); }
+  .plan .pform input { width: 110px; margin-left: 6px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
+  .plan .pform input.short { width: 56px; }
+  .plan table { min-width: 0; width: 100%; }
+  .plan td { padding: 7px 8px; border-top: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+  .plan td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .plan .act { font-weight: 600; white-space: nowrap; }
+  .plan .act.buy { color: var(--bull); } .plan .act.sell { color: var(--bear); } .plan .act.hold { color: var(--text); } .plan .act.skip { color: var(--faint); }
+  .plan .sym { font-weight: 600; cursor: pointer; } .plan .sym:hover { color: var(--accent); }
+  .plan .pnote { font-size: 12px; color: var(--muted); margin: 0; }
+  @media (max-width: 720px) { .plan td.opt { display: none; } }
   .tile.idx:hover { border-color: var(--line); }
   .tile.idx .lbl { display: flex; align-items: center; gap: 8px; position: relative; }
   .idxrow { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
@@ -534,10 +548,12 @@
   <div id="banners"></div>
 
   <section class="tiles" aria-label="Sammanfattning">
-    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="Trendlinjen på veckografen för hela marknaden: S&amp;P 500 (fonden SPY) för aktier och Bitcoin för krypto. Risk på betyder uppåttrend: var investerad och ta månadsrekylens köplägen. Risk av betyder nedåttrend: överväg att minska risken, till exempel genom att inte öppna nya affärer eller flytta en indexfond till sparkonto tills linjen vänder upp. Börsläget skyddar mot större nedgångar men ger inga köplägen. Det köper ofta tillbaka dyrare än det sålde och ger ibland falsklarm, så det kostar avkastning. Test S&amp;P 500: största nedgången blev −18 % i stället för −32 % (2017–2021) och −9 % i stället för −25 % (2022–2026), men avkastningen blev +76 % mot +112 % och +26 % mot +61 % för köp och behåll. Bitcoin: största nedgången blev −62 % i stället för −79 % och −26 % i stället för −66 %. Avkastningen blev lägre 2017–2021 (+792 % mot +1 795 %) men högre 2022–2026 (+237 % mot +94 %). Stockholmsbörsen är inte testad än.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
-    <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Månadsrekyl: aktier över sitt 40-veckorsmedel som just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor."><span class="lbl">Månadsrekyl</span><span class="val" id="nPull">–</span><span class="sub">köplägen just nu</span></button>
+    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="Trendlinjen på veckografen för hela marknaden: S&amp;P 500 (fonden SPY) för aktier och Bitcoin för krypto. Risk på betyder uppåttrend: var investerad och ta månadsrekylens köplägen. Risk av betyder nedåttrend: överväg att minska risken, till exempel genom att inte öppna nya affärer eller flytta en indexfond till sparkonto tills linjen vänder upp. Börsläget skyddar mot större nedgångar men ger inga köplägen. Det köper ofta tillbaka dyrare än det sålde och ger ibland falsklarm, så det kostar avkastning. Test S&amp;P 500: största nedgången blev −18 % i stället för −32 % (2017–2021) och −9 % i stället för −25 % (2022–2026), men avkastningen blev +76 % mot +112 % och +26 % mot +61 % för köp och behåll. Bitcoin: största nedgången blev −62 % i stället för −79 % och −26 % i stället för −66 %. Avkastningen blev lägre 2017–2021 (+792 % mot +1 795 %) men högre 2022–2026 (+237 % mot +94 %). OMXS30 visas men är inte testad än: indexets historik hämtas av den nattliga körningen.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
+    <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Köplägen: månadsrekyl i en Raketen-aktie. Aktien tillhör årets starkaste femtedel och har just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor."><span class="lbl">Köplägen</span><span class="val" id="nPull">–</span><span class="sub">rekyl + Raketen</span></button>
     <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Bäst som filter för månadsrekylen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
   </section>
+
+  <section class="plan card" id="planCard" aria-label="Kontoplan"></section>
 
   <section class="market" aria-label="Marknaden">
     <div class="card">
@@ -817,6 +833,7 @@
   ];
   // Stockholmsbörsen: [symbol, namn, kategorier, etp?]. Kräver Twelve Data Pro eller högre.
   const SWEDEN = [
+    ["OMXS30","OMXS30 (index)","index",1,"^OMX"],
     ["SWEC.B","Sweco","infra"],["VOLV.B","Volvo","verkstad"],["ATCO.A","Atlas Copco","verkstad"],
     ["SAND","Sandvik","verkstad"],["SKF.B","SKF","verkstad"],["ALFA","Alfa Laval","verkstad,green"],
     ["ABB","ABB","verkstad,infra,green"],["ASSA.B","Assa Abloy","verkstad"],["HEXA.B","Hexagon","mjuk,verkstad"],
@@ -861,10 +878,10 @@
   const ASSETS = [
     ...CRYPTO.map(([sym, name]) => ({ sym, name, type: "krypto", pair: sym + "USDT", cats: CRYPTO_CATS_BY_SYM[sym] || [] })),
     ...STOCKS.map(([sym, name, cats, etf]) => ({ sym, name, type: "aktie", cats: cats.split(","), etf: !!etf })),
-    ...SWEDEN.map(([sym, name, cats, etf]) => ({ sym, name, type: "aktie", cats: cats.split(","), etf: !!etf, se: true, mic: "XSTO" }))
+    ...SWEDEN.map(([sym, name, cats, etf, ysym]) => ({ sym, name, type: "aktie", cats: cats.split(","), etf: !!etf, se: true, mic: "XSTO", ysym }))
   ].map(a => Object.assign(a, { key: a.type === "krypto" ? "c:" + a.sym : a.se ? a.sym + "@XSTO" : a.sym }));
 
-  const DEFAULTS = { atrLen: 10, mult: 3.2, freshN: 3, nearPct: 3, sePlan: false, notifyMode: "closed", notifyW: true, notifyD: true, autoMin: 15, capital: 10000, riskPct: 1 };
+  const DEFAULTS = { atrLen: 10, mult: 3.2, freshN: 3, nearPct: 3, sePlan: false, notifyMode: "closed", notifyW: true, notifyD: true, autoMin: 15, capital: 10000, riskPct: 1, slots: 5, planMkt: "SE" };
   const DAY = 86400000;
 
   // ---------- Lagring (tål att localStorage saknas) ----------
@@ -1301,10 +1318,10 @@
   // Visas i filtret: köpläge eller pågående affär där säljnivån (5-dagarsmedlet) ligger minst 1 % över priset.
   const PULL_MIN_UP = 0.01, PULL_STRONG_UP = 0.03;
   const pullDayShown = key => { const p = pullOf(key); return !!p && (p.state === "signal" || p.state === "open") && p.upside >= PULL_MIN_UP && !p.stopHitLive; };
-  const pullShown = key => (pullWOf(key) || {}).state === "signal";
+  const pullShown = key => (pullWOf(key) || {}).state === "signal" && raketAtSignal(key);
   function pullTags(key) {
     const p = pullOf(key), w = pullWOf(key), t = [];
-    if (w && (w.state === "signal" || w.state === "exit")) t.push(`<span class="tag pull ${w.state}">${w.state === "signal" ? (isRaket(key) ? "Månadsrekyl + Raketen: starkt köpläge" : "Månadsrekyl: köpläge") : "Månadsrekyl: sälj"}</span>`);
+    if (w && (w.state === "signal" || (w.state === "exit" && raketAtSignal(key)))) t.push(w.state === "signal" ? (raketAtSignal(key) ? `<span class="tag pull signal">Köpläge: rekyl + Raketen</span>` : `<span class="tag" title="Månadsrekyl i en aktie utanför Raketen: i kontotestet slog sådana affärer inte indexfonden">Svag rekyl</span>`) : `<span class="tag pull exit">Månadsrekyl: sälj</span>`);
     if (isRaket(key)) t.push(`<span class="tag raket" title="Bland de 20 % starkaste aktierna på 12 månader">🚀 Raketen</span>`);
     return t.join("");
   }
@@ -1339,6 +1356,10 @@
   // marknad (USA respektive Sverige). Den starkaste femtedelen är Raketen. ETF:er och krypto ingår inte (inte testat).
   const RK = { from: 52, skip: 4, top: 0.2, minN: 10 };
   function computeRaket() {
+    ASSETS.forEach(a => { data[a.key].raketAt = []; });
+    for (let off = 5; off >= 0; off--) computeRaketAt(off);
+  }
+  function computeRaketAt(off) {
     const groups = { US: [], SE: [] };
     ASSETS.forEach(a => {
       const d = data[a.key];
@@ -1346,7 +1367,7 @@
       if (a.type !== "aktie" || a.etf || d.status !== "ok" || !d.w) return;
       const b = d.w, n = b.length;
       if (!n) return;
-      const last = barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2;
+      const last = (barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2) - off;
       if (last - RK.from < 0) return;
       const m = b[last - RK.skip].c / b[last - RK.from].c - 1;
       if (isFinite(m)) groups[a.se ? "SE" : "US"].push({ key: a.key, m });
@@ -1354,11 +1375,23 @@
     Object.entries(groups).forEach(([g, L]) => {
       if (L.length < RK.minN) return;
       L.sort((x, y) => x.m - y.m);
-      L.forEach((x, i) => { data[x.key].raket = { mom: x.m, pct: i / (L.length - 1), top: i / (L.length - 1) >= 1 - RK.top, n: L.length, place: L.length - i, g }; });
+      L.forEach((x, i) => {
+        const r = { mom: x.m, pct: i / (L.length - 1), top: i / (L.length - 1) >= 1 - RK.top, n: L.length, place: L.length - i, g };
+        data[x.key].raketAt[off] = r;
+        if (off === 0) data[x.key].raket = r;
+      });
     });
   }
   const raketOf = key => (data[key] && data[key].raket) || null;
   const isRaket = key => { const r = raketOf(key); return !!r && r.top; };
+  // Var aktien i Raketen veckan då månadsrekylens signal kom?
+  function raketAtSignal(key) {
+    const p = pullWOf(key), d = data[key];
+    if (!p || !d || !d.raketAt) return false;
+    const off = p.state === "signal" ? 0 : p.state === "open" ? p.held : p.state === "exit" ? Math.round((p.closedT - p.entryT) / (7 * DAY)) + 1 : null;
+    const r = off == null ? null : d.raketAt[Math.min(5, off)];
+    return !!r && r.top;
+  }
   // Räkna om utan att det ger notiser (t.ex. när indikatorinställningarna ändras)
   function recomputeQuiet() {
     suppressWatch = true; computeAll(); suppressWatch = false;
@@ -1703,7 +1736,7 @@
       if (prev === undefined || prev === null || prev === cur || !cur) return;
       const p = pullWOf(key);
       found.push(p.state === "signal"
-        ? { a, dir: 1, title: `${a.sym}: månadsrekyl, köpläge${isRaket(key) ? " + Raketen" : ""}`, body: `${a.name}. Köp ca ${fmtPrice(p.entry)}, stop loss ${fmtPrice(p.stop)}, sälj efter ${PBW.hold} veckor.`, txt: "Månadsrekyl köpläge", price: p.entry }
+        ? { a, dir: 1, title: raketAtSignal(key) ? `${a.sym}: köpläge, rekyl + Raketen` : `${a.sym}: svag rekyl (inte i Raketen)`, body: `${a.name}. Köp ca ${fmtPrice(p.entry)}, stop loss ${fmtPrice(p.stop)}, sälj efter ${PBW.hold} veckor.`, txt: "Månadsrekyl köpläge", price: p.entry }
         : { a, dir: -1, title: `${a.sym}: månadsrekyl, sälj`, body: `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${PBW.hold} veckor har gått.`} Resultat enligt regeln ${fmtSigned(p.result * 100)}.`, txt: "Månadsrekyl sälj", price: p.live });
     });
     IDX.forEach(([k, nm]) => {
@@ -1945,7 +1978,7 @@
   }
 
   // Börsläge: trendlinjen på veckografen (stängd vecka) för S&P 500 och Bitcoin
-  const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]];
+  const IDX = [["SPY", "S&P 500"], ["OMXS30@XSTO", "OMXS30"], ["c:BTC", "Bitcoin"]];
   function idxState(key) {
     const d = data[key], s = d && d.res && d.res.w;
     if (!s || s.cdir == null) return null;
@@ -1954,17 +1987,60 @@
   function renderIdx() {
     const html = IDX.map(([k, nm]) => {
       const x = idxState(k);
-      if (!x) return `<div class="idxrow"><span class="nm">${nm}</span><span class="since">laddar…</span></div>`;
+      if (!x) return `<div class="idxrow"><span class="nm">${nm}</span><span class="since">${k.startsWith("OMX") ? "data saknas än" : "laddar…"}</span></div>`;
       return `<div class="idxrow"><span class="nm">${nm}</span><b class="${x.dir === 1 ? "on" : "off"}">${x.dir === 1 ? "Risk på" : "Risk av"}</b><span class="since">${x.since ? "sedan " + fmtDate(x.since) + " · " : ""}${x.dir === 1 ? "slår om under" : "slår om över"} ${fmtPrice(x.line)}</span></div>`;
     }).join("");
     $("idxBody").innerHTML = html;
   }
+  // ---------- Kontoplan: indexfond som kärna och månadsrekyl i Raketen-aktier vid sidan om ----------
+  const PLAN_TIP = "Så här använder du Flipradar. Pengarna ligger i en indexfond. När en Raketen-aktie får köpläge i månadsrekylen tar du en del av kapitalet (kapitalet delat med antalet platser) och köper aktien. Efter fyra veckor, eller om stop loss går, säljer du och för tillbaka pengarna till indexfonden. Har alla platser affärer står du över nya köplägen. Kontotest 2017–2026 med 5 platser och courtage: i Sverige gav kontot +28 % per år 2017–2021 och +13 % 2022–2026, mot +25 % och +11 % för att bara äga samma aktier. I USA gav det +34 % och +41 % mot +35 % och +30 %. Att ta alla månadsrekyler, även utanför Raketen, slog inte indexet stabilt. Med sparkonto i stället för indexfond mellan affärerna blev resultatet mycket sämre. Aktielistorna är dagens aktier, så nivåerna är för höga. Jämförelsen med samma aktier är det som räknas. Största nedgången blev ungefär lika stor som indexets, 28–40 %.";
+  function renderPlan() {
+    const m = settings.planMkt === "US" ? "US" : "SE", slots = Math.max(1, Math.min(20, Math.round(settings.slots || 5)));
+    const cap = settings.capital, per = cap / slots;
+    const idxKey = m === "US" ? "SPY" : "OMXS30@XSTO", idxName = m === "US" ? "S&P 500" : "OMXS30", ix = idxState(idxKey);
+    const L = ASSETS.filter(a => a.type === "aktie" && !a.etf && !!a.se === (m === "SE")).map(a => ({ a, p: pullWOf(a.key) }))
+      .filter(x => x.p && x.p.state !== "none" && raketAtSignal(x.a.key));
+    const open = L.filter(x => x.p.state === "open").sort((x, y) => x.p.entryT - y.p.entryT);
+    const exits = L.filter(x => x.p.state === "exit");
+    const sigs = L.filter(x => x.p.state === "signal").sort((x, y) => (raketOf(y.a.key) || {}).pct - (raketOf(x.a.key) || {}).pct);
+    const used = Math.min(slots, open.length), free = slots - used;
+    const nm = x => `<span class="sym" data-open-asset="${esc(x.a.key)}">${esc(x.a.sym)}</span> <span class="muted small">${esc(x.a.name)}</span>`;
+    const rows = [];
+    exits.forEach(x => rows.push(`<tr><td>${nm(x)}</td><td class="act sell">Sälj</td><td class="opt">${x.p.why === "stop" ? "Stop loss gick" : "Fyra veckor har gått"} · resultat ${fmtSigned(x.p.result * 100)}</td><td class="num">tillbaka till indexfonden</td></tr>`));
+    open.forEach((x, i) => {
+      const r = x.p.live / x.p.entry - 1;
+      rows.push(`<tr><td>${nm(x)}</td><td class="act hold">${i < slots ? "Behåll" : "Behåll (över antalet platser)"}</td><td class="opt">vecka ${x.p.held} av ${PBW.hold} · köpt ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} · <span class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</span></td><td class="num">ca ${nf0.format(per)}</td></tr>`);
+    });
+    sigs.forEach((x, i) => {
+      const buy = i < free;
+      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? "Köp" : "Står över · fullt"}</td><td class="opt">${x.p.entryKnown ? "nu" : x.a.se ? "vid börsens öppning måndag" : "vid öppning måndag"} · ca ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} %)${erWarn(x.a, 28) ? ' · <b class="warn">rapport inom 4 veckor</b>' : ""}</td><td class="num">${buy ? "ca " + nf0.format(per) : "–"}</td></tr>`);
+    });
+    const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
+    const idxAmt = cap - inStocks * per;
+    rows.push(`<tr><td><b>Indexfond</b> <span class="muted small">${idxName}</span></td><td class="act hold">${ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">${ix ? (ix.dir === 1 ? "Börsläge risk på" : "Börsläge risk av: indexdelen kan flyttas till sparkonto tills läget vänder") : "Börsläge saknas än för " + idxName}</td><td class="num">ca ${nf0.format(idxAmt)}</td></tr>`);
+    $("planCard").innerHTML = `<div class="phead"><h4>Kontoplan ${tipBtn(PLAN_TIP)}</h4>
+        <div class="seg" role="group" aria-label="Marknad för kontoplanen"><button data-plan="SE" aria-pressed="${m === "SE"}">Sverige</button><button data-plan="US" aria-pressed="${m === "US"}">USA</button></div>
+        <div class="pform"><label>Kapital<input type="number" data-plan-in="capital" min="0" step="any" value="${cap}"></label><label>Platser<input class="short" type="number" data-plan-in="slots" min="1" max="20" step="1" value="${slots}"></label></div></div>
+      <table><tbody>${rows.join("")}</tbody></table>
+      <p class="pnote">${inStocks} av ${slots} platser används · en plats är ca ${nf0.format(per)}. ${!open.length && !sigs.length && !exits.length ? "Inga Raketen-rekyler just nu: allt ligger i indexfonden." : ""} Affärer som pågår räknas enligt regeln från signalveckan, oavsett om du själv köpte.</p>`;
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-plan]"); if (b) { settings.planMkt = b.dataset.plan; store.set("fr:settings", settings); renderPlan(); return; }
+    const o = e.target.closest("[data-open-asset]"); if (o) openAsset(o.dataset.openAsset);
+  });
+  document.addEventListener("change", e => {
+    const inp = e.target.closest("[data-plan-in]"); if (!inp) return;
+    const v = parseFloat(inp.value);
+    if (inp.dataset.planIn === "capital" && v > 0) settings.capital = v;
+    if (inp.dataset.planIn === "slots" && v >= 1) settings.slots = Math.min(20, Math.round(v));
+    store.set("fr:settings", settings); renderPlan(); renderTable();
+  });
   function renderTiles() {
     const rows = buildRows().filter(baseMatch).filter(r => r.s);
     $("nPull").textContent = buildRows().filter(baseMatch).filter(r => pullShown(r.a.key)).length;
     $("nRaket").textContent = buildRows().filter(baseMatch).filter(r => isRaket(r.a.key)).length;
     document.querySelectorAll(".tile[data-quick]").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
-    renderIdx();
+    renderIdx(); renderPlan();
     renderMarket();
   }
 
@@ -2000,7 +2076,7 @@
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
   const TREND_NAMES = { bull: "Bull", bear: "Bear", aligned: "V+D samstämmiga" };
-  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Rekyltrade", raket: "Raketen" };
+  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Köplägen", raket: "Raketen" };
   function activeFilterList() {
     const f = [];
     if (state.market !== "alla") f.push(["market", "Marknad", MARKET_NAMES[state.market]]);
@@ -2125,7 +2201,7 @@
     // Månadsrekyl (vecka)
     const pw = pullWOf(a.key);
     if (pw) {
-      const [cls, txt] = pw.state === "signal" ? ["pos", "Köpläge · tyder på uppgång inom en månad"]
+      const [cls, txt] = pw.state === "signal" ? (raketAtSignal(a.key) ? ["pos", "Köpläge · rekyl i Raketen-aktie"] : ["neu", "Svag rekyl · aktien är inte i Raketen"])
         : pw.state === "open" ? ["neu", `Pågår · vecka ${pw.held} av ${PBW.hold}`] : pw.state === "exit" ? ["neg", pw.why === "stop" ? "Stoppad" : "Sälj"] : ["neu", "Inget köpläge"];
       rows.push(sigRow("pullw", "Rekyl, en månad", cls, txt,
         `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. Test på 234 aktier över tio år, cirka 1 800 affärer: 59–61 % gick med vinst och snittet var +2,3 till +3,3 % per affär, mot +1,3 till +1,9 % för ett köp vilken vecka som helst över 40-veckorsmedlet. Regeln gick plus alla år 2017–2026 och slog jämförelsen nio år av tio. De sämsta 5 % av affärerna förlorade 13–16 % eller mer, eftersom kursen kan öppna under stoppet. Testat på aktier, inte krypto.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,

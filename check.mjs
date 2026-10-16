@@ -3,7 +3,7 @@
 // 1. Hämtar dagliga och veckovisa kurser för alla aktier i index.html (även svenska) från
 //    Yahoo Finance och sparar dem i data/stocks.json, som webbversionen av Flipradar läser.
 // 2. Skickar notiser via ntfy:
-//    - när börsläget slår om (trendlinjen på veckografen för S&P 500 eller Bitcoin, stängd vecka)
+//    - när börsläget slår om (trendlinjen på veckografen för S&P 500, OMXS30 eller Bitcoin, stängd vecka)
 //    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i månadsrekylen
 //    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i månadsrekylen
 //    Flippar per tillgång ger inte längre notis: i testet sa de inget om fortsättningen.
@@ -65,7 +65,7 @@ async function getJSON(url, opts = {}) {
 
 function yahooSymbol(a) {
   const base = a.sym.replace(/\./g, "-");
-  return a.se ? base + ".ST" : base;
+  return a.ysym || (a.se ? base + ".ST" : base);
 }
 const dayStart = sec => Math.floor(sec * 1000 / DAY) * DAY;
 const monday = t => t - ((new Date(t).getUTCDay() + 6) % 7) * DAY;
@@ -199,7 +199,7 @@ let sent = 0;
 const firstRun = !Object.keys(state.rekyl).length;
 
 // 2a. Börsläge
-const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]];
+const IDX = [["SPY", "S&P 500"], ["OMXS30@XSTO", "OMXS30"], ["c:BTC", "Bitcoin"]];
 for (const [key, nm] of IDX) {
   const a = BY_KEY[key];
   if (!a) continue;
@@ -245,7 +245,7 @@ for (const a of ASSETS) {
   if (firstRun || prev === undefined || prev === sig || !sig) continue;
   const watched = watchlist.includes(a.key), raket = !!rk[a.key];
   if (p.state === "signal" && (raket || watched)) {
-    const title = `${a.sym}: månadsrekyl, köpläge${raket ? " + Raketen" : ""}`;
+    const title = raket ? `${a.sym}: köpläge, rekyl + Raketen` : `${a.sym}: svag rekyl (inte i Raketen)`;
     const msg = `${a.name}. Köp ca ${fmt(p.entry)} när börsen öppnar, stop loss ${fmt(p.stop)}, sälj efter ${E.PBW.hold} veckor.`;
     log("  " + title + " – " + msg); await notify(title, msg, 1); sent++;
   } else if (p.state === "exit" && watched) {
