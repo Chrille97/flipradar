@@ -130,6 +130,7 @@ async function ask(model, text) {
   }); } catch (e) { return { error: "nätverksfel: " + [e.message, e.cause?.code, e.cause?.message].filter(Boolean).join(" · ") }; }
   const body = await r.text();
   if (r.status === 429) return { quota: true, retry: Number(r.headers.get("retry-after") || 0) };
+  if (r.status >= 500) return { busy: true, error: `HTTP ${r.status}: ${body.slice(0, 160)}` };
   if (r.status === 404) return { noModel: true, error: `modellen finns inte: ${body.slice(0, 150)}` };
   if (!r.ok) return { error: `HTTP ${r.status}: ${body.slice(0, 200)}` };
   let j; try { j = JSON.parse(body); } catch { return { error: `oväntat svar (HTTP ${r.status}): ${body.slice(0, 120)}` }; }
@@ -157,7 +158,7 @@ async function classify(state) {
   state.modelsUsed = MODEL_LIST;
   const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && !excluded(r) && (r.aiErr || 0) < 3);
   console.log(`AI läser ${todo.length} rapporter`);
-  let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0;
+  let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0, busyRow = 0;
   for (const [id, r] of todo) {
     if (!timeLeft() || mi >= MODEL_LIST.length) break;
     if (n === 0 && errRow === 0 && mi > 0) console.log("Byter till", MODEL_LIST[mi]);
@@ -168,6 +169,14 @@ async function classify(state) {
       if (res.retry && res.retry < 120) { await sleep(res.retry * 1000); continue; }
       console.log(`Kvoten slut för ${MODEL_LIST[mi]}`); mi++; quotaHits++; continue;
     }
+    if (res.busy) {
+      // Modellen är tillfälligt överbelastad: vänta, och byt modell om det håller i sig
+      state.lastAiError = `${MODEL_LIST[mi]}: ${res.error}`;
+      if (++busyRow >= 3) { console.log(`${MODEL_LIST[mi]} är överbelastad, byter modell`); mi++; busyRow = 0; }
+      else await sleep(20000);
+      continue;
+    }
+    busyRow = 0;
     if (res.noModel) { console.log(res.error); state.lastAiError = res.error; mi++; continue; }
     if (res.error) {
       state.lastAiError = res.error; console.log(id, res.error); await sleep(4000);
