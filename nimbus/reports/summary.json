@@ -1,6 +1,6 @@
 {
- "updated": "2026-10-16T09:08:06.222Z",
- "lastAiError": "kunde inte tolka svaret: {\n \"period\": \"Q2 20",
+ "updated": "2026-10-16T10:53:25.826Z",
+ "lastAiError": "gemini-3.1-flash-lite: HTTP 503: [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again late",
  "modelsUsed": [
   "gemini-3.8-flash",
   "gemini-3.7-flash",
@@ -82,163 +82,163 @@
  "totals": {
   "rapporter": 1020,
   "text": 1020,
-  "ai": 0
+  "ai": 348
  },
  "bySym": {
   "HEXA-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 16
   },
   "LAGR-B.ST": {
    "rapporter": 37,
    "text": 37,
-   "ai": 0
+   "ai": 18
   },
   "SWEC-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 8
   },
   "ADDT-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 15
   },
   "LIFCO-B.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 0
+   "ai": 22
   },
   "CAMX.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 0
+   "ai": 12
   },
   "SECT-B.ST": {
    "rapporter": 15,
    "text": 15,
-   "ai": 0
+   "ai": 8
   },
   "MYCR.ST": {
    "rapporter": 28,
    "text": 28,
-   "ai": 0
+   "ai": 16
   },
   "AZA.ST": {
    "rapporter": 23,
    "text": 23,
-   "ai": 0
+   "ai": 17
   },
   "GETI-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 0
+   "ai": 7
   },
   "SHB-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 17
   },
   "ALFA.ST": {
    "rapporter": 41,
    "text": 41,
-   "ai": 0
+   "ai": 9
   },
   "SAND.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 15
   },
   "SAVE.ST": {
    "rapporter": 37,
    "text": 37,
-   "ai": 0
+   "ai": 13
   },
   "INVE-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 0
+   "ai": 7
   },
   "TELIA.ST": {
    "rapporter": 45,
    "text": 45,
-   "ai": 0
+   "ai": 17
   },
   "NDA-SE.ST": {
    "rapporter": 20,
    "text": 20,
-   "ai": 0
+   "ai": 8
   },
   "TEL2-B.ST": {
    "rapporter": 36,
    "text": 36,
-   "ai": 0
+   "ai": 14
   },
   "SWED-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 0
+   "ai": 14
   },
   "SKF-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 0
+   "ai": 9
   },
   "SSAB-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 0
+   "ai": 6
   },
   "EVO.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 0
+   "ai": 18
   },
   "LATO-B.ST": {
    "rapporter": 44,
    "text": 44,
-   "ai": 0
+   "ai": 13
   },
   "HM-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 0
+   "ai": 5
   },
   "SAAB-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 0
+   "ai": 4
   },
   "ESSITY-B.ST": {
    "rapporter": 38,
    "text": 38,
-   "ai": 0
+   "ai": 16
   },
   "BONEX.ST": {
    "rapporter": 8,
    "text": 8,
-   "ai": 0
+   "ai": 5
   },
   "EPI-A.ST": {
    "rapporter": 33,
    "text": 33,
-   "ai": 0
+   "ai": 9
   },
   "EQT.ST": {
    "rapporter": 13,
    "text": 13,
-   "ai": 0
+   "ai": 3
   },
   "ASSA-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 0
+   "ai": 4
   },
   "SEB-A.ST": {
    "rapporter": 9,
    "text": 9,
-   "ai": 0
+   "ai": 3
   },
   "MILDEF.ST": {
    "rapporter": 21,
@@ -277,7 +277,7 @@
  "cisionBolagMedRapporter": [
   "handelsbanken:129",
   "duni-group:95",
-  "avarda-bank-ab:89",
+  "avarda-bank-ab:90",
   "byggmax:88",
   "hexagon:87",
   "investment-ab-latour:87",
@@ -294,13 +294,13 @@
   "bactiguard-holding-ab--publ-:78",
   "eltel:77",
   "fastighets-ab-balder:77",
+  "essity:75",
   "hexpol:74",
   "lindex-group-oyj:74",
-  "essity:74",
   "collector-bank-ab:73",
+  "fabege:73",
   "academedia-ab:73",
   "pandox:72",
-  "fabege:72",
   "garo:72",
   "vattenfall:71",
   "pricer:71",
@@ -320,9 +320,9 @@
   "loomis-ab:66",
   "eql-pharma:66",
   "securitas:66",
+  "flowscape-technology:66",
   "atrium-ljungberg-ab:65",
   "tourn-international:65",
-  "flowscape-technology:65",
   "ambea:65",
   "ependion-ab:64",
   "fiskars-corporation:64",
@@ -331,8 +331,8 @@
   "konecranes-oyj:63",
   "itab-group-ab--publ-:63",
   "bonava-group:63",
+  "vibrosense:62",
   "lasernet-group-ab--publ-:61",
-  "vibrosense:61",
   "indutrade-ab:61",
   "wihlborgs-fastigheter-ab:61",
   "samhallsbyggnadsbolaget-i-norden-ab:60",
@@ -357,13 +357,13 @@
   "ica-gruppen-ab:54",
   "nexam-chemical:54",
   "alm-equity:54",
+  "klaria-pharma-holding-ab:54",
   "swedish-orphan-biovitrum-ab:54",
   "devport:54",
   "raysearch-laboratories:53",
   "inission:53",
   "aik-fotboll:53",
   "blick-global-group-ab:53",
-  "klaria-pharma-holding-ab:53",
   "provide-it:53",
   "absolicon:53",
   "bioarctic:53",
