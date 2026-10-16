@@ -13,7 +13,7 @@ const OUT = path.join(DIR, "reports"), TXT = path.join(OUT, "text");
 const CISION = process.env.CISION_URL || "https://news.cision.com";
 // Googles OpenAI-kompatibla gränssnitt. Nyckeln läggs som hemlighet GEMINI_API_KEY i repot.
 const MODELS = process.env.MODELS_URL || "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const MODEL_LIST = (process.env.MODEL_LIST || "gemini-2.5-flash,gemini-2.5-flash-lite").split(",");
+let MODEL_LIST = (process.env.MODEL_LIST || "").split(",").filter(Boolean);
 const TOKEN = process.env.GEMINI_API_KEY || "";
 const FIRST = Number(process.env.FIRST_YEAR || 2016);
 const BUDGET_MS = Number(process.env.BUDGET_MIN || 100) * 60000, T0 = Date.now();
@@ -138,11 +138,29 @@ async function ask(model, text) {
 }
 async function classify(state) {
   if (!TOKEN) { state.lastAiError = "Ingen GEMINI_API_KEY. Lägg in nyckeln som hemlighet i repot."; console.log(state.lastAiError); return; }
+  // Fråga vilka modeller nyckeln får använda och välj snabba, billiga textmodeller (Flash) först.
+  if (!MODEL_LIST.length) {
+    try {
+      const r = await fetch(MODELS.replace(/chat\/completions\/?$/, "models"), { headers: { Authorization: `Bearer ${TOKEN}` } });
+      const j = await r.json();
+      const ids = (j.data || j.models || []).map(m => String(m.id || m.name || "").replace(/^models\//, "")).filter(Boolean);
+      state.availableModels = ids;
+      const ok = ids.filter(id => /gemini/.test(id) && /flash/.test(id) && !/(image|tts|audio|live|embed|thinking|exp|preview|vision)/.test(id));
+      const ver = id => parseFloat((id.match(/gemini-(\d+(\.\d+)?)/) || [])[1] || 0);
+      ok.sort((a, b) => ver(b) - ver(a) || (/lite/.test(a) ? 1 : 0) - (/lite/.test(b) ? 1 : 0));
+      MODEL_LIST = ok.length ? ok : ids.filter(id => /gemma/.test(id));
+      console.log("Tillgängliga modeller:", ids.join(", "));
+    } catch (e) { state.lastAiError = "kunde inte lista modeller: " + e.message; }
+    if (!MODEL_LIST.length) { state.lastAiError ||= "Ingen lämplig modell hittades. Se availableModels i state.json."; console.log(state.lastAiError); return; }
+  }
+  console.log("Använder i tur och ordning:", MODEL_LIST.join(", "));
+  state.modelsUsed = MODEL_LIST;
   const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && !excluded(r) && (r.aiErr || 0) < 3);
   console.log(`AI läser ${todo.length} rapporter`);
   let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0;
   for (const [id, r] of todo) {
     if (!timeLeft() || mi >= MODEL_LIST.length) break;
+    if (n === 0 && errRow === 0 && mi > 0) console.log("Byter till", MODEL_LIST[mi]);
     const text = fs.readFileSync(path.join(TXT, id + ".txt"), "utf8");
     if (text.length < 300) { r.ai = { skip: "för lite text" }; continue; }
     const res = await ask(MODEL_LIST[mi], text);
@@ -177,7 +195,7 @@ async function main() {
   for (const r of R) { const b = bySym[r.sym] ||= { rapporter: 0, text: 0, ai: 0 }; b.rapporter++; if (r.fetched === true) b.text++; if (r.ai && !r.ai.skip) b.ai++; }
   const missing = Object.keys(COMPANIES).filter(k => !bySym[k]);
   const topSlugs = Object.entries(state.slugsSeen).sort((a, b) => b[1] - a[1]).slice(0, 400).map(([k, v]) => `${k}:${v}`);
-  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
+  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, modelsUsed: state.modelsUsed || null, availableModels: state.availableModels || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
   console.log(`Totalt ${R.length} rapporter, ${R.filter(r => r.fetched === true).length} med text, ${R.filter(r => r.ai && !r.ai.skip).length} lästa av AI. Saknas: ${missing.join(", ") || "inga"}`);
 }
 main().catch(e => { console.error(e); process.exit(1); });
