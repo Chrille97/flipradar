@@ -125,7 +125,7 @@ async function ask(model, text) {
   let r;
   try { r = await fetch(MODELS, {
     method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
-    body: JSON.stringify({ model, temperature: 0, max_tokens: 400, response_format: { type: "json_object" },
+    body: JSON.stringify({ model, temperature: 0, max_tokens: 8192, response_format: { type: "json_object" },
       messages: [{ role: "system", content: PROMPT }, { role: "user", content: text.slice(0, 7000) }] }),
   }); } catch (e) { return { error: "nätverksfel: " + [e.message, e.cause?.code, e.cause?.message].filter(Boolean).join(" · ") }; }
   const body = await r.text();
@@ -180,7 +180,7 @@ async function classify(state) {
     if (res.noModel) { console.log(res.error); state.lastAiError = res.error; mi++; continue; }
     if (res.error) {
       state.lastAiError = res.error; console.log(id, res.error); await sleep(4000);
-      if (++errRow >= 5) { console.log("Fem fel i rad, avbryter AI-steget. Se lastAiError i summary.json."); break; }
+      if (++errRow >= 10) { console.log("Tio fel i rad, avbryter AI-steget. Se lastAiError i summary.json."); break; }
       if (!/nätverksfel|HTTP 5/.test(res.error)) r.aiErr = (r.aiErr || 0) + 1;
       continue;
     }
