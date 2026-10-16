@@ -5,7 +5,7 @@
 // 2. Skickar notiser via ntfy:
 //    - när börsläget slår om (trendlinjen på veckografen för S&P 500, OMXS30 eller Bitcoin, stängd vecka)
 //    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i Köp dippen (månadsrekylen)
-//    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i Köp dippen
+//    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i Köp dippen, eller Sälj studsen
 //    Flippar per tillgång ger inte längre notis: i testet sa de inget om fortsättningen.
 //
 // Tillgångslistorna och trendmotorn läses direkt ur index.html, så sidan och notiserna
@@ -193,7 +193,7 @@ if (publish && okStocks) {
 
 // 2. Notiser
 // Gammalt format (flipp-läge per tillgång) byts mot { idx: {...}, rekyl: {...} }.
-for (const k of Object.keys(state)) if (k !== "idx" && k !== "rekyl") delete state[k];
+for (const k of Object.keys(state)) if (k !== "idx" && k !== "rekyl" && k !== "studs") delete state[k];
 state.idx = state.idx || {}; state.rekyl = state.rekyl || {};
 let sent = 0;
 const firstRun = !Object.keys(state.rekyl).length;
@@ -242,8 +242,18 @@ for (const a of ASSETS) {
   const sig = p.state === "signal" ? "s" + p.closedT : p.state === "exit" ? "x" + p.entryT : "";
   const prev = state.rekyl[a.key];
   state.rekyl[a.key] = sig;
-  if (firstRun || prev === undefined || prev === sig || !sig) continue;
   const watched = watchlist.includes(a.key), raket = !!rk[a.key];
+  // Sälj studsen (bevakade aktier): under 40-veckorsmedlet och vecko-RSI(2) över 90 på stängd vecka
+  state.studs = state.studs || {};
+  const studs = p.closeW < p.sma && p.rsi > 90 ? "s" + p.closedT : "";
+  const prevS = state.studs[a.key];
+  state.studs[a.key] = studs;
+  if (watched && !firstRun && prevS !== undefined && studs && prevS !== studs) {
+    const title = `${a.sym}: sälj studsen`;
+    const msg = `${a.name} ligger under sitt 40-veckorsmedel men steg kraftigt förra veckan (${fmt(p.closeW)}). Äger du aktien är det ett bra tillfälle att sälja och flytta pengarna till indexfonden.`;
+    log("  " + title + " – " + msg); await notify(title, msg, -1); sent++;
+  }
+  if (firstRun || prev === undefined || prev === sig || !sig) continue;
   if (p.state === "signal" && (raket || watched)) {
     const title = raket ? `${a.sym}: Köp dippen` : `${a.sym}: svag dipp (inte i Raketen)`;
     const msg = `${a.name}. Köp ca ${fmt(p.entry)} när börsen öppnar, stop loss ${fmt(p.stop)}, sälj efter ${E.PBW.hold} veckor.`;

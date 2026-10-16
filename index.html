@@ -89,7 +89,7 @@
   .banner.info strong { color: var(--accent); }
 
   /* Summary tiles */
-  .tiles { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .tiles { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
   .tile {
     text-align: left;
     background: var(--panel);
@@ -307,6 +307,8 @@
   .nm { color: var(--muted); font-size: 13px; }
   .tag.pull { color: var(--accent); border-color: var(--accent); }
   .tag.raket { color: #f5a623; border-color: #f5a623; }
+  .tag.sell { color: var(--bear, #ff3b5c); border-color: currentColor; }
+  .tile.sell .val { color: var(--bear, #ff3b5c); }
   .tag.pull.exit { color: var(--bear, #ff3b5c); border-color: currentColor; }
   .card.pullcard.on { border-color: var(--accent); }
   .card.pullcard ol { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; }
@@ -553,6 +555,7 @@
     <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="Trendlinjen på veckografen för hela marknaden: S&amp;P 500 (fonden SPY) för aktier och Bitcoin för krypto. Risk på betyder uppåttrend: var investerad och ta köplägena i Köp dippen. Risk av betyder nedåttrend: överväg att minska risken, till exempel genom att inte öppna nya affärer eller flytta en indexfond till sparkonto tills linjen vänder upp. Börsläget skyddar mot större nedgångar men ger inga köplägen. Det köper ofta tillbaka dyrare än det sålde och ger ibland falsklarm, så det kostar avkastning. Test S&amp;P 500: största nedgången blev −18 % i stället för −32 % (2017–2021) och −9 % i stället för −25 % (2022–2026), men avkastningen blev +76 % mot +112 % och +26 % mot +61 % för köp och behåll. Bitcoin: största nedgången blev −62 % i stället för −79 % och −26 % i stället för −66 %. Avkastningen blev lägre 2017–2021 (+792 % mot +1 795 %) men högre 2022–2026 (+237 % mot +94 %). OMXS30 visas men är inte testad än: indexets historik hämtas av den nattliga körningen.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
     <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Köp dippen: en av årets starkaste aktier (Raketen) har just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor. Troligen en liten fördel (+0,8 procentenheter per affär mot att äga samma aktier), men inte bevisad: använd en begränsad lekkassa."><span class="lbl">Köp dippen</span><span class="val" id="nPull">–</span><span class="sub">köplägen just nu</span></button>
     <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Används för Köp dippen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
+    <button class="tile sell" id="tSell" data-quick="sell" aria-pressed="false" title="Säljråd: tillgångar där det testade rådet just nu är att sälja eller minska: sälj studsen, dippköp som är klara, samt index och krypto vid risk av."><span class="lbl">Sälj</span><span class="val" id="nSell">–</span><span class="sub">säljråd just nu</span></button>
   </section>
 
   <details class="settings manual" id="manual">
@@ -563,7 +566,7 @@
         <li><b>En gång i veckan,</b> helst i helgen: öppna Kontoplanen och gör det som står där, Köp, Behåll eller Sälj.</li>
         <li><b>Köp dippen:</b> köp när börsen öppnar på måndagen, för beloppet i planen. Lägg stop loss direkt på nivån som står där.</li>
         <li><b>Sälj</b> efter fyra veckor, eller tidigare om stop loss går. Pengarna går tillbaka till indexfonden.</li>
-        <li><b>Rapport inom fyra veckor:</b> köp för mindre eller stå över.</li>
+        <li><b>Sälj:</b> följ Säljråd. Sälj studsen i svaga aktier du äger, behåll vinnarna, och sälj dippköpen efter fyra veckor.</li>
         <li><b>Börsläge risk av:</b> överväg att flytta indexdelen till sparkonto tills läget är risk på igen.</li>
         <li><b>Gör inte:</b> köp utan signal, sälj tidigt för att det känns fel, eller öka lekkassan efter några vinster.</li>
       </ol>
@@ -1319,7 +1322,7 @@
       if (!pos && c[i] > sma(i) && rsi[i] != null && atr[i] != null && rsi[i] < PBW.rsi) pos = { i: -1, a: atr[i] };
     }
     const wins = trades.filter(t => t.r > 0);
-    const out = { state: "none", above: c[last] > sma(last), rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1], closedT: bars[last].t,
+    const out = { state: "none", above: c[last] > sma(last), closeW: c[last], rsi: rsi[last], sma: sma(last), hasLive: n - 1 > last, live: c[n - 1], closedT: bars[last].t,
       stats: trades.length ? { n: trades.length, win: wins.length / trades.length, avg: mean(trades.map(t => t.r)) } : null };
     if (pos && pos.i < 0) {
       const e = out.hasLive ? bars[n - 1].o : c[last];
@@ -1340,6 +1343,8 @@
   function pullTags(key) {
     const p = pullOf(key), w = pullWOf(key), t = [];
     if (w && (w.state === "signal" || (w.state === "exit" && raketAtSignal(key)))) t.push(w.state === "signal" ? (raketAtSignal(key) ? `<span class="tag pull signal">Köp dippen</span>` : `<span class="tag" title="Dipp i en aktie utanför Raketen: efter courtage ingen fördel mot att äga samma aktier">Svag dipp</span>`) : `<span class="tag pull exit">Sälj dippköpet</span>`);
+    const sr = sellOf(key);
+    if (sr && sr.lvl === "sell" && !(w && w.state === "exit")) t.push(`<span class="tag sell" title="${esc(sr.tip)}">${esc(sr.txt.split(" · ")[0])}</span>`);
     if (isRaket(key)) t.push(`<span class="tag raket" title="Bland de 20 % starkaste aktierna på 12 månader">🚀 Raketen</span>`);
     return t.join("");
   }
@@ -1402,6 +1407,42 @@
   }
   const raketOf = key => (data[key] && data[key].raket) || null;
   const isRaket = key => { const r = raketOf(key); return !!r && r.top; };
+  // ---------- Säljråd ----------
+  // Testat 2017–2026 (aktier i USA och Sverige): vad hände efter signalen jämfört med snittet av samma marknads aktier?
+  //  Sälj studsen: aktie under 40-veckorsmedlet som stigit kraftigt en vecka (vecko-RSI(2) över 90) gick sedan sämre (4 av 4 delar).
+  //  Behåll vinnaren: aktie över 30 % över 40-veckorsmedlet gick sedan bättre (8 av 8 delar). Sälj inte bara för att den stigit.
+  //  Trendflip till bear per aktie gav ingen fördel att sälja. Index och Bitcoin: börsläget (skydd mot stora fall).
+  const SELL_TIP = {
+    studs: "Sälj studsen: aktien ligger under sitt 40-veckorsmedel (svag trend) men steg kraftigt den senaste veckan (vecko-RSI(2) över 90). Äger du den är det ett bra tillfälle att sälja och flytta pengarna till indexfonden. I testet 2017–2026 gick sådana aktier sämre än snittet av aktierna de följande fyra veckorna, i både Sverige (−0,2 och −0,8 procentenheter) och USA (−0,5 och −1,1), i båda perioderna. Effekten är liten och efter 13 veckor försvann den, så räkna med en liten fördel, inte en garanti.",
+    vinnare: "Behåll vinnaren: aktien ligger mer än 30 % över sitt 40-veckorsmedel eller tillhör Raketen. Det är frestande att ta hem vinsten, men i testet gick sådana aktier bättre än snittet efteråt: +0,6 till +2,0 procentenheter de följande fyra veckorna i alla delar av testet. Att sälja vinnare för tidigt är ett av de vanligaste misstagen bland privatpersoner. Sälj av andra skäl, till exempel om du behöver pengarna eller vill sprida risken.",
+    dipp: "Köp dippen-affärer säljs efter fyra veckor eller när stop loss går. Det är den testade regeln, se Köp dippen.",
+    index: "För index och Bitcoin styr börsläget: vid risk av har en försäljning till sparkonto ungefär halverat de största nedgångarna (S&P 500: −18 % i stället för −32 %, Bitcoin: −26 % i stället för −66 % 2022–2026), men kostat avkastning eftersom återköpet ofta sker dyrare.",
+    ingen: "Ingen testad säljsignal just nu. Att sälja när trendlinjen slår om till bear gav ingen fördel i testet: aktierna gick lika bra som snittet efteråt. Har du ingen annan anledning att sälja kan du behålla."
+  };
+  function sellOf(key) {
+    const a = ASSET_BY_KEY[key], d = data[key];
+    if (!a || !d || !d.res) return null;
+    const p = pullWOf(key);
+    if (p && raketAtSignal(key) && (p.state === "open" || p.state === "exit"))
+      return p.state === "exit" ? { lvl: "sell", txt: p.why === "stop" ? "Sälj · stop loss har gått" : "Sälj · dippköpet är klart (4 veckor)", tip: SELL_TIP.dipp }
+        : { lvl: "hold", txt: `Behåll · dippköp vecka ${p.held} av ${PBW.hold}`, tip: SELL_TIP.dipp };
+    const BROAD = ["SPY", "QQQ", "IWM", "DIA", "OMXS30@XSTO"];
+    const idxLike = BROAD.includes(key) || a.type === "krypto";
+    if (a.etf && !idxLike) return { lvl: "none", txt: "Ingen testad säljsignal", tip: "För bransch- och råvarufonder finns ingen testad säljsignal. Börsläget är bara testat på breda index (S&P 500, Nasdaq 100, Russell 2000) och Bitcoin." };
+    if (idxLike) {
+      const ref = a.type === "krypto" ? idxState("c:BTC") : (d.res.w ? { dir: d.res.w.cdir, line: d.res.w.cline } : null);
+      if (!ref || ref.dir == null) return null;
+      const nm = a.type === "krypto" ? "Börsläge Bitcoin" : "Trend vecka";
+      return ref.dir === -1 ? { lvl: "sell", txt: `Minska · ${nm} risk av`, tip: SELL_TIP.index + (a.type === "krypto" && a.sym !== "BTC" ? " För altcoins finns ingen egen testad säljsignal, så Bitcoins läge används." : "") }
+        : { lvl: "keep", txt: `Behåll · ${nm} risk på`, tip: SELL_TIP.index };
+    }
+    if (!p || p.sma == null || p.rsi == null) return null;
+    if (p.closeW < p.sma && p.rsi > 90) return { lvl: "sell", txt: "Sälj studsen · svag aktie som just stigit kraftigt", tip: SELL_TIP.studs };
+    if (p.closeW > 1.3 * p.sma || isRaket(key)) return { lvl: "keep", txt: "Behåll vinnaren · sälj inte bara för att den stigit", tip: SELL_TIP.vinnare };
+    return { lvl: "none", txt: "Ingen säljsignal", tip: SELL_TIP.ingen };
+  }
+  const sellShown = key => { const x = sellOf(key); return !!x && x.lvl === "sell"; };
+
   // Var aktien i Raketen veckan då månadsrekylens signal kom?
   function raketAtSignal(key) {
     const p = pullWOf(key), d = data[key];
@@ -1750,12 +1791,20 @@
       const cur = pwSig(key);
       if (cur == null) return;
       const prev = watch[key] && watch[key].pw;
-      watch[key] = { pw: cur };
+      watch[key] = Object.assign(watch[key] || {}, { pw: cur });
       if (prev === undefined || prev === null || prev === cur || !cur) return;
       const p = pullWOf(key);
       found.push(p.state === "signal"
         ? { a, dir: 1, title: raketAtSignal(key) ? `${a.sym}: Köp dippen` : `${a.sym}: svag dipp (inte i Raketen)`, body: `${a.name}. Köp ca ${fmtPrice(p.entry)}, stop loss ${fmtPrice(p.stop)}, sälj efter ${PBW.hold} veckor.`, txt: "Köp dippen", price: p.entry }
         : { a, dir: -1, title: `${a.sym}: sälj dippköpet`, body: `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${PBW.hold} veckor har gått.`} Resultat enligt regeln ${fmtSigned(p.result * 100)}.`, txt: "Sälj dippköpet", price: p.live });
+    });
+    Object.keys(watch).forEach(key => {
+      const a = ASSET_BY_KEY[key], x = sellOf(key);
+      if (!a || !x || a.etf || a.type === "krypto") return;
+      const sig = x.lvl === "sell" && x.txt.startsWith("Sälj studsen") ? "studs:" + ((pullWOf(key) || {}).closedT || "") : "";
+      const prev = watch[key].st;
+      watch[key].st = sig;
+      if (prev !== undefined && sig && prev !== sig) found.push({ a, dir: -1, title: `${a.sym}: sälj studsen`, body: `${a.name} ligger under sitt 40-veckorsmedel men steg kraftigt förra veckan. Äger du aktien är det ett bra tillfälle att sälja och flytta pengarna till indexfonden.`, txt: "Sälj studsen", price: (pullWOf(key) || {}).closeW });
     });
     IDX.forEach(([k, nm]) => {
       const x = idxState(k);
@@ -1934,6 +1983,7 @@
       if (state.quick === "near" && !isNear(s)) return false;
       if (state.quick === "pull" && !pullShown(r.a.key)) return false;
       if (state.quick === "raket" && !isRaket(r.a.key)) return false;
+      if (state.quick === "sell" && !sellShown(r.a.key)) return false;
       if (state.rs !== "alla" && !(s && s.rs && s.rs.dir === (state.rs === "strong" ? 1 : -1))) return false;
       if (state.minScore && !(s && s.scoreN != null && s.scoreN >= state.minScore)) return false;
       if (state.ext === "stretched" && !(s && s.extLevel > 0)) return false;
@@ -2032,7 +2082,7 @@
     });
     sigs.forEach((x, i) => {
       const buy = i < free;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? "Köp" : "Står över · max antal affärer"}</td><td class="opt">${x.p.entryKnown ? "nu" : x.a.se ? "vid börsens öppning måndag" : "vid öppning måndag"} · ca ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} %)${erWarn(x.a, 28) ? ' · <b class="warn">rapport inom 4 veckor</b>' : ""}</td><td class="num">${buy ? "ca " + nf0.format(per) : "–"}</td></tr>`);
+      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? "Köp" : "Står över · max antal affärer"}</td><td class="opt">${x.p.entryKnown ? "nu" : x.a.se ? "vid börsens öppning måndag" : "vid öppning måndag"} · ca ${fmtPrice(x.p.entry)} · stop ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} %)${erWarn(x.a, 28) ? ' · rapport inom 4 veckor' : ""}</td><td class="num">${buy ? "ca " + nf0.format(per) : "–"}</td></tr>`);
     });
     const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
     const idxAmt = cap - inStocks * per;
@@ -2059,6 +2109,7 @@
     const rows = buildRows().filter(baseMatch).filter(r => r.s);
     $("nPull").textContent = buildRows().filter(baseMatch).filter(r => pullShown(r.a.key)).length;
     $("nRaket").textContent = buildRows().filter(baseMatch).filter(r => isRaket(r.a.key)).length;
+    $("nSell").textContent = buildRows().filter(baseMatch).filter(r => sellShown(r.a.key)).length;
     document.querySelectorAll(".tile[data-quick]").forEach(t => t.setAttribute("aria-pressed", String(state.quick === t.dataset.quick)));
     renderIdx(); renderPlan();
     renderMarket();
@@ -2096,7 +2147,7 @@
 
   const MARKET_NAMES = { krypto: "Krypto", aktier: "Aktier", sverige: "Sverige" };
   const TREND_NAMES = { bull: "Bull", bear: "Bear", aligned: "V+D samstämmiga" };
-  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Köplägen", raket: "Raketen" };
+  const QUICK_NAMES = { bull: "Bullish", bear: "Bearish", fresh: "Nyss flippade", near: "Nära flip", pull: "Köp dippen", raket: "Raketen", sell: "Sälj" };
   function activeFilterList() {
     const f = [];
     if (state.market !== "alla") f.push(["market", "Marknad", MARKET_NAMES[state.market]]);
@@ -2227,6 +2278,9 @@
         `Köpläge när priset ligger över sitt 40-veckorsmedel och har fallit kraftigt senaste veckan (vecko-RSI(2) under 10). Håll fyra veckor. Det ärliga måttet är om affären slog att bara äga samma aktier under samma veckor, efter courtage (0,3 % tur och retur). Alla dippar: ingen fördel, +0,1 procentenheter per affär i Sverige. Bara dippar i Raketen-aktier: +0,8 procentenheter per affär, men osäkerheten är stor (mellan −0,6 och +2,1), så fördelen är inte bevisad. Därför är bara dippar i Raketen-aktier köplägen. En procentenhet är skillnaden mellan två procenttal: steg aktierna du kunde ha ägt i stället 2,0 % under samma fyra veckor och dippköpet 2,8 %, blev dippköpet 0,8 procentenheter bättre. De sämsta 5 % av affärerna förlorade 12–21 %, eftersom kursen kan öppna under stoppet. Visas bara för aktier: på krypto gav regeln förlust.${pw.stats ? ` På ${a.sym}: ${pw.stats.n} affärer, ${nf0.format(pw.stats.win * 100)} % med vinst.` : ""}`,
         pw.state === "none" ? null : planWeek(a, pw)));
     }
+    // Säljråd
+    const sr = sellOf(a.key);
+    if (sr) rows.push(sigRow("sell", "Säljråd", sr.lvl === "sell" ? "neg" : sr.lvl === "keep" ? "pos" : "neu", sr.txt, sr.tip));
     // Raketen
     const rk = raketOf(a.key);
     if (rk) {
@@ -2239,9 +2293,9 @@
     const er = data[a.key].er, erDays = er ? Math.ceil((er - Date.now()) / DAY) : null;
     if (a.type === "aktie" && !a.etf) {
       const soon = erDays != null && erDays >= 0 && erDays <= 7, inMonth = erDays != null && erDays >= 0 && erDays <= 28;
-      rows.push(sigRow("er", "Nästa rapport", soon ? "neg" : "neu",
-        erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · större risk" : inMonth ? " · inom ett dippköp" : ""}`,
-        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test vann 48–50 % av dippköpen som hade en rapport med stor kursrörelse under affären, mot 57–63 % för övriga. Snittresultatet blev inte tydligt sämre, men utfallen spreds mer åt båda hållen. Datumet kommer från Yahoo och kan ändras."));
+      rows.push(sigRow("er", "Nästa rapport", "neu",
+        erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · inom en vecka" : inMonth ? " · inom ett dippköp" : ""}`,
+        "En rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. I vårt test med verkliga rapportdatum (37 svenska bolag) gick dippköp med en rapport under affären inte sämre än övriga: +3,8 % mot +0,8 % per affär, och de sämsta utfallen var inte större. Därför är rapporten information, inte ett skäl att stå över. Datumet kommer från Yahoo och kan ändras."));
     }
     const newsQ = encodeURIComponent(a.type === "krypto" ? `${a.name} ${a.sym} crypto` : `${a.name} ${a.se ? "aktie" : "stock"}`);
     rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("Öppnar de senaste nyheterna om tillgången. Läs dem innan du köper dippen: ett kursfall med en tydlig dålig nyhet bakom (vinstvarning, utredning, tappad kund) är något annat än ett fall utan orsak. Det här går inte att testa i efterhand, så det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
@@ -2274,7 +2328,6 @@
   function summaryBox(a, s) {
     const bits = [];
     bits.push(`<b class="${s.dir === 1 ? "up" : "down"}">${s.dir === 1 ? "Bullish" : "Bearish"} trend</b>`);
-    if (s.rs) bits.push(`${s.rs.dir === 1 ? "starkare" : "svagare"} än ${s.rsRef}`);
     if (s.ext && s.ext.level) bits.push(`<b class="${s.ext.level > 0 ? "warn" : "cold"}">${EXT_NAMES[s.ext.level].toLowerCase()}</b>`);
     if (s.vol && s.vol.level === 4) bits.push("linjen reagerar sent");
     const lv = s.ext ? s.ext.level : 0;
@@ -2283,7 +2336,6 @@
     else if (s.dir === 1) take = "Trenden är uppåt och läget är inte uttänjt.";
     else if (lv < 0) take = "Trenden är nedåt men priset är lågt mot sin långa historik. Bevaka för stegvisa köp och låt linjen bekräfta vändningen.";
     else take = "Trenden är nedåt, så det finns ingen köpsignal.";
-    if (s.dir === 1 && s.rs && s.rs.dir === -1) take += ` Den går dock sämre än ${s.rsRef}.`;
     return `<div class="summary"><span class="sumlbl">Läget i korthet</span><span>${bits.join(" · ")}</span><span class="take">${take}</span></div>`;
   }
 
@@ -2294,7 +2346,7 @@
   }
   function erWarn(a, days) {
     const er = data[a.key].er, n = er ? Math.ceil((er - Date.now()) / DAY) : null;
-    return n != null && n >= 0 && n <= days ? `<p class="muted small"><b class="warn">Rapport ${fmtDate(er)}, om ${n} ${n === 1 ? "dag" : "dagar"}.</b> Kursen kan öppna under stoppet. Överväg mindre position eller att stå över.</p>` : "";
+    return n != null && n >= 0 && n <= days ? `<p class="muted small"><b class="warn">Rapport ${fmtDate(er)}, om ${n} ${n === 1 ? "dag" : "dagar"}.</b> Kursen kan öppna under stoppet. I testet gick dippköp med rapport inte sämre, så det är information, inte ett skäl att stå över.</p>` : "";
   }
   function planDay(a, p) {
     const kr = a.type === "krypto";
