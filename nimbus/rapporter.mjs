@@ -129,7 +129,12 @@ async function ask(model, text) {
       messages: [{ role: "system", content: PROMPT }, { role: "user", content: text.slice(0, 7000) }] }),
   }); } catch (e) { return { error: "nätverksfel: " + [e.message, e.cause?.code, e.cause?.message].filter(Boolean).join(" · ") }; }
   const body = await r.text();
-  if (r.status === 429) return { quota: true, retry: Number(r.headers.get("retry-after") || 0) };
+  if (r.status === 429) {
+    // Google anger om det är minut- eller dagskvoten, och hur länge man ska vänta, inne i svaret
+    const perDay = /PerDay/i.test(body) && !/PerMinute/i.test(body);
+    const delay = Number(r.headers.get("retry-after") || (body.match(/"retryDelay"\s*:\s*"(\d+(\.\d+)?)s"/) || [])[1] || 0);
+    return { quota: true, perDay, retry: perDay ? 0 : Math.max(delay, 30), info: body.slice(0, 300) };
+  }
   if (r.status >= 500) return { busy: true, error: `HTTP ${r.status}: ${body.slice(0, 160)}` };
   if (r.status === 404) return { noModel: true, error: `modellen finns inte: ${body.slice(0, 150)}` };
   if (!r.ok) return { error: `HTTP ${r.status}: ${body.slice(0, 200)}` };
@@ -149,6 +154,8 @@ async function classify(state) {
       const ok = ids.filter(id => /gemini/.test(id) && /flash/.test(id) && !/(image|tts|audio|live|embed|thinking|exp|preview|vision)/.test(id));
       const ver = id => parseFloat((id.match(/gemini-(\d+(\.\d+)?)/) || [])[1] || 0);
       ok.sort((a, b) => ver(b) - ver(a) || (/lite/.test(a) ? 1 : 0) - (/lite/.test(b) ? 1 : 0));
+      // De allra nyaste är ofta överbelastade på gratisnivån: börja med 3.5 Flash om den finns
+      const pref = ok.indexOf("gemini-3.5-flash"); if (pref > 0) ok.unshift(...ok.splice(pref, 1));
       MODEL_LIST = ok.length ? ok : ids.filter(id => /gemma/.test(id));
       console.log("Tillgängliga modeller:", ids.join(", "));
     } catch (e) { state.lastAiError = "kunde inte lista modeller: " + e.message; }
@@ -159,15 +166,16 @@ async function classify(state) {
   const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && !excluded(r) && (r.aiErr || 0) < 3);
   console.log(`AI läser ${todo.length} rapporter`);
   let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0, busyRow = 0;
+  const minuteWaits = MODEL_LIST.map(() => 0); let lastMi = -1;
   for (const [id, r] of todo) {
     if (!timeLeft() || mi >= MODEL_LIST.length) break;
-    if (n === 0 && errRow === 0 && mi > 0) console.log("Byter till", MODEL_LIST[mi]);
+    if (mi !== lastMi) { console.log("Använder nu", MODEL_LIST[mi]); lastMi = mi; }
     const text = fs.readFileSync(path.join(TXT, id + ".txt"), "utf8");
     if (text.length < 300) { r.ai = { skip: "för lite text" }; continue; }
     const res = await ask(MODEL_LIST[mi], text);
     if (res.quota) {
-      if (res.retry && res.retry < 120) { await sleep(res.retry * 1000); continue; }
-      console.log(`Kvoten slut för ${MODEL_LIST[mi]}`); mi++; quotaHits++; continue;
+      if (!res.perDay && ++minuteWaits[mi] <= 6) { console.log(`Minutkvoten nådd för ${MODEL_LIST[mi]}, väntar ${Math.round(res.retry)} s`); await sleep(res.retry * 1000 + 2000); continue; }
+      console.log(`Dagskvoten slut för ${MODEL_LIST[mi]}`); state.lastQuota = res.info; mi++; quotaHits++; continue;
     }
     if (res.busy) {
       // Modellen är tillfälligt överbelastad: vänta, och byt modell om det håller i sig
@@ -185,7 +193,7 @@ async function classify(state) {
       continue;
     }
     errRow = 0;
-    r.ai = { ...res.data, model: MODEL_LIST[mi] }; n++; state.lastAiError = null;
+    r.ai = { ...res.data, model: MODEL_LIST[mi] }; n++; state.lastAiError = null; minuteWaits[mi] = 0; // bara väntan i rad räknas
     if (n % 20 === 0) { wr(path.join(OUT, "state.json"), state); console.log(`  ${n} klara`); }
     await sleep(7000); // under 10 anrop per minut (gratisnivån)
   }
@@ -204,7 +212,7 @@ async function main() {
   for (const r of R) { const b = bySym[r.sym] ||= { rapporter: 0, text: 0, ai: 0 }; b.rapporter++; if (r.fetched === true) b.text++; if (r.ai && !r.ai.skip) b.ai++; }
   const missing = Object.keys(COMPANIES).filter(k => !bySym[k]);
   const topSlugs = Object.entries(state.slugsSeen).sort((a, b) => b[1] - a[1]).slice(0, 400).map(([k, v]) => `${k}:${v}`);
-  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, modelsUsed: state.modelsUsed || null, availableModels: state.availableModels || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
+  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, lastQuota: state.lastQuota || null, modelsUsed: state.modelsUsed || null, availableModels: state.availableModels || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
   console.log(`Totalt ${R.length} rapporter, ${R.filter(r => r.fetched === true).length} med text, ${R.filter(r => r.ai && !r.ai.skip).length} lästa av AI. Saknas: ${missing.join(", ") || "inga"}`);
 }
 main().catch(e => { console.error(e); process.exit(1); });
