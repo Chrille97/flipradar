@@ -2,8 +2,11 @@
 //
 // 1. Hämtar dagliga och veckovisa kurser för alla aktier i index.html (även svenska) från
 //    Yahoo Finance och sparar dem i data/stocks.json, som webbversionen av Flipradar läser.
-// 2. Räknar trendlinjen för allt i watchlist.json och skickar en notis via ntfy när en
-//    bevakad tillgång har flippat (bekräftat, på stängd stapel).
+// 2. Skickar notiser via ntfy:
+//    - när börsläget slår om (trendlinjen på veckografen för S&P 500 eller Bitcoin, stängd vecka)
+//    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i månadsrekylen
+//    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i månadsrekylen
+//    Flippar per tillgång ger inte längre notis: i testet sa de inget om fortsättningen.
 //
 // Tillgångslistorna och trendmotorn läses direkt ur index.html, så sidan och notiserna
 // räknar alltid exakt likadant.
@@ -46,8 +49,10 @@ const { ASSETS } = new Function(listCode + "; return { ASSETS };")();
 const defLine = js.slice(js.indexOf("const DEFAULTS = "), js.indexOf(";", js.indexOf("const DEFAULTS = ")));
 const DEFAULTS = new Function("return " + defLine.replace("const DEFAULTS = ", ""))();
 const settings = { atrLen: DEFAULTS.atrLen, mult: DEFAULTS.mult };
+const pbwLine = js.slice(js.indexOf("const PBW = "), js.indexOf(";", js.indexOf("const PBW = ")) + 1);
 const E = new Function("settings", "DAY",
-  ["atrRma", "trendLine", "barClosed", "toWeekly"].map(grab).join("\n") + "; return { trendLine, barClosed, toWeekly };"
+  "const mean = xs => xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null;\n" + pbwLine + "\n" +
+  ["atrRma", "trendLine", "barClosed", "toWeekly", "rsiSeries", "pullbackWeekOf"].map(grab).join("\n") + "; return { trendLine, barClosed, toWeekly, pullbackWeekOf, PBW };"
 )(settings, DAY);
 const BY_KEY = Object.fromEntries(ASSETS.map(a => [a.key, a]));
 
@@ -111,9 +116,9 @@ function closedTrend(bars, tf, a) {
 
 const fmt = v => new Intl.NumberFormat("sv-SE", v >= 1000 ? { maximumFractionDigits: 0 } : v >= 1 ? { maximumFractionDigits: 2 } : { maximumSignificantDigits: 4 }).format(v);
 
-async function notify(title, message, dir) {
+async function notify(title, message, dir, priority = 4) {
   if (!env.NTFY_TOPIC) { log("  (ingen NTFY_TOPIC satt, hoppar över notis)"); return; }
-  const body = { topic: env.NTFY_TOPIC, title, message, tags: [dir === 1 ? "chart_with_upwards_trend" : "chart_with_downwards_trend"], priority: 4 };
+  const body = { topic: env.NTFY_TOPIC, title, message, tags: [dir === 1 ? "chart_with_upwards_trend" : "chart_with_downwards_trend"], priority };
   if (env.SITE_URL) body.click = env.SITE_URL;
   const r = await fetch(NTFY, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) log("  ntfy svarade", r.status);
@@ -186,32 +191,68 @@ if (publish && okStocks) {
   log("Skrev data/stocks.json");
 }
 
-// 2. Bevakning
-log(`Kontrollerar ${watchlist.length} bevakade tillgångar…`);
-let flips = 0;
-for (const key of watchlist) {
+// 2. Notiser
+// Gammalt format (flipp-läge per tillgång) byts mot { idx: {...}, rekyl: {...} }.
+for (const k of Object.keys(state)) if (k !== "idx" && k !== "rekyl") delete state[k];
+state.idx = state.idx || {}; state.rekyl = state.rekyl || {};
+let sent = 0;
+const firstRun = !Object.keys(state.rekyl).length;
+
+// 2a. Börsläge
+const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]];
+for (const [key, nm] of IDX) {
   const a = BY_KEY[key];
+  if (!a) continue;
   let bars;
-  try {
-    bars = a.type === "krypto" ? await cryptoBars(a) : stockData[key];
-  } catch (e) { log(`  ${a.sym}: ${e.message}`); continue; }
-  if (!bars) { log(`  ${a.sym}: ingen data`); continue; }
-  state[key] = state[key] || {};
-  for (const tf of ["w", "d"]) {
-    const tr = closedTrend(bars[tf], tf, a);
-    if (!tr) continue;
-    const prev = state[key][tf];
-    if (prev != null && prev !== tr.dir) {
-      flips++;
-      const title = `${a.sym} flippade till ${tr.dir === 1 ? "BULLISH" : "BEARISH"}`;
-      const msg = `${a.name} på ${tf === "w" ? "veckografen" : "dagsgrafen"}. Pris ${fmt(tr.close)}. Blir ${tr.dir === 1 ? "bearish under" : "bullish över"} ${fmt(tr.line)}.`;
-      log("  " + title + " – " + msg);
-      await notify(title, msg, tr.dir);
-    }
-    state[key][tf] = tr.dir;
+  try { bars = a.type === "krypto" ? await cryptoBars(a) : stockData[key]; } catch (e) { log(`  ${nm}: ${e.message}`); continue; }
+  const tr = bars && closedTrend(bars.w, "w", a);
+  if (!tr) { log(`  ${nm}: ingen data`); continue; }
+  const prev = state.idx[key];
+  if (prev != null && prev !== tr.dir) {
+    const title = `Börsläge ${nm}: ${tr.dir === 1 ? "risk på" : "risk av"}`;
+    const msg = tr.dir === 1 ? `Trendlinjen på veckografen vände upp (${fmt(tr.close)}). Slår om igen under ${fmt(tr.line)}.`
+      : `Trendlinjen på veckografen vände ner (${fmt(tr.close)}). Överväg att minska risken. Slår om igen över ${fmt(tr.line)}.`;
+    log("  " + title + " – " + msg); await notify(title, msg, tr.dir, 5); sent++;
   }
-  await sleep(a.type === "krypto" ? 150 : 0);
+  state.idx[key] = tr.dir;
 }
-for (const k of Object.keys(state)) if (!watchlist.includes(k)) delete state[k];
+
+// 2b. Raketen-rang (52 till 4 veckor sedan, inom USA respektive Sverige), som på sidan
+const rk = {};
+for (const g of [true, false]) {
+  const L = [];
+  for (const a of ASSETS) {
+    if (a.type !== "aktie" || a.etf || !!a.se !== g || !stockData[a.key] || !stockData[a.key].w || stockData[a.key].w.length < 60) continue;
+    const b = stockData[a.key].w, n = b.length, last = E.barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2;
+    if (last - 52 < 0) continue;
+    const m = b[last - 4].c / b[last - 52].c - 1;
+    if (isFinite(m)) L.push([a.key, m]);
+  }
+  if (L.length < 10) continue;
+  L.sort((x, y) => x[1] - y[1]);
+  L.forEach(([k], i) => { rk[k] = i / (L.length - 1) >= 0.8; });
+}
+
+// 2c. Månadsrekyl: Raketen-aktier (alla) och bevakade aktier
+log(`Kontrollerar månadsrekyl för ${Object.keys(stockData).length} aktier (${watchlist.length} bevakade)…`);
+for (const a of ASSETS) {
+  if (a.type !== "aktie" || a.etf || !stockData[a.key] || !stockData[a.key].w || stockData[a.key].w.length < 60) continue;
+  const p = E.pullbackWeekOf(stockData[a.key].w, a);
+  if (!p) continue;
+  const sig = p.state === "signal" ? "s" + p.closedT : p.state === "exit" ? "x" + p.entryT : "";
+  const prev = state.rekyl[a.key];
+  state.rekyl[a.key] = sig;
+  if (firstRun || prev === undefined || prev === sig || !sig) continue;
+  const watched = watchlist.includes(a.key), raket = !!rk[a.key];
+  if (p.state === "signal" && (raket || watched)) {
+    const title = `${a.sym}: månadsrekyl, köpläge${raket ? " + Raketen" : ""}`;
+    const msg = `${a.name}. Köp ca ${fmt(p.entry)} när börsen öppnar, stop loss ${fmt(p.stop)}, sälj efter ${E.PBW.hold} veckor.`;
+    log("  " + title + " – " + msg); await notify(title, msg, 1); sent++;
+  } else if (p.state === "exit" && watched) {
+    const title = `${a.sym}: månadsrekyl, sälj`;
+    const msg = `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${E.PBW.hold} veckor har gått, sälj när börsen öppnar.`} Resultat enligt regeln ${(p.result * 100).toFixed(1).replace(".", ",")} %.`;
+    log("  " + title + " – " + msg); await notify(title, msg, -1); sent++;
+  }
+}
 await fs.writeFile("state.json", JSON.stringify(state, null, 2) + "\n");
-log(`Klart. ${flips} flippar.`);
+log(`Klart. ${sent} notiser.`);
