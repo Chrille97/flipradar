@@ -4,8 +4,8 @@
 //    Yahoo Finance och sparar dem i data/stocks.json, som webbversionen av Flipradar läser.
 // 2. Skickar notiser via ntfy:
 //    - när börsläget slår om (trendlinjen på veckografen för S&P 500, OMXS30 eller Bitcoin, stängd vecka)
-//    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i månadsrekylen
-//    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i månadsrekylen
+//    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i Köp dippen (månadsrekylen)
+//    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i Köp dippen
 //    Flippar per tillgång ger inte längre notis: i testet sa de inget om fortsättningen.
 //
 // Tillgångslistorna och trendmotorn läses direkt ur index.html, så sidan och notiserna
@@ -245,11 +245,11 @@ for (const a of ASSETS) {
   if (firstRun || prev === undefined || prev === sig || !sig) continue;
   const watched = watchlist.includes(a.key), raket = !!rk[a.key];
   if (p.state === "signal" && (raket || watched)) {
-    const title = raket ? `${a.sym}: köpläge, rekyl + Raketen` : `${a.sym}: svag rekyl (inte i Raketen)`;
+    const title = raket ? `${a.sym}: Köp dippen` : `${a.sym}: svag dipp (inte i Raketen)`;
     const msg = `${a.name}. Köp ca ${fmt(p.entry)} när börsen öppnar, stop loss ${fmt(p.stop)}, sälj efter ${E.PBW.hold} veckor.`;
     log("  " + title + " – " + msg); await notify(title, msg, 1); sent++;
   } else if (p.state === "exit" && watched) {
-    const title = `${a.sym}: månadsrekyl, sälj`;
+    const title = `${a.sym}: sälj dippköpet`;
     const msg = `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${E.PBW.hold} veckor har gått, sälj när börsen öppnar.`} Resultat enligt regeln ${(p.result * 100).toFixed(1).replace(".", ",")} %.`;
     log("  " + title + " – " + msg); await notify(title, msg, -1); sent++;
   }
