@@ -26,16 +26,19 @@ const wr = (f, x) => fs.writeFileSync(f, JSON.stringify(x, null, 1));
 const COMPANIES = {
   "SWEC-B.ST": /^sweco/, "VOLV-B.ST": /^(ab-)?volvo(?!-car)/, "ATCO-A.ST": /^atlas-copco/, "SAND.ST": /^sandvik/,
   "SKF-B.ST": /^(ab-)?skf/, "ALFA.ST": /^alfa-laval/, "ASSA-B.ST": /^assa-abloy/, "HEXA-B.ST": /^hexagon/,
-  "INVE-B.ST": /^investor(-ab)?$/, "EQT.ST": /^eqt(-ab)?$/, "SEB-A.ST": /^(seb|skandinaviska-enskilda)/, "SHB-A.ST": /handelsbanken/,
-  "SWED-A.ST": /^swedbank/, "AZA.ST": /^avanza/, "SAVE.ST": /^nordnet/, "ERIC-B.ST": /ericsson/, "SINCH.ST": /^sinch/,
+  "INVE-B.ST": /^investor(-ab)?$/, "EQT.ST": /^eqt(-ab)?$/, "SEB-A.ST": /^(seb|skandinaviska-enskilda)/, "SHB-A.ST": /^(svenska-)?handelsbanken(-ab)?$/,
+  "SWED-A.ST": /^swedbank(-ab)?$/, "AZA.ST": /^avanza/, "SAVE.ST": /^nordnet/, "ERIC-B.ST": /ericsson/, "SINCH.ST": /^sinch/,
   "HM-B.ST": /^(h---m|h-m|hm-|hennes)/, "EVO.ST": /^evolution(-gaming)?(-group)?(-ab)?$/, "SAAB-B.ST": /^saab/, "NIBE-B.ST": /^nibe/,
   "BOL.ST": /^boliden/, "EPI-A.ST": /^epiroc/, "LIFCO-B.ST": /^lifco/, "ADDT-B.ST": /^addtech/, "LAGR-B.ST": /^lagercrantz/,
   "INDU-C.ST": /industrivarden/, "LATO-B.ST": /latour/, "KINV-B.ST": /^kinnevik/, "NDA-SE.ST": /^nordea/, "ESSITY-B.ST": /^essity/,
-  "TELIA.ST": /^telia/, "TEL2-B.ST": /^tele2/, "SSAB-B.ST": /^ssab/, "GETI-B.ST": /^getinge/, "SOBI.ST": /(swedish-orphan|^sobi)/,
+  "TELIA.ST": /^telia/, "TEL2-B.ST": /^tele2(-ab)?$/, "SSAB-B.ST": /^ssab/, "GETI-B.ST": /^getinge/, "SOBI.ST": /(swedish-orphan|^sobi)/,
   "CAMX.ST": /^camurus/, "SECT-B.ST": /^sectra/, "BONEX.ST": /^bonesupport/, "MYCR.ST": /^mycronic/, "HMS.ST": /^hms-networks/,
   "MILDEF.ST": /^mildef/, "TRUE-B.ST": /^truecaller/, "YUBICO.ST": /^yubico/, "ABB.ST": /^abb(-ltd)?$/, "AZN.ST": /^astrazeneca/,
 };
 const REPORT = /(delarsrapport|bokslutskommunike|kvartalsrapport|halvarsrapport|bokslutsrapport|arsbokslut)/;
+// Inbjudningar och påminnelser om rapporter är inte rapporter
+const NOT_REPORT = /(inbjudan|presenteras|presentation|webcast|webbsandning|telefonkonferens|kallelse|publicerar|publiceras|datum-for|andrat-datum|invitation)/;
+const excluded = r => NOT_REPORT.test(r.slug) || !(COMPANIES[r.sym] && COMPANIES[r.sym].test(r.comp));
 
 async function get(url, binary = false) {
   for (let a = 0; a < 4; a++) {
@@ -118,11 +121,12 @@ Jämför med samma period föregående år när rapporten anger det. Gissa inte:
  "sammanfattning": "högst 20 ord på svenska"
 }`;
 async function ask(model, text) {
-  const r = await fetch(MODELS, {
+  let r;
+  try { r = await fetch(MODELS, {
     method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
     body: JSON.stringify({ model, temperature: 0, max_tokens: 400, response_format: { type: "json_object" },
       messages: [{ role: "system", content: PROMPT }, { role: "user", content: text.slice(0, 7000) }] }),
-  });
+  }); } catch (e) { return { error: "nätverksfel: " + [e.message, e.cause?.code, e.cause?.message].filter(Boolean).join(" · ") }; }
   if (r.status === 429) return { quota: true, retry: Number(r.headers.get("retry-after") || 0) };
   if (!r.ok) return { error: `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}` };
   const j = await r.json(), c = j?.choices?.[0]?.message?.content || "";
@@ -130,9 +134,9 @@ async function ask(model, text) {
 }
 async function classify(state) {
   if (!TOKEN) { console.log("Ingen GITHUB_TOKEN, hoppar över AI-steget."); return; }
-  const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && (r.aiErr || 0) < 3);
+  const todo = Object.entries(state.reports).filter(([id, r]) => r.fetched === true && !r.ai && !excluded(r) && (r.aiErr || 0) < 3);
   console.log(`AI läser ${todo.length} rapporter`);
-  let mi = state.modelIdx || 0, n = 0, quotaHits = 0;
+  let mi = state.modelIdx || 0, n = 0, quotaHits = 0, errRow = 0;
   for (const [id, r] of todo) {
     if (!timeLeft() || mi >= MODEL_LIST.length) break;
     const text = fs.readFileSync(path.join(TXT, id + ".txt"), "utf8");
@@ -142,7 +146,13 @@ async function classify(state) {
       if (res.retry && res.retry < 120) { await sleep(res.retry * 1000); continue; }
       console.log(`Kvoten slut för ${MODEL_LIST[mi]}`); mi++; quotaHits++; continue;
     }
-    if (res.error) { r.aiErr = (r.aiErr || 0) + 1; console.log(id, res.error); await sleep(4000); continue; }
+    if (res.error) {
+      state.lastAiError = res.error; console.log(id, res.error); await sleep(4000);
+      if (++errRow >= 5) { console.log("Fem fel i rad, avbryter AI-steget. Se lastAiError i summary.json."); break; }
+      if (!/nätverksfel|HTTP 5/.test(res.error)) r.aiErr = (r.aiErr || 0) + 1;
+      continue;
+    }
+    errRow = 0;
     r.ai = { ...res.data, model: MODEL_LIST[mi] }; n++;
     if (n % 20 === 0) { wr(path.join(OUT, "state.json"), state); console.log(`  ${n} klara`); }
     await sleep(4500); // under 15 anrop per minut
@@ -157,12 +167,12 @@ async function main() {
   const state = rd(sf, { months: {}, reports: {}, slugsSeen: {} });
   try { await discover(state); } finally { wr(sf, state); }
   try { await fetchTexts(state); } finally { wr(sf, state); }
-  try { await classify(state); } finally { wr(sf, state); }
-  const R = Object.values(state.reports), bySym = {};
+  try { await classify(state); } catch (e) { state.lastAiError = "krasch: " + e.message; console.log(e); } finally { wr(sf, state); }
+  const R = Object.values(state.reports).filter(r => !excluded(r)), bySym = {};
   for (const r of R) { const b = bySym[r.sym] ||= { rapporter: 0, text: 0, ai: 0 }; b.rapporter++; if (r.fetched === true) b.text++; if (r.ai && !r.ai.skip) b.ai++; }
   const missing = Object.keys(COMPANIES).filter(k => !bySym[k]);
   const topSlugs = Object.entries(state.slugsSeen).sort((a, b) => b[1] - a[1]).slice(0, 400).map(([k, v]) => `${k}:${v}`);
-  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
+  wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
   console.log(`Totalt ${R.length} rapporter, ${R.filter(r => r.fetched === true).length} med text, ${R.filter(r => r.ai && !r.ai.skip).length} lästa av AI. Saknas: ${missing.join(", ") || "inga"}`);
 }
 main().catch(e => { console.error(e); process.exit(1); });
