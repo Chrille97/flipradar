@@ -1,55 +1,74 @@
-// Forskningsdata: analytikernas höjningar och sänkningar (Yahoo Finance) för aktierna i index.html.
-// Körs av arbetsflödet "Nimbus3000 backtest" (Actions → Run workflow). Skriver nimbus/research/analyst.json.
-// Påverkar inte Flipradar-sidan.
+// Forskningsdata: omvärldsindikatorer för prognosmodellen.
+//  Sverige: Konjunkturinstitutets barometer per bransch (månadsvis sedan 1996), Riksbankens räntor.
+//  USA:     FRED (amerikanska centralbanken i St. Louis): industri, bygg, räntor, kreditvillkor, hushåll, olja.
+// Körs av arbetsflödet "Nimbus3000 backtest". Skriver nimbus/research/macro.json. Påverkar inte Flipradar-sidan.
 import fs from "node:fs";
 import path from "node:path";
 
-const DIR = path.dirname(new URL(import.meta.url).pathname);
-const OUT = path.join(DIR, "research");
-const YAHOO2 = process.env.YAHOO2_URL || "https://query2.finance.yahoo.com";
-const COOKIE_URL = process.env.COOKIE_URL || "https://fc.yahoo.com";
-const DELAY = Number(process.env.DELAY_MS ?? 400);
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
+const DIR = path.dirname(new URL(import.meta.url).pathname), OUT = path.join(DIR, "research");
+const KI = process.env.KI_URL || "https://statistik.konj.se/PxWeb/api/v1/sv/KonjBar/indikatorer/Indikatorm.px";
+const FRED = process.env.FRED_URL || "https://fred.stlouisfed.org/graph/fredgraph.csv";
+const RB = process.env.RB_URL || "https://api.riksbank.se/swea/v1/Observations";
+const UA = "Mozilla/5.0 (Flipradar research; +https://github.com/Chrille97/flipradar)";
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-function symbols() {
-  const html = fs.readFileSync(path.join(DIR, "..", "index.html"), "utf8");
-  const grab = name => { const i = html.indexOf(`const ${name} = [`); if (i < 0) return []; const j = html.indexOf("];", i); return new Function(`return ${html.slice(html.indexOf("[", i), j + 1)}`)(); };
-  const y = (s, se) => s.replace(/\./g, "-") + (se ? ".ST" : "");
-  return [...grab("STOCKS").filter(r => !r[3]).map(r => ({ sym: r[0], y: y(r[0], false) })),
-          ...grab("SWEDEN").filter(r => !r[3]).map(r => ({ sym: r[0] + "@XSTO", y: y(r[0], true) }))];
-}
-async function auth() {
-  try {
-    const r = await fetch(COOKIE_URL, { headers: { "User-Agent": UA }, redirect: "manual" });
-    const raw = r.headers.getSetCookie ? r.headers.getSetCookie() : [r.headers.get("set-cookie") || ""];
-    const cookie = raw.map(c => c.split(";")[0]).filter(Boolean).join("; ");
-    if (!cookie) return null;
-    const c = await (await fetch(`${YAHOO2}/v1/test/getcrumb`, { headers: { "User-Agent": UA, Cookie: cookie } })).text();
-    return c && c.length < 40 && !c.includes("<") ? { cookie, crumb: c } : null;
-  } catch { return null; }
+// Konjunkturinstitutet: konfidensindikatorer (säsongsrensade nettotal)
+const KI_SERIES = ["KIFI", "BTOT", "BTVI", "BINVE", "BINTM", "BCONS", "B21000", "B24000", "B26000", "B28000", "B29000",
+  "BBYG", "B41000", "B42000", "BHAN", "BDHAN", "BTJA", "B62000", "B64XXX", "B71120", "B71100", "B68YYY", "bhus"];
+// FRED: id → beskrivning
+const FRED_SERIES = {
+  INDPRO: "USA industriproduktion", HOUST: "USA påbörjade bostäder", PERMIT: "USA bygglov", TLMRCONS: "USA byggutgifter (ej bostäder)",
+  GACDFSA066MSFRBPHI: "Philadelphia Fed industriindex", CFNAI: "Chicago Fed aktivitetsindex", UMCSENT: "USA hushållens förtroende",
+  ICSA: "USA nya arbetslösa", UNRATE: "USA arbetslöshet", DGS10: "USA 10-årsränta", DGS2: "USA 2-årsränta", T10Y2Y: "Räntekurva 10-2",
+  FEDFUNDS: "USA styrränta", NFCI: "Finansiella villkor (Chicago Fed)", DCOILWTICO: "Olja WTI", DTWEXBGS: "Dollarindex",
+  M2SL: "USA penningmängd M2", WALCL: "Fed balansräkning", RSAFS: "USA detaljhandel", PCOPPUSDM: "Kopparpris",
+};
+const RB_SERIES = { SECBREPOEFF: "Riksbankens styrränta", SEGVB10YC: "Svensk 10-årsränta", SEGVB2YC: "Svensk 2-årsränta", SEKUSDPMI: "USD/SEK" };
+
+async function get(url, opt = {}) {
+  for (let a = 0; a < 3; a++) {
+    try { const r = await fetch(url, { ...opt, headers: { "User-Agent": UA, ...(opt.headers || {}) } }); if (r.ok) return await r.text(); if (r.status === 404 || r.status === 400) return { err: `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}` }; }
+    catch (e) { if (a === 2) return { err: e.message }; }
+    await sleep(2000 * (a + 1));
+  }
+  return { err: "misslyckades" };
 }
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
-  const list = symbols(), a = await auth(), out = { fetched: new Date().toISOString(), auth: !!a, assets: {}, errors: {} };
-  console.log(`${list.length} aktier. Åtkomst: ${a ? "ja" : "nej"}`);
-  if (!a) { fs.writeFileSync(path.join(OUT, "analyst.json"), JSON.stringify(out)); return; }
-  for (const s of list) {
+  const out = { fetched: new Date().toISOString(), ki: {}, fred: {}, rb: {}, errors: {}, info: { fred: FRED_SERIES, rb: RB_SERIES } };
+  // 1. Konjunkturinstitutet (PxWeb, POST, svar som json-stat2)
+  const body = { query: [{ code: "Indikator", selection: { filter: "item", values: KI_SERIES } }, { code: "Period", selection: { filter: "all", values: ["*"] } }], response: { format: "json-stat2" } };
+  const t = await get(KI, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (typeof t === "string") {
     try {
-      const url = `${YAHOO2}/v10/finance/quoteSummary/${encodeURIComponent(s.y)}?modules=upgradeDowngradeHistory,recommendationTrend,financialData&crumb=${encodeURIComponent(a.crumb)}`;
-      let r;
-      for (let k = 0; k < 3; k++) { r = await fetch(url, { headers: { "User-Agent": UA, Cookie: a.cookie } }); if (r.status !== 429 && r.status < 500) break; await sleep(3000 * (k + 1)); }
-      if (!r.ok) { out.errors[s.sym] = `HTTP ${r.status}`; continue; }
-      const m = (await r.json())?.quoteSummary?.result?.[0] || {};
-      const h = (m.upgradeDowngradeHistory?.history || []).map(x => [x.epochGradeDate, x.firm || "", x.fromGrade || "", x.toGrade || "", x.action || "", x.priceTargetAction || "", x.currentPriceTarget ?? null, x.priorPriceTarget ?? null]);
-      out.assets[s.sym] = { y: s.y, hist: h, trend: m.recommendationTrend?.trend || [], target: m.financialData?.targetMeanPrice?.raw ?? null, rec: m.financialData?.recommendationKey ?? null, nAnalysts: m.financialData?.numberOfAnalystOpinions?.raw ?? null };
-      console.log(s.sym, h.length, "händelser");
-    } catch (e) { out.errors[s.sym] = e.message; }
-    await sleep(DELAY);
+      const j = JSON.parse(t), dimI = j.dimension.Indikator.category.index, dimP = j.dimension.Period.category.index;
+      const ids = Object.keys(dimI).sort((a, b) => dimI[a] - dimI[b]), per = Object.keys(dimP).sort((a, b) => dimP[a] - dimP[b]);
+      const order = j.id, size = j.size, iI = order.indexOf("Indikator"), iP = order.indexOf("Period");
+      for (const id of ids) out.ki[id] = [];
+      // värdena ligger i radordning enligt j.id
+      j.value.forEach((v, k) => { let rem = k; const pos = []; for (let d = order.length - 1; d >= 0; d--) { pos[d] = rem % size[d]; rem = Math.floor(rem / size[d]); } if (v != null) out.ki[ids[pos[iI]]].push([per[pos[iP]], v]); });
+      out.info.kiText = Object.fromEntries(ids.map(id => [id, j.dimension.Indikator.category.label[id]]));
+      console.log(`Konjunkturinstitutet: ${ids.length} serier, ${per[0]}–${per[per.length - 1]}`);
+    } catch (e) { out.errors.ki = "tolkning: " + e.message + " · " + t.slice(0, 200); }
+  } else out.errors.ki = t.err;
+  // 2. FRED (CSV utan nyckel)
+  for (const id of Object.keys(FRED_SERIES)) {
+    const c = await get(`${FRED}?id=${id}&cosd=2005-01-01`);
+    if (typeof c !== "string") { out.errors["fred:" + id] = c.err; continue; }
+    const rows = c.trim().split("\n").slice(1).map(l => l.split(",")).filter(r => r[1] && r[1] !== "." && !isNaN(+r[1])).map(r => [r[0], +r[1]]);
+    if (!rows.length) { out.errors["fred:" + id] = "tomt: " + c.slice(0, 120); continue; }
+    out.fred[id] = rows; console.log(`FRED ${id}: ${rows.length} värden, ${rows[0][0]}–${rows[rows.length - 1][0]}`);
+    await sleep(600);
   }
-  out.cols = ["tid", "firma", "fran", "till", "handling", "riktkursHandling", "riktkurs", "tidigareRiktkurs"];
-  fs.writeFileSync(path.join(OUT, "analyst.json"), JSON.stringify(out));
-  const n = Object.values(out.assets).reduce((x, v) => x + v.hist.length, 0);
-  console.log(`Klart: ${Object.keys(out.assets).length} aktier, ${n} händelser, ${Object.keys(out.errors).length} fel.`);
+  // 3. Riksbanken
+  for (const id of Object.keys(RB_SERIES)) {
+    const c = await get(`${RB}/${id}/2005-01-01`, { headers: { Accept: "application/json" } });
+    if (typeof c !== "string") { out.errors["rb:" + id] = c.err; continue; }
+    try { const j = JSON.parse(c); out.rb[id] = (Array.isArray(j) ? j : j.observations || []).map(o => [o.date, +o.value]).filter(r => r[0] && !isNaN(r[1])); console.log(`Riksbanken ${id}: ${out.rb[id].length} värden`); }
+    catch (e) { out.errors["rb:" + id] = "tolkning: " + c.slice(0, 120); }
+    await sleep(1500);
+  }
+  fs.writeFileSync(path.join(OUT, "macro.json"), JSON.stringify(out));
+  console.log("Fel:", JSON.stringify(out.errors));
 }
 main().catch(e => { console.error(e); process.exit(1); });
