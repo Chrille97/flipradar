@@ -17,7 +17,7 @@ const KI_SERIES = ["KIFI", "BTOT", "BTVI", "BINVE", "BINTM", "BCONS", "B21000", 
   "BBYG", "B41000", "B42000", "BHAN", "BDHAN", "BTJA", "B62000", "B64XXX", "B71120", "B71100", "B68YYY", "bhus"];
 // FRED: id → beskrivning
 const FRED_SERIES = {
-  INDPRO: "USA industriproduktion", HOUST: "USA påbörjade bostäder", PERMIT: "USA bygglov", TLMRCONS: "USA byggutgifter (ej bostäder)",
+  INDPRO: "USA industriproduktion", TTLCONS: "USA byggutgifter totalt", HOUST: "USA påbörjade bostäder", PERMIT: "USA bygglov",
   GACDFSA066MSFRBPHI: "Philadelphia Fed industriindex", CFNAI: "Chicago Fed aktivitetsindex", UMCSENT: "USA hushållens förtroende",
   ICSA: "USA nya arbetslösa", UNRATE: "USA arbetslöshet", DGS10: "USA 10-årsränta", DGS2: "USA 2-årsränta", T10Y2Y: "Räntekurva 10-2",
   FEDFUNDS: "USA styrränta", NFCI: "Finansiella villkor (Chicago Fed)", DCOILWTICO: "Olja WTI", DTWEXBGS: "Dollarindex",
@@ -36,23 +36,37 @@ async function get(url, opt = {}) {
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const out = { fetched: new Date().toISOString(), ki: {}, fred: {}, rb: {}, errors: {}, info: { fred: FRED_SERIES, rb: RB_SERIES } };
-  // 1. Konjunkturinstitutet (PxWeb, POST, svar som json-stat2)
-  const body = { query: [{ code: "Indikator", selection: { filter: "item", values: KI_SERIES } }, { code: "Period", selection: { filter: "all", values: ["*"] } }], response: { format: "json-stat2" } };
-  const t = await get(KI, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (typeof t === "string") {
+  // 1. Konjunkturinstitutet (PxWeb). Provar några varianter av frågan tills en fungerar och loggar vilken.
+  const variants = [
+    { fmt: "json", per: { filter: "all", values: ["*"] } },
+    { fmt: "json", per: { filter: "top", values: ["400"] } },
+    { fmt: "json", per: null },
+    { fmt: "json-stat2", per: { filter: "top", values: ["400"] } },
+  ];
+  for (const v of variants) {
+    const q = [{ code: "Indikator", selection: { filter: "item", values: KI_SERIES } }];
+    if (v.per) q.push({ code: "Period", selection: v.per });
+    const t = await get(KI, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, response: { format: v.fmt } }) });
+    if (typeof t !== "string") { out.errors["ki:" + JSON.stringify(v)] = t.err; await sleep(1500); continue; }
     try {
-      const j = JSON.parse(t), dimI = j.dimension.Indikator.category.index, dimP = j.dimension.Period.category.index;
-      const ids = Object.keys(dimI).sort((a, b) => dimI[a] - dimI[b]), per = Object.keys(dimP).sort((a, b) => dimP[a] - dimP[b]);
-      const order = j.id, size = j.size, iI = order.indexOf("Indikator"), iP = order.indexOf("Period");
-      for (const id of ids) out.ki[id] = [];
-      // värdena ligger i radordning enligt j.id
-      j.value.forEach((v, k) => { let rem = k; const pos = []; for (let d = order.length - 1; d >= 0; d--) { pos[d] = rem % size[d]; rem = Math.floor(rem / size[d]); } if (v != null) out.ki[ids[pos[iI]]].push([per[pos[iP]], v]); });
-      out.info.kiText = Object.fromEntries(ids.map(id => [id, j.dimension.Indikator.category.label[id]]));
-      console.log(`Konjunkturinstitutet: ${ids.length} serier, ${per[0]}–${per[per.length - 1]}`);
-    } catch (e) { out.errors.ki = "tolkning: " + e.message + " · " + t.slice(0, 200); }
-  } else out.errors.ki = t.err;
+      const j = JSON.parse(t);
+      if (v.fmt === "json") {
+        const cols = j.columns.map(c => c.code), iI = cols.indexOf("Indikator"), iP = cols.indexOf("Period");
+        for (const row of j.data) { const id = row.key[iI], per = row.key[iP], val = +row.values[0]; if (!isNaN(val) && row.values[0] !== "..") (out.ki[id] ||= []).push([per, val]); }
+      } else {
+        const dimI = j.dimension.Indikator.category.index, dimP = j.dimension.Period.category.index;
+        const ids = Object.keys(dimI).sort((a, b) => dimI[a] - dimI[b]), per = Object.keys(dimP).sort((a, b) => dimP[a] - dimP[b]);
+        const order = j.id, size = j.size, iI = order.indexOf("Indikator"), iP = order.indexOf("Period");
+        j.value.forEach((val, k) => { let rem = k; const pos = []; for (let d = order.length - 1; d >= 0; d--) { pos[d] = rem % size[d]; rem = Math.floor(rem / size[d]); } if (val != null) (out.ki[ids[pos[iI]]] ||= []).push([per[pos[iP]], val]); });
+      }
+      for (const k in out.ki) out.ki[k].sort((a, b) => a[0] < b[0] ? -1 : 1);
+      out.info.kiVariant = v;
+      console.log(`Konjunkturinstitutet: ${Object.keys(out.ki).length} serier med variant ${JSON.stringify(v)}`);
+      break;
+    } catch (e) { out.errors["ki:" + JSON.stringify(v)] = "tolkning: " + e.message + " · " + t.slice(0, 150); }
+  }
   // 2. FRED (CSV utan nyckel)
-  for (const id of Object.keys(FRED_SERIES)) {
+  for (const id of Object.keys(FRED_SERIES).filter(id => !process.env.SKIP_FRED)) {
     const c = await get(`${FRED}?id=${id}&cosd=2005-01-01`);
     if (typeof c !== "string") { out.errors["fred:" + id] = c.err; continue; }
     const rows = c.trim().split("\n").slice(1).map(l => l.split(",")).filter(r => r[1] && r[1] !== "." && !isNaN(+r[1])).map(r => [r[0], +r[1]]);
