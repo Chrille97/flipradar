@@ -8,7 +8,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,6 +17,7 @@ jobs:
       - run: node nimbus/rapporter.mjs
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BUDGET_MIN: 330
       - name: Spara
         if: always()
         run: |
