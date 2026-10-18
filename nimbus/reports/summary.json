@@ -1,11 +1,12 @@
 {
- "updated": "2026-10-16T10:53:25.826Z",
- "lastAiError": "gemini-3.1-flash-lite: HTTP 503: [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again late",
+ "updated": "2026-10-18T04:37:46.997Z",
+ "lastAiError": null,
+ "lastQuota": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota e",
  "modelsUsed": [
+  "gemini-3.5-flash",
   "gemini-3.8-flash",
   "gemini-3.7-flash",
   "gemini-3.6-flash",
-  "gemini-3.5-flash",
   "gemini-3.5-flash-lite",
   "gemini-3.1-flash-lite",
   "gemini-2.5-flash",
@@ -82,183 +83,183 @@
  "totals": {
   "rapporter": 1020,
   "text": 1020,
-  "ai": 348
+  "ai": 989
  },
  "bySym": {
   "HEXA-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 16
+   "ai": 42
   },
   "LAGR-B.ST": {
    "rapporter": 37,
    "text": 37,
-   "ai": 18
+   "ai": 36
   },
   "SWEC-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 8
+   "ai": 42
   },
   "ADDT-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 15
+   "ai": 42
   },
   "LIFCO-B.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 22
+   "ai": 41
   },
   "CAMX.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 12
+   "ai": 42
   },
   "SECT-B.ST": {
    "rapporter": 15,
    "text": 15,
-   "ai": 8
+   "ai": 14
   },
   "MYCR.ST": {
    "rapporter": 28,
    "text": 28,
-   "ai": 16
+   "ai": 28
   },
   "AZA.ST": {
    "rapporter": 23,
    "text": 23,
-   "ai": 17
+   "ai": 23
   },
   "GETI-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 7
+   "ai": 26
   },
   "SHB-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 17
+   "ai": 41
   },
   "ALFA.ST": {
    "rapporter": 41,
    "text": 41,
-   "ai": 9
+   "ai": 33
   },
   "SAND.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 15
+   "ai": 43
   },
   "SAVE.ST": {
    "rapporter": 37,
    "text": 37,
-   "ai": 13
+   "ai": 37
   },
   "INVE-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 7
+   "ai": 20
   },
   "TELIA.ST": {
    "rapporter": 45,
    "text": 45,
-   "ai": 17
+   "ai": 43
   },
   "NDA-SE.ST": {
    "rapporter": 20,
    "text": 20,
-   "ai": 8
+   "ai": 20
   },
   "TEL2-B.ST": {
    "rapporter": 36,
    "text": 36,
-   "ai": 14
+   "ai": 36
   },
   "SWED-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 14
+   "ai": 41
   },
   "SKF-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 9
+   "ai": 20
   },
   "SSAB-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 6
+   "ai": 26
   },
   "EVO.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 18
+   "ai": 42
   },
   "LATO-B.ST": {
    "rapporter": 44,
    "text": 44,
-   "ai": 13
+   "ai": 42
   },
   "HM-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 5
+   "ai": 10
   },
   "SAAB-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 4
+   "ai": 10
   },
   "ESSITY-B.ST": {
    "rapporter": 38,
    "text": 38,
-   "ai": 16
+   "ai": 37
   },
   "BONEX.ST": {
    "rapporter": 8,
    "text": 8,
-   "ai": 5
+   "ai": 8
   },
   "EPI-A.ST": {
    "rapporter": 33,
    "text": 33,
-   "ai": 9
+   "ai": 31
   },
   "EQT.ST": {
    "rapporter": 13,
    "text": 13,
-   "ai": 3
+   "ai": 12
   },
   "ASSA-B.ST": {
    "rapporter": 26,
    "text": 26,
-   "ai": 4
+   "ai": 26
   },
   "SEB-A.ST": {
    "rapporter": 9,
    "text": 9,
-   "ai": 3
+   "ai": 9
   },
   "MILDEF.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 0
+   "ai": 21
   },
   "TRUE-B.ST": {
    "rapporter": 1,
    "text": 1,
-   "ai": 0
+   "ai": 1
   },
   "SINCH.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 0
+   "ai": 41
   },
   "SOBI.ST": {
    "rapporter": 3,
    "text": 3,
-   "ai": 0
+   "ai": 3
   }
  },
  "saknasHeltPaCision": [
@@ -277,7 +278,7 @@
  "cisionBolagMedRapporter": [
   "handelsbanken:129",
   "duni-group:95",
-  "avarda-bank-ab:90",
+  "avarda-bank-ab:93",
   "byggmax:88",
   "hexagon:87",
   "investment-ab-latour:87",
@@ -292,13 +293,13 @@
   "inwido:79",
   "lkab:78",
   "bactiguard-holding-ab--publ-:78",
+  "essity:78",
   "eltel:77",
   "fastighets-ab-balder:77",
-  "essity:75",
+  "fabege:76",
   "hexpol:74",
   "lindex-group-oyj:74",
   "collector-bank-ab:73",
-  "fabege:73",
   "academedia-ab:73",
   "pandox:72",
   "garo:72",
@@ -309,6 +310,7 @@
   "hansa-biopharma-ab:70",
   "addtech:69",
   "aq-group:69",
+  "flowscape-technology:69",
   "cabonline-group-ab:69",
   "arjo:69",
   "servana-ab:68",
@@ -320,8 +322,8 @@
   "loomis-ab:66",
   "eql-pharma:66",
   "securitas:66",
-  "flowscape-technology:66",
   "atrium-ljungberg-ab:65",
+  "vibrosense:65",
   "tourn-international:65",
   "ambea:65",
   "ependion-ab:64",
@@ -331,7 +333,6 @@
   "konecranes-oyj:63",
   "itab-group-ab--publ-:63",
   "bonava-group:63",
-  "vibrosense:62",
   "lasernet-group-ab--publ-:61",
   "indutrade-ab:61",
   "wihlborgs-fastigheter-ab:61",
@@ -347,6 +348,7 @@
   "moberg-pharma:57",
   "coor:57",
   "dios-fastigheter:57",
+  "klaria-pharma-holding-ab:57",
   "nordnet:56",
   "plejd:56",
   "saab:55",
@@ -357,7 +359,6 @@
   "ica-gruppen-ab:54",
   "nexam-chemical:54",
   "alm-equity:54",
-  "klaria-pharma-holding-ab:54",
   "swedish-orphan-biovitrum-ab:54",
   "devport:54",
   "raysearch-laboratories:53",

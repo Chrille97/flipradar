@@ -556,7 +556,21 @@
    "lastmod": "2016-05-10T11:00:06+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2995
+   "chars": 2995,
+   "ai": {
+    "period": "Q4 2015/16",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Lagercrantz redovisar ökad omsättning och förbättrat resultat för helåret 2015/16. Styrelsen föreslår höjd utdelning till 1,75 SEK.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "2006477": {
    "sym": "SWEC-B.ST",
@@ -2445,7 +2459,21 @@
    "lastmod": "2026-06-01T05:57:29+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2642
+   "chars": 2642,
+   "ai": {
+    "period": "Q4 2016",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Swedbank rapporterar ökat räntenetto och höjd utdelning för 2016. VD Birgitte Bonnesen framhåller framsteg inom kundvärde och effektivitet.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "2180789": {
    "sym": "LIFCO-B.ST",
@@ -2628,7 +2656,21 @@
    "lastmod": "2017-02-15T11:00:21+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q4 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Lifco redovisar ökad omsättning och stärkt EBITA-marginal för fjärde kvartalet, främst driven av genomförda förvärv.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "2189929": {
    "sym": "LATO-B.ST",
@@ -15395,7 +15437,21 @@
    "lastmod": "2021-07-16T04:30:08+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3403
+   "chars": 3403,
+   "ai": {
+    "period": "Q2 2021",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Handelsbanken rapporterar ökat rörelseresultat, stigande intäkter och god kreditkvalitet för det andra kvartalet 2021.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "3385800": {
    "sym": "LAGR-B.ST",
@@ -17139,7 +17195,21 @@
    "lastmod": "2022-01-26T10:30:12+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 5440
+   "chars": 5440,
+   "ai": {
+    "period": "Q4 2021",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": true,
+    "sammanfattning": "Epiroc avslutar 2021 starkt med rekordhöga intäkter och resultat samt god tillväxt i orderingången.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "3493301": {
    "sym": "SEB-A.ST",
@@ -22371,7 +22441,21 @@
    "lastmod": "2023-04-27T05:04:17+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5841
+   "chars": 5841,
+   "ai": {
+    "period": "Q1 2023",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Essity redovisar ökad omsättning och stärkt resultat i första kvartalet, samt inleder strategisk översyn av vissa verksamheter.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "3760059": {
    "sym": "LATO-B.ST",
@@ -31016,7 +31100,21 @@
    "lastmod": "2026-04-23T06:00:18+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 2,
+    "vd_ton": 2,
+    "engangsposter": true,
+    "sammanfattning": "MilDef rapporterar ett starkt första kvartal med kraftigt ökad omsättning, rekordhög orderingång och stärkta marginaler.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4337693": {
    "sym": "GETI-B.ST",
@@ -31027,7 +31125,21 @@
    "lastmod": "2026-04-21T10:00:06+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4621
+   "chars": 4621,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Getinge rapporterar positiv organisk tillväxt och starkt kassaflöde i Q1 2026, men lägre resultat per aktie. Helårsprognosen upprätthålls.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4337886": {
    "sym": "EVO.ST",
@@ -31038,7 +31150,21 @@
    "lastmod": "2026-04-22T05:30:21+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6622
+   "chars": 6622,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Nettoomsättningen och marginalen sjönk under första kvartalet, men resultat per aktie ökade något till 1,26 EUR.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4337968": {
    "sym": "ADDT-B.ST",
@@ -31082,7 +31208,21 @@
    "lastmod": "2026-04-22T09:30:10+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2655
+   "chars": 2655,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Starkt första kvartal för Sandvik med ökande orderingång, intäkter, förbättrad marginal samt högre resultat per aktie.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4338784": {
    "sym": "HEXA-B.ST",
@@ -31093,7 +31233,21 @@
    "lastmod": "2026-04-23T06:00:52+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2557
+   "chars": 2557,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Hexagon redovisar en organisk tillväxt på 8 procent och ett stärkt resultat för det första kvartalet 2026.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4338867": {
    "sym": "ESSITY-B.ST",
@@ -31126,7 +31280,21 @@
    "lastmod": "2026-04-24T05:00:13+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3754
+   "chars": 3754,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Nordnet levererar ett rekordresultat över en miljard kronor för första kvartalet 2026 med stark tillväxt och hög handelsaktivitet.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4340779": {
    "sym": "SWEC-B.ST",
@@ -31137,7 +31305,21 @@
    "lastmod": "2026-04-28T05:20:14+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 7463
+   "chars": 7463,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Sweco visar ökad omsättning och organisk tillväxt i första kvartalet, men lägre marginal och resultat jämfört med föregående år.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4340867": {
    "sym": "SOBI.ST",
@@ -31148,7 +31330,21 @@
    "lastmod": "2026-04-28T06:00:52+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4093
+   "chars": 4093,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Sobi redovisar ett starkt första kvartal 2026 med ökade intäkter, förbättrad marginal och upprätthåller sin helårsprognos.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4340920": {
    "sym": "ASSA-B.ST",
@@ -31159,7 +31355,21 @@
    "lastmod": "2026-04-28T06:01:02+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6664
+   "chars": 6664,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Omsättning och vinst per aktie minskade, men den organiska tillväxten var positiv och rörelsemarginalen stärktes i kvartalet.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4341653": {
    "sym": "LATO-B.ST",
@@ -31181,7 +31391,21 @@
    "lastmod": "2026-06-01T05:57:29+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3049
+   "chars": 3049,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Swedbank inleder 2026 stabilt trots en osäker omvärld, men intäkter och resultat minskar något jämfört med föregående år.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4341687": {
    "sym": "EPI-A.ST",
@@ -31236,7 +31460,21 @@
    "lastmod": "2026-05-12T09:17:59+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3523
+   "chars": 3523,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "oklart",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Intäkterna och rörelseresultatet minskade under första kvartalet, men helårsprognosen upprepas inför stundande FDA-beslut för Oclaiz.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4350458": {
    "sym": "SECT-B.ST",
@@ -31379,7 +31617,21 @@
    "lastmod": "2026-07-14T06:15:03+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3603
+   "chars": 3603,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Omsättning och rörelseresultat ökade med stärkta marginaler, medan den organiska tillväxten var oförändrad under kvartalet.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4374682": {
    "sym": "SHB-A.ST",
@@ -31390,7 +31642,21 @@
    "lastmod": "2026-07-15T05:00:16+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4309
+   "chars": 4309,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Rörelseresultatet och resultat per aktie sjönk, men banken uppvisar stabil affärstillväxt och mycket låga kreditförluster.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4374700": {
    "sym": "CAMX.ST",
@@ -31401,7 +31667,21 @@
    "lastmod": "2026-07-15T05:00:20+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3889
+   "chars": 3889,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Camurus ökade intäkterna och produktförsäljningen under kvartalet och helårsutsikten upprepades.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4374855": {
    "sym": "EPI-A.ST",
@@ -31434,7 +31714,21 @@
    "lastmod": "2026-07-16T06:00:29+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4444
+   "chars": 4444,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "hojd",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Stark intäkts- och resultattillväxt i andra kvartalet, viktiga pipelineframsteg och höjda helårsutsikter.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375133": {
    "sym": "ESSITY-B.ST",
@@ -31445,7 +31739,21 @@
    "lastmod": "2026-07-16T05:00:26+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6224
+   "chars": 6224,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Essity ökade omsättningen drivet av högre volymer, men rörelsemarginal och resultat per aktie sjönk något.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375508": {
    "sym": "SWED-A.ST",
@@ -31467,7 +31775,21 @@
    "lastmod": "2026-07-17T05:00:18+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3836
+   "chars": 3836,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Nordnet levererar ett rekordresultat för andra kvartalet med kraftigt ökande intäkter, god kostnadskontroll och stark kundtillväxt.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375525": {
    "sym": "TELIA.ST",
@@ -31500,7 +31822,21 @@
    "lastmod": "2026-07-17T09:30:12+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 7736
+   "chars": 7736,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Sweco ökade omsättning, rörelsemarginal och vinst per aktie under andra kvartalet, drivet av högre arvoden och förvärv.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375600": {
    "sym": "EQT.ST",
@@ -31522,7 +31858,21 @@
    "lastmod": "2026-07-17T06:00:43+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5463
+   "chars": 5463,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Getinge redovisar god organisk tillväxt, kraftigt stärkt lönsamhet samt kassaflöde och upprepar helårsprognosen.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375614": {
    "sym": "ASSA-B.ST",
@@ -31533,7 +31883,21 @@
    "lastmod": "2026-07-17T06:00:44+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6883
+   "chars": 6883,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Stark rapport med accelererad organisk tillväxt, rekordhög rörelsemarginal och ett förbättrat resultat per aktie.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375737": {
    "sym": "SAND.ST",
@@ -31544,7 +31908,21 @@
    "lastmod": "2026-07-17T09:30:16+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2653
+   "chars": 2653,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Sandvik rapporterade stark tillväxt med tvåsiffrig ökning i orderingång, intäkter och väsentligt förbättrat rörelseresultat under andra kvartalet.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4376241": {
    "sym": "ALFA.ST",
@@ -31566,7 +31944,21 @@
    "lastmod": "2026-07-29T06:00:24+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2361
+   "chars": 2361,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Hexagon ökade omsättningen med 12 procents organisk tillväxt, stärkt rörelsemarginal och ett förbättrat resultat per aktie.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4381927": {
    "sym": "LATO-B.ST",
@@ -31632,7 +32024,21 @@
    "lastmod": "2026-09-30T12:54:15+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3071
+   "chars": 3071,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Justerat substansvärde ökade 9 procent till 1 214,7 mdr kr under Q2 och totalavkastningen nådde 15 procent.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "4402928": {
    "sym": "INVE-B.ST",
@@ -31643,7 +32049,21 @@
    "lastmod": "2026-09-30T13:05:17+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4056
+   "chars": 4056,
+   "ai": {
+    "period": "Q4 2025",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": -1,
+    "vd_ton": -1,
+    "engangsposter": true,
+    "sammanfattning": "Substansvärdet ökade till 1 087 mdr kr i Q4. Utdelningen föreslås höjas till 5,60 kronor per aktie.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "4402930": {
    "sym": "INVE-B.ST",
@@ -31676,7 +32096,21 @@
    "lastmod": "2016-04-19T09:45:15+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5155
+   "chars": 5155,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "TeliaSonera redovisar region Eurasien som avvecklad och genomför nedskrivningar på 7,2 miljarder kronor i fjärde kvartalet 2015.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9898277": {
    "sym": "INVE-B.ST",
@@ -31720,7 +32154,21 @@
    "lastmod": "2016-01-21T07:15:05+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 7285
+   "chars": 7285,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Avanza redovisar ett rekordår med kraftigt ökat resultat, stark kundtillväxt och förbättrad rörelsemarginal.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9899973": {
    "sym": "SWED-A.ST",
@@ -31753,7 +32201,21 @@
    "lastmod": "2016-01-27T06:00:37+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 4256
+   "chars": 4256,
+   "ai": {
+    "period": "FY 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Nordea redovisar ökat rörelseresultat och höjd utdelning för helåret 2015, och inleder ett flerårigt digitalt omvandlingsarbete.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9903172": {
    "sym": "SAAB-B.ST",
@@ -31797,7 +32259,21 @@
    "lastmod": "2016-01-28T06:00:29+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 4054
+   "chars": 4054,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Nettoomsättningen ökade i fjärde kvartalet medan EBITDA minskade. Utdelningen föreslås höjas med 10 procent.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9903681": {
    "sym": "HM-B.ST",
@@ -31830,7 +32306,21 @@
    "lastmod": "2017-04-12T14:28:02+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2471
+   "chars": 2471,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Ökad orderingång och omsättning i Q4, men lägre marginaler och resultat per aktie belastat av engångskostnader.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9904386": {
    "sym": "SAVE.ST",
@@ -31841,7 +32331,21 @@
    "lastmod": "2016-01-29T07:30:15+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 6627
+   "chars": 6627,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Nordnet ökade intäkter och resultat under Q4 drivet av rekordhög handelsaktivitet och stark kundtillväxt. Utdelningen höjs.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9905794": {
    "sym": "ALFA.ST",
@@ -31852,7 +32356,21 @@
    "lastmod": "2016-02-02T06:30:17+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 4564
+   "chars": 4564,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "ned",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": -1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Minskad orderingång och marginal i fjärde kvartalet, men helåret 2015 nådde rekordnivåer för fakturering och rörelseresultat.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9905855": {
    "sym": "SWED-A.ST",
@@ -31874,7 +32392,21 @@
    "lastmod": "2016-02-02T12:00:19+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 6165
+   "chars": 6165,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": -1,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "SKF rapporterade minskad försäljning och lägre rörelsemarginal i fjärde kvartalet till följd av försvagad industriell efterfrågan.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9906390": {
    "sym": "SKF-B.ST",
@@ -31896,7 +32428,21 @@
    "lastmod": "2016-02-03T07:00:53+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 2614
+   "chars": 2614,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Sandvik redovisar Q4 2015 med negativ vinst per aktie och justeringar i rörelseresultatet, samt föreslår utdelning.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9907571": {
    "sym": "LIFCO-B.ST",
@@ -31940,7 +32486,21 @@
    "lastmod": "2016-02-09T11:00:18+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 2925
+   "chars": 2925,
+   "ai": {
+    "period": "Q3 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Nettoomsättningen ökade med 16 procent medan rörelsemarginalen och vinsten per aktie minskade. Notering av AddLife förbereds.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9910321": {
    "sym": "SHB-A.ST",
@@ -31951,7 +32511,21 @@
    "lastmod": "2016-02-09T06:00:10+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 3183
+   "chars": 3183,
+   "ai": {
+    "period": "FY 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Handelsbanken nådde sitt högsta rörelseresultat någonsin under 2015, med stigande intäkter och föreslagen extrautdelning.",
+    "model": "gemini-3.7-flash"
+   }
   },
   "9911277": {
    "sym": "SAAB-B.ST",
@@ -31995,7 +32569,21 @@
    "lastmod": "2016-02-12T06:30:14+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 6949
+   "chars": 6949,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "SSAB redovisar lägre försäljning och sämre rörelseresultat för Q4 2015 men ett starkt kassaflöde.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9914683": {
    "sym": "EVO.ST",
@@ -32006,7 +32594,21 @@
    "lastmod": "2020-09-30T13:57:37+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6438
+   "chars": 6438,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 2,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Evolution redovisar stark tillväxt och ökad lönsamhet för Q4 2015 samt föreslår utdelning och planerar huvudlistnotering.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9915265": {
    "sym": "TELIA.ST",
@@ -32017,7 +32619,21 @@
    "lastmod": "2016-04-19T09:45:15+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6330
+   "chars": 6330,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Nettoomsättningen ökade och kärnverksamheten stärktes, men nettoresultatet tyngdes av stora nedskrivningar hänförliga till avvecklad verksamhet i Eurasien.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9915918": {
    "sym": "CAMX.ST",
@@ -32028,7 +32644,21 @@
    "lastmod": "2016-02-17T09:49:12+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 8070
+   "chars": 8070,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 2,
+    "vd_ton": 2,
+    "engangsposter": true,
+    "sammanfattning": "Camurus redovisar lägre nettoomsättning och ett negativt resultat för Q4 2015, men lyfter fram börsnotering och framsteg i kliniska fas III-prövningar.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9916208": {
    "sym": "LATO-B.ST",
@@ -32039,7 +32669,21 @@
    "lastmod": "2016-02-18T07:30:10+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": true,
+    "sammanfattning": "Latour redovisar ett rekordår 2015 med ökad omsättning, starkt rörelseresultat och en höjd utdelning till 6,75 kr per aktie.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9920484": {
    "sym": "LIFCO-B.ST",
@@ -32050,7 +32694,21 @@
    "lastmod": "2016-02-22T10:30:12+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Lifco redovisar ökad omsättning och förbättrat resultat för både fjärde kvartalet och helåret 2015.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9921198": {
    "sym": "AZA.ST",
@@ -32061,7 +32719,21 @@
    "lastmod": "2016-02-23T07:15:04+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 1292
+   "chars": 1292,
+   "ai": {
+    "period": "2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Avanza Bank redovisar ökade intäkter och högre resultat per aktie för helåret 2015 jämfört med föregående år.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9951431": {
    "sym": "TELIA.ST",
@@ -32138,7 +32810,21 @@
    "lastmod": "2016-04-19T06:15:18+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 7635
+   "chars": 7635,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Avanza redovisar ett stabilt resultat per aktie på 3,35 SEK och en rörelsemarginal på 51 procent för första kvartalet 2016, med fortsatt stark kundtillväxt.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9958938": {
    "sym": "SHB-A.ST",
@@ -32149,7 +32835,21 @@
    "lastmod": "2016-04-20T05:00:16+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2824
+   "chars": 2824,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Handelsbanken redovisar ett resultat per aktie på 2,12 kr för Q1 2016, vilket är en ökning med 3%.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9959045": {
    "sym": "TELIA.ST",
@@ -32160,7 +32860,21 @@
    "lastmod": "2016-04-20T05:00:31+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5810
+   "chars": 5810,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "hojd",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Telia Company redovisar fortsatt vinsttillväxt och höjda utsikter för helåret, trots en mindre nedgång i nettoomsättningen för det första kvartalet.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9959100": {
    "sym": "SHB-A.ST",
@@ -32182,7 +32896,21 @@
    "lastmod": "2016-04-21T06:00:35+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3231
+   "chars": 3231,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "upp",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Mycronic redovisar ökad försäljning, högre resultat och rekordstor orderstock för det första kvartalet 2016.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9959946": {
    "sym": "SAVE.ST",
@@ -32193,7 +32921,21 @@
    "lastmod": "2016-04-21T06:30:16+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6130
+   "chars": 6130,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Nordnet redovisar minskade intäkter och lägre resultat för Q1 2016 till följd av prismodeller och lägre räntenetto.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9959989": {
    "sym": "TEL2-B.ST",
@@ -32204,7 +32946,21 @@
    "lastmod": "2016-04-21T05:00:23+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3269
+   "chars": 3269,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "oklart",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Tele2 redovisar lägre omsättning och EBITDA för Q1 2016 men bekräftar sin helårsguidning.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9961535": {
    "sym": "LATO-B.ST",
@@ -32226,7 +32982,21 @@
    "lastmod": "2017-04-12T14:28:02+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2432
+   "chars": 2432,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "ned",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Getinge redovisar minskad omsättning och orderingång för Q1 2016, men förbättrat resultat per aktie.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9962828": {
    "sym": "HEXA-B.ST",
@@ -32248,7 +33018,21 @@
    "lastmod": "2016-04-25T09:00:09+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2052
+   "chars": 2052,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Detta är en pressrelease om att Lifco ska presentera sin delårsrapport för januari-mars 2016.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9963025": {
    "sym": "SAND.ST",
@@ -32259,7 +33043,21 @@
    "lastmod": "2016-04-25T11:30:07+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2498
+   "chars": 2498,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Sandvik redovisar delårsrapport för första kvartalet 2016 med en fakturering på 20 420 miljoner kronor för koncernen.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9963051": {
    "sym": "ALFA.ST",
@@ -32270,7 +33068,21 @@
    "lastmod": "2016-04-25T10:45:07+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3504
+   "chars": 3504,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "ned",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 0,
+    "vd_ton": -1,
+    "engangsposter": false,
+    "sammanfattning": "Alfa Laval redovisar lägre nettoomsättning och orderingång för Q1 2016. Resultat per aktie steg dock något.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9963604": {
    "sym": "SWED-A.ST",
@@ -32281,7 +33093,21 @@
    "lastmod": "2026-06-01T05:57:29+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2131
+   "chars": 2131,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Swedbank presenterar Q1 2016 med lägre räntenetto, god kostnadskontroll, låga kreditförluster och en stark kapitalisering.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9965693": {
    "sym": "EVO.ST",
@@ -32292,7 +33118,21 @@
    "lastmod": "2020-09-30T13:57:37+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5195
+   "chars": 5195,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 2,
+    "vd_ton": 2,
+    "engangsposter": false,
+    "sammanfattning": "Evolution redovisar stark tillväxt med 59 % ökade intäkter och högre marginal under Q1 2016.",
+    "model": "gemini-3.5-flash-lite"
+   }
   },
   "9966960": {
    "sym": "LATO-B.ST",
@@ -32303,7 +33143,21 @@
    "lastmod": "2016-04-29T06:30:20+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 7383
+   "chars": 7383,
+   "ai": {
+    "period": "Q1 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 2,
+    "engangsposter": true,
+    "sammanfattning": "Stark start på 2016 med organisk tillväxt, ökad orderingång och förbättrad rörelsemarginal samt stora realisationsvinster.",
+    "model": "gemini-3.5-flash-lite"
+   }
   }
  },
  "slugsSeen": {
@@ -32406,7 +33260,7 @@
   "note": 34,
   "lovisagruvan": 43,
   "lifco-ab": 57,
-  "fabege": 75,
+  "fabege": 76,
   "vasakronan": 42,
   "ab-svensk-exportkredit": 40,
   "oriflame": 27,
@@ -32754,7 +33608,7 @@
   "nicoccino": 42,
   "catena-media": 21,
   "quickcool": 18,
-  "vibrosense": 64,
+  "vibrosense": 65,
   "skanska-energi-ab": 15,
   "storytel": 34,
   "front-ventures-ab": 35,
@@ -32777,7 +33631,7 @@
   "karessa-pharma-holding-ab": 17,
   "coeli": 1,
   "everysport-group-ab": 41,
-  "klaria-pharma-holding-ab": 56,
+  "klaria-pharma-holding-ab": 57,
   "spiffbet-ab": 27,
   "aligera-holding-ab--publ-": 5,
   "varbergs-sparbank-ab": 43,
@@ -32795,7 +33649,7 @@
   "ikano-bank": 20,
   "navigo-invest-ab": 52,
   "randviken-fastigheter": 29,
-  "avarda-bank-ab": 92,
+  "avarda-bank-ab": 93,
   "vidhance-ab": 64,
   "zinzino": 44,
   "fable-media-group": 35,
@@ -32916,7 +33770,7 @@
   "redwood-pharma": 34,
   "litium": 31,
   "absolicon": 53,
-  "flowscape-technology": 68,
+  "flowscape-technology": 69,
   "talkpool-ag": 16,
   "loudspring": 5,
   "expres2ion-biotechnologies": 16,
@@ -33016,7 +33870,7 @@
   "integrum-ab": 29,
   "humlegarden-fastigheter-ab": 5,
   "omnicar": 1,
-  "essity": 77,
+  "essity": 78,
   "alligo-ab--publ-": 60,
   "senzagen": 7,
   "iapotek-int-ab": 19,
@@ -33363,7 +34217,7 @@
   "pixfam": 21,
   "bricknode": 3,
   "devyser-diagnostics-ab": 9,
-  "solidx": 30,
+  "solidx": 31,
   "builddata-group-ab": 3,
   "naxs-ab": 19,
   "careium": 14,
@@ -33381,7 +34235,7 @@
   "preservium-property": 19,
   "dnb-carnegie": 1,
   "esmaeilzadeh-holding-ab": 29,
-  "tura-group-ab": 29,
+  "tura-group-ab": 30,
   "clean-industry-solutions-holding-europe": 10,
   "noba-holding-ab--publ-": 10,
   "borgo-ab": 9,
@@ -33429,7 +34283,7 @@
   "scandinavian-astor-group-ab": 21,
   "mindark-pe-ab": 15,
   "lumenradio": 11,
-  "my-beat-ab": 25,
+  "my-beat-ab": 26,
   "c-green-ab": 1,
   "readly": 1,
   "star-innovation-group-ab--publ-": 3,
@@ -33474,7 +34328,7 @@
   "esco-marginalen-ab": 4,
   "condo-nordic-holding-ab": 1,
   "klovern": 6,
-  "hf-reverse--rto--ab": 13,
+  "hf-reverse--rto--ab": 14,
   "fc-husky-holdco-ab": 1,
   "macgregor-group-ab": 4,
   "white-pebbles-ab": 4,
