@@ -948,7 +948,21 @@
    "lastmod": "2016-07-15T05:00:37+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 2728
+   "chars": 2728,
+   "ai": {
+    "period": "Q2 2016",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Stabil rapport för första halvåret 2016 med svagt ökade intäkter och förbättrat resultat per aktie.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "2046616": {
    "sym": "SHB-A.ST",
@@ -31197,7 +31211,21 @@
    "lastmod": "2026-04-22T05:00:26+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 4367
+   "chars": 4367,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Handelsbankens rörelseresultat och resultat per aktie ökade under första kvartalet 2026 med god kreditkvalitet och stabilt räntenetto.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4338428": {
    "sym": "SAND.ST",
@@ -31258,7 +31286,21 @@
    "lastmod": "2026-04-23T05:00:39+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6382
+   "chars": 6382,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Essity redovisar lägre omsättning men stärkta marginaler och positiv organisk tillväxt under första kvartalet 2026.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4339563": {
    "sym": "TELIA.ST",
@@ -31269,7 +31311,21 @@
    "lastmod": "2026-04-24T05:00:11+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Telia rapporterar ökade tjänsteintäkter och högre resultat per aktie i Q1 2026, samt upprepar helårsprognosen.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4339580": {
    "sym": "SAVE.ST",
@@ -31380,7 +31436,21 @@
    "lastmod": "2026-04-29T06:30:22+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 8349
+   "chars": 8349,
+   "ai": {
+    "period": "Q1 2026",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "ned",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Latour redovisar lägre omsättning och resultat för första kvartalet 2026, men visar positiv organisk tillväxt och hög förvärvsaktivitet.",
+    "model": "gemini-3.5-flash"
+   }
   },
   "4341681": {
    "sym": "SWED-A.ST",
@@ -31692,7 +31762,21 @@
    "lastmod": "2026-07-17T09:30:10+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 6214
+   "chars": 6214,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Stark rapport med tvåsiffrig organisk tillväxt, ökad orderingång samt förbättrad rörelsemarginal och vinst.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375082": {
    "sym": "SINCH.ST",
@@ -31800,7 +31884,21 @@
    "lastmod": "2026-07-17T05:00:33+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Telia ökade intäkter och rörelseresultat under andra kvartalet med god tjänsteintäktstillväxt och upprepade utsikterna för helåret.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375556": {
    "sym": "SWED-A.ST",
@@ -31811,7 +31909,21 @@
    "lastmod": "2026-07-17T05:00:34+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3815
+   "chars": 3815,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Swedbank visar stark volymtillväxt och avslutar historiska utredningar via DFS-uppgörelse, tyngd av extraordinära kostnader.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375561": {
    "sym": "SWEC-B.ST",
@@ -31847,7 +31959,21 @@
    "lastmod": "2026-07-17T05:00:28+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "H1 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "EQT ökade intäkter och resultat under första halvåret 2026 med stark utveckling och fortsatt hög kapitalanskaffning.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4375613": {
    "sym": "GETI-B.ST",
@@ -31933,7 +32059,21 @@
    "lastmod": "2026-07-21T05:30:12+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 3124
+   "chars": 3124,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": -1,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Stark orderingång och ökad omsättning i Q2, men något lägre marginal samt förväntan om något lägre efterfrågan i Q3.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4378184": {
    "sym": "HEXA-B.ST",
@@ -31980,7 +32120,21 @@
    "lastmod": "2026-08-19T06:30:19+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 9000
+   "chars": 9000,
+   "ai": {
+    "period": "Q2 2026",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Stark orderingång och organisk tillväxt i industrirörelsen samt kraftigt ökat resultat drivet av realisationsvinster från aktieförsäljningar.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4397476": {
    "sym": "ESSITY-B.ST",
@@ -32013,7 +32167,21 @@
    "lastmod": "2026-09-29T07:18:20+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 5054
+   "chars": 5054,
+   "ai": {
+    "period": "Q2 2025",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "Sinch rapporterade positiv organisk tillväxt under andra kvartalet, men omsättning och resultat sjönk tyngt av negativa valutaeffekter.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "4402905": {
    "sym": "INVE-B.ST",
@@ -32248,7 +32416,21 @@
    "lastmod": "2016-01-28T07:00:16+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 3134
+   "chars": 3134,
+   "ai": {
+    "period": "Q3 2015/16",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Nettoomsättningen ökade med 5 procent och rörelseresultatet steg med 11 procent under det tredje kvartalet.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9903663": {
    "sym": "TEL2-B.ST",
@@ -32284,7 +32466,21 @@
    "lastmod": "2016-01-28T07:00:20+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 8251
+   "chars": 8251,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Ökad omsättning men lägre kvartalsresultat på grund av dyrare dollar; fortsatt snabb expansion med nya butiker och onlinemarknader.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9903696": {
    "sym": "INVE-B.ST",
@@ -32295,7 +32491,21 @@
    "lastmod": "2016-01-28T06:12:58+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 2594
+   "chars": 2594,
+   "ai": {
+    "period": "FY 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Substansvärdet och omsättningen ökade under 2015 medan resultatet minskade. Styrelsen föreslår en höjd utdelning.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9904075": {
    "sym": "GETI-B.ST",
@@ -32381,7 +32591,21 @@
    "lastmod": "2026-06-01T05:57:29+02:00",
    "fetched": true,
    "pub": null,
-   "chars": 1984
+   "chars": 1984,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Swedbank rapporterar stabilt räntenetto för Q4 2015, högre kreditförluster och föreslår en utdelning om 10,70 kronor per aktie.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9906087": {
    "sym": "SKF-B.ST",
@@ -32417,7 +32641,21 @@
    "lastmod": "2016-02-02T13:35:21+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 6130
+   "chars": 6130,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "ned",
+    "organisk_tillvaxt": "negativ",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": -1,
+    "vd_ton": 0,
+    "engangsposter": true,
+    "sammanfattning": "SKF redovisade lägre organisk försäljning och marginaler i Q4 präglat av svagare efterfrågan i Nordamerika samt omstruktureringskostnader.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9906684": {
    "sym": "SAND.ST",
@@ -32453,7 +32691,21 @@
    "lastmod": "2016-02-04T09:00:15+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 1992
+   "chars": 1992,
+   "ai": {
+    "period": "FY 2015",
+    "nettoomsattning": "oklart",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "oklart",
+    "resultat_per_aktie": "oklart",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Inbjudan till presentation och telefonkonferens avseende Lifcos kommande bokslutskommuniké för 2015.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9908273": {
    "sym": "SHB-A.ST",
@@ -32475,7 +32727,21 @@
    "lastmod": "2016-02-05T07:01:15+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 2011
+   "chars": 2011,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "oklart",
+    "rorelsemarginal": "upp",
+    "resultat_per_aktie": "upp",
+    "prognos": "ingen",
+    "utsikter_ton": 0,
+    "vd_ton": 0,
+    "engangsposter": false,
+    "sammanfattning": "Hexagon redovisar ökad omsättning, positiv organisk tillväxt och ett stärkt resultat per aktie i fjärde kvartalet.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9910190": {
    "sym": "ADDT-B.ST",
@@ -32536,7 +32802,21 @@
    "lastmod": "2016-02-10T06:30:23+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 7369
+   "chars": 7369,
+   "ai": {
+    "period": "Helår 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "positiv",
+    "orderingang": "upp",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "upp",
+    "prognos": "oforandrad",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": false,
+    "sammanfattning": "Saab redovisar stark försäljningstillväxt och rekordstor orderstock för helåret 2015 med högre resultat per aktie.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9912033": {
    "sym": "SWEC-B.ST",
@@ -32547,7 +32827,21 @@
    "lastmod": "2016-02-11T06:20:18+01:00",
    "fetched": true,
    "pub": null,
-   "chars": 4130
+   "chars": 4130,
+   "ai": {
+    "period": "Q4 2015",
+    "nettoomsattning": "upp",
+    "organisk_tillvaxt": "oklart",
+    "orderingang": "oklart",
+    "rorelsemarginal": "ned",
+    "resultat_per_aktie": "ned",
+    "prognos": "ingen",
+    "utsikter_ton": 1,
+    "vd_ton": 1,
+    "engangsposter": true,
+    "sammanfattning": "Stark omsättningstillväxt efter Grontmij-köpet, men förvärvskostnader pressade marginaler och vinst per aktie.",
+    "model": "gemini-3.8-flash"
+   }
   },
   "9912412": {
    "sym": "LATO-B.ST",
@@ -33260,7 +33554,7 @@
   "note": 34,
   "lovisagruvan": 43,
   "lifco-ab": 57,
-  "fabege": 76,
+  "fabege": 77,
   "vasakronan": 42,
   "ab-svensk-exportkredit": 40,
   "oriflame": 27,
@@ -33608,7 +33902,7 @@
   "nicoccino": 42,
   "catena-media": 21,
   "quickcool": 18,
-  "vibrosense": 65,
+  "vibrosense": 66,
   "skanska-energi-ab": 15,
   "storytel": 34,
   "front-ventures-ab": 35,
@@ -33631,7 +33925,7 @@
   "karessa-pharma-holding-ab": 17,
   "coeli": 1,
   "everysport-group-ab": 41,
-  "klaria-pharma-holding-ab": 57,
+  "klaria-pharma-holding-ab": 58,
   "spiffbet-ab": 27,
   "aligera-holding-ab--publ-": 5,
   "varbergs-sparbank-ab": 43,
@@ -33649,7 +33943,7 @@
   "ikano-bank": 20,
   "navigo-invest-ab": 52,
   "randviken-fastigheter": 29,
-  "avarda-bank-ab": 93,
+  "avarda-bank-ab": 94,
   "vidhance-ab": 64,
   "zinzino": 44,
   "fable-media-group": 35,
@@ -33770,7 +34064,7 @@
   "redwood-pharma": 34,
   "litium": 31,
   "absolicon": 53,
-  "flowscape-technology": 69,
+  "flowscape-technology": 70,
   "talkpool-ag": 16,
   "loudspring": 5,
   "expres2ion-biotechnologies": 16,
@@ -33870,7 +34164,7 @@
   "integrum-ab": 29,
   "humlegarden-fastigheter-ab": 5,
   "omnicar": 1,
-  "essity": 78,
+  "essity": 79,
   "alligo-ab--publ-": 60,
   "senzagen": 7,
   "iapotek-int-ab": 19,
@@ -34217,7 +34511,7 @@
   "pixfam": 21,
   "bricknode": 3,
   "devyser-diagnostics-ab": 9,
-  "solidx": 31,
+  "solidx": 32,
   "builddata-group-ab": 3,
   "naxs-ab": 19,
   "careium": 14,
@@ -34235,7 +34529,7 @@
   "preservium-property": 19,
   "dnb-carnegie": 1,
   "esmaeilzadeh-holding-ab": 29,
-  "tura-group-ab": 30,
+  "tura-group-ab": 31,
   "clean-industry-solutions-holding-europe": 10,
   "noba-holding-ab--publ-": 10,
   "borgo-ab": 9,
@@ -34283,7 +34577,7 @@
   "scandinavian-astor-group-ab": 21,
   "mindark-pe-ab": 15,
   "lumenradio": 11,
-  "my-beat-ab": 26,
+  "my-beat-ab": 27,
   "c-green-ab": 1,
   "readly": 1,
   "star-innovation-group-ab--publ-": 3,
@@ -34328,7 +34622,7 @@
   "esco-marginalen-ab": 4,
   "condo-nordic-holding-ab": 1,
   "klovern": 6,
-  "hf-reverse--rto--ab": 14,
+  "hf-reverse--rto--ab": 15,
   "fc-husky-holdco-ab": 1,
   "macgregor-group-ab": 4,
   "white-pebbles-ab": 4,

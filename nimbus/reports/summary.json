@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-18T04:37:46.997Z",
+ "updated": "2026-10-19T04:22:17.313Z",
  "lastAiError": null,
  "lastQuota": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota e",
  "modelsUsed": [
@@ -83,23 +83,23 @@
  "totals": {
   "rapporter": 1020,
   "text": 1020,
-  "ai": 989
+  "ai": 1010
  },
  "bySym": {
   "HEXA-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 42
+   "ai": 43
   },
   "LAGR-B.ST": {
    "rapporter": 37,
    "text": 37,
-   "ai": 36
+   "ai": 37
   },
   "SWEC-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 42
+   "ai": 43
   },
   "ADDT-B.ST": {
    "rapporter": 43,
@@ -109,7 +109,7 @@
   "LIFCO-B.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 41
+   "ai": 42
   },
   "CAMX.ST": {
    "rapporter": 42,
@@ -139,12 +139,12 @@
   "SHB-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 41
+   "ai": 43
   },
   "ALFA.ST": {
    "rapporter": 41,
    "text": 41,
-   "ai": 33
+   "ai": 34
   },
   "SAND.ST": {
    "rapporter": 43,
@@ -159,12 +159,12 @@
   "INVE-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 20
+   "ai": 21
   },
   "TELIA.ST": {
    "rapporter": 45,
    "text": 45,
-   "ai": 43
+   "ai": 45
   },
   "NDA-SE.ST": {
    "rapporter": 20,
@@ -179,12 +179,12 @@
   "SWED-A.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 41
+   "ai": 43
   },
   "SKF-B.ST": {
    "rapporter": 21,
    "text": 21,
-   "ai": 20
+   "ai": 21
   },
   "SSAB-B.ST": {
    "rapporter": 26,
@@ -199,22 +199,22 @@
   "LATO-B.ST": {
    "rapporter": 44,
    "text": 44,
-   "ai": 42
+   "ai": 44
   },
   "HM-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 10
+   "ai": 11
   },
   "SAAB-B.ST": {
    "rapporter": 11,
    "text": 11,
-   "ai": 10
+   "ai": 11
   },
   "ESSITY-B.ST": {
    "rapporter": 38,
    "text": 38,
-   "ai": 37
+   "ai": 38
   },
   "BONEX.ST": {
    "rapporter": 8,
@@ -224,12 +224,12 @@
   "EPI-A.ST": {
    "rapporter": 33,
    "text": 33,
-   "ai": 31
+   "ai": 32
   },
   "EQT.ST": {
    "rapporter": 13,
    "text": 13,
-   "ai": 12
+   "ai": 13
   },
   "ASSA-B.ST": {
    "rapporter": 26,
@@ -254,7 +254,7 @@
   "SINCH.ST": {
    "rapporter": 42,
    "text": 42,
-   "ai": 41
+   "ai": 42
   },
   "SOBI.ST": {
    "rapporter": 3,
@@ -278,7 +278,7 @@
  "cisionBolagMedRapporter": [
   "handelsbanken:129",
   "duni-group:95",
-  "avarda-bank-ab:93",
+  "avarda-bank-ab:94",
   "byggmax:88",
   "hexagon:87",
   "investment-ab-latour:87",
@@ -291,12 +291,12 @@
   "eastnine-ab--publ-:80",
   "ework-group-ab:80",
   "inwido:79",
+  "essity:79",
   "lkab:78",
   "bactiguard-holding-ab--publ-:78",
-  "essity:78",
   "eltel:77",
+  "fabege:77",
   "fastighets-ab-balder:77",
-  "fabege:76",
   "hexpol:74",
   "lindex-group-oyj:74",
   "collector-bank-ab:73",
@@ -308,9 +308,9 @@
   "sinch-ab:71",
   "meko:70",
   "hansa-biopharma-ab:70",
+  "flowscape-technology:70",
   "addtech:69",
   "aq-group:69",
-  "flowscape-technology:69",
   "cabonline-group-ab:69",
   "arjo:69",
   "servana-ab:68",
@@ -321,9 +321,9 @@
   "telia-company:66",
   "loomis-ab:66",
   "eql-pharma:66",
+  "vibrosense:66",
   "securitas:66",
   "atrium-ljungberg-ab:65",
-  "vibrosense:65",
   "tourn-international:65",
   "ambea:65",
   "ependion-ab:64",
@@ -344,11 +344,11 @@
   "aike-media-ab:59",
   "finepart:59",
   "prevas:58",
+  "klaria-pharma-holding-ab:58",
   "lifco-ab:57",
   "moberg-pharma:57",
   "coor:57",
   "dios-fastigheter:57",
-  "klaria-pharma-holding-ab:57",
   "nordnet:56",
   "plejd:56",
   "saab:55",
