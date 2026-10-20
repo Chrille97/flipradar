@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-19T04:22:17.313Z",
+ "updated": "2026-10-20T04:10:04.141Z",
  "lastAiError": null,
  "lastQuota": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota e",
  "modelsUsed": [
@@ -83,7 +83,7 @@
  "totals": {
   "rapporter": 1020,
   "text": 1020,
-  "ai": 1010
+  "ai": 1012
  },
  "bySym": {
   "HEXA-B.ST": {
@@ -104,7 +104,7 @@
   "ADDT-B.ST": {
    "rapporter": 43,
    "text": 43,
-   "ai": 42
+   "ai": 43
   },
   "LIFCO-B.ST": {
    "rapporter": 42,
@@ -119,7 +119,7 @@
   "SECT-B.ST": {
    "rapporter": 15,
    "text": 15,
-   "ai": 14
+   "ai": 15
   },
   "MYCR.ST": {
    "rapporter": 28,
@@ -278,7 +278,7 @@
  "cisionBolagMedRapporter": [
   "handelsbanken:129",
   "duni-group:95",
-  "avarda-bank-ab:94",
+  "avarda-bank-ab:95",
   "byggmax:88",
   "hexagon:87",
   "investment-ab-latour:87",
@@ -290,12 +290,12 @@
   "swedbank:80",
   "eastnine-ab--publ-:80",
   "ework-group-ab:80",
+  "essity:80",
   "inwido:79",
-  "essity:79",
+  "fabege:78",
   "lkab:78",
   "bactiguard-holding-ab--publ-:78",
   "eltel:77",
-  "fabege:77",
   "fastighets-ab-balder:77",
   "hexpol:74",
   "lindex-group-oyj:74",
@@ -305,10 +305,10 @@
   "garo:72",
   "vattenfall:71",
   "pricer:71",
+  "flowscape-technology:71",
   "sinch-ab:71",
   "meko:70",
   "hansa-biopharma-ab:70",
-  "flowscape-technology:70",
   "addtech:69",
   "aq-group:69",
   "cabonline-group-ab:69",
@@ -318,10 +318,10 @@
   "tobii-ab:67",
   "ncc:67",
   "arise-ab:67",
+  "vibrosense:67",
   "telia-company:66",
   "loomis-ab:66",
   "eql-pharma:66",
-  "vibrosense:66",
   "securitas:66",
   "atrium-ljungberg-ab:65",
   "tourn-international:65",
@@ -342,9 +342,9 @@
   "boule-diagnostics-ab:59",
   "saltx-technology-holding-ab:59",
   "aike-media-ab:59",
+  "klaria-pharma-holding-ab:59",
   "finepart:59",
   "prevas:58",
-  "klaria-pharma-holding-ab:58",
   "lifco-ab:57",
   "moberg-pharma:57",
   "coor:57",
@@ -668,13 +668,13 @@
   "stockholm-treasury:33",
   "epiroc:33",
   "hedin-mobility-group-ab--publ-:33",
+  "solidx:33",
   "concordia-maritime:32",
   "emotra:32",
   "fagerhult-group-ab:32",
   "semcon:32",
   "phase-holographic:32",
   "avensia-ab:32",
-  "insplorion:32",
-  "railcare:32"
+  "insplorion:32"
  ]
 }
