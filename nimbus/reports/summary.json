@@ -1,6 +1,6 @@
 {
- "updated": "2026-10-23T04:10:09.503Z",
- "lastAiError": "gemini-3.5-flash: HTTP 503: [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again late",
+ "updated": "2026-10-24T04:06:50.722Z",
+ "lastAiError": null,
  "lastQuota": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota e",
  "modelsUsed": [
   "gemini-3.5-flash",
@@ -80,7 +80,7 @@
  "totals": {
   "rapporter": 1020,
   "text": 1020,
-  "ai": 1012
+  "ai": 1013
  },
  "bySym": {
   "HEXA-B.ST": {
@@ -221,7 +221,7 @@
   "EPI-A.ST": {
    "rapporter": 33,
    "text": 33,
-   "ai": 32
+   "ai": 33
   },
   "EQT.ST": {
    "rapporter": 13,
@@ -274,7 +274,7 @@
  ],
  "cisionBolagMedRapporter": [
   "handelsbanken:129",
-  "avarda-bank-ab:98",
+  "avarda-bank-ab:99",
   "duni-group:95",
   "byggmax:88",
   "hexagon:87",
@@ -283,9 +283,9 @@
   "nobia-ab:86",
   "cloetta-ab:86",
   "vitrolife-ab--publ-:84",
-  "essity:83",
+  "essity:84",
   "afry:82",
-  "fabege:81",
+  "fabege:82",
   "swedbank:80",
   "eastnine-ab--publ-:80",
   "ework-group-ab:80",
@@ -294,19 +294,19 @@
   "bactiguard-holding-ab--publ-:78",
   "eltel:77",
   "fastighets-ab-balder:77",
+  "flowscape-technology:75",
   "hexpol:74",
   "lindex-group-oyj:74",
-  "flowscape-technology:74",
   "collector-bank-ab:73",
   "academedia-ab:73",
   "pandox:72",
   "garo:72",
   "vattenfall:71",
   "pricer:71",
+  "vibrosense:71",
   "sinch-ab:71",
   "meko:70",
   "hansa-biopharma-ab:70",
-  "vibrosense:70",
   "addtech:69",
   "aq-group:69",
   "cabonline-group-ab:69",
@@ -329,8 +329,8 @@
   "vidhance-ab:64",
   "konecranes-oyj:63",
   "itab-group-ab--publ-:63",
+  "klaria-pharma-holding-ab:63",
   "bonava-group:63",
-  "klaria-pharma-holding-ab:62",
   "lasernet-group-ab--publ-:61",
   "indutrade-ab:61",
   "wihlborgs-fastigheter-ab:61",
@@ -597,6 +597,7 @@
   "sveaskog:37",
   "bonesupport-holding-ab:37",
   "logistri-fastighets-ab:37",
+  "solidx:37",
   "rizzo-group-ab:36",
   "hiq-international:36",
   "intrum:36",
@@ -614,8 +615,8 @@
   "zaplox:36",
   "veteranpoolen-ab:36",
   "calliditas-therapeutics:36",
-  "solidx:36",
   "dynavox-group:36",
+  "tura-group-ab:36",
   "skane-mollan-ab:35",
   "svedbergs:35",
   "genovis-ab:35",
@@ -633,7 +634,6 @@
   "compactor-fastigheter-ab:35",
   "comintelli:35",
   "hunter-capital-ab--publ-:35",
-  "tura-group-ab:35",
   "tagmaster-ab:34",
   "note:34",
   "kindred-group:34",
