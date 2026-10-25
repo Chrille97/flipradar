@@ -559,7 +559,7 @@
   <div id="banners"></div>
 
   <section class="tiles" aria-label="Sammanfattning">
-    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="# Vad det är&#10;Trendlinjen på veckografen för hela marknaden: S&amp;P 500, OMXS30 och Bitcoin.&#10;&#10;# Så använder du det&#10;Risk på: var investerad.&#10;Risk av: överväg att flytta indexdelen till sparkonto tills läget är risk på igen.&#10;&#10;# Testat 2017–2026&#10;S&amp;P 500: största nedgången −18 % i stället för −32 % (2017–21) och −9 % i stället för −25 % (2022–26). Men avkastningen blev lägre: +76 % mot +112 % och +26 % mot +61 %.&#10;Bitcoin: största nedgången −62 % i stället för −79 % och −26 % i stället för −66 %.&#10;&#10;# Tänk på&#10;Skyddar mot stora fall men ger inga köplägen. Köper ofta tillbaka dyrare än det sålde. OMXS30 är inte testat än.">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
+    <div class="tile idx" id="tIdx"><span class="lbl">Börsläge <button type="button" class="tip" aria-label="Mer information" data-tip="# Vad det är&#10;Trendlinjen på veckografen för hela marknaden: S&amp;P 500 och Bitcoin.&#10;&#10;# Så använder du det&#10;Risk på: var investerad.&#10;Risk av: överväg att flytta indexdelen till sparkonto tills läget är risk på igen.&#10;&#10;# Testat 2017–2026&#10;S&amp;P 500: största nedgången −18 % i stället för −32 % (2017–21) och −9 % i stället för −25 % (2022–26). Men avkastningen blev lägre: +76 % mot +112 % och +26 % mot +61 %.&#10;Bitcoin: största nedgången −62 % i stället för −79 % och −26 % i stället för −66 %.&#10;&#10;# Tänk på&#10;Skyddar mot stora fall men ger inga köplägen. Köper ofta tillbaka dyrare än det sålde.&#10;&#10;# OMXS30&#10;Testat och visas inte: på OMXS30 skyddade börsläget inte (största nedgång −29 % mot −28 % 2017–21) och kostade mycket avkastning (+16 % mot +58 % och −2 % mot +36 %).">i</button></span><div id="idxBody"><span class="sub">Laddar…</span></div><span class="sub">skyddar mot stora fall · ger inga köplägen</span></div>
     <button class="tile pull" id="tPull" data-quick="pull" aria-pressed="false" title="Köp dippen: en av årets starkaste aktier (Raketen) har just fallit kraftigt en vecka. Köp nästa vecka, sälj efter fyra veckor. Troligen en liten fördel (+0,8 procentenheter per affär mot att äga samma aktier), men inte bevisad: använd en begränsad lekkassa."><span class="lbl">Köp dippen</span><span class="val" id="nPull">–</span><span class="sub">köplägen just nu</span></button>
     <button class="tile raket" id="tRaket" data-quick="raket" aria-pressed="false" title="Raketen: aktier som tillhör den starkaste femtedelen på 12 månader (senaste månaden borträknad), jämfört med andra aktier på samma marknad. Används för Köp dippen."><span class="lbl">Raketen</span><span class="val" id="nRaket">–</span><span class="sub">årets starkaste aktier</span></button>
     <button class="tile sell" id="tSell" data-quick="sell" aria-pressed="false" title="Säljråd: tillgångar där det testade rådet just nu är att sälja eller minska: sälj studsen, dippköp som är klara, samt index och krypto vid risk av."><span class="lbl">Sälj</span><span class="val" id="nSell">–</span><span class="sub">säljråd just nu</span></button>
@@ -574,7 +574,7 @@
         <li><b>Köp dippen:</b> köp när börsen öppnar på måndagen, för beloppet i planen. Lägg stop loss direkt på nivån som står där.</li>
         <li><b>Sälj</b> efter fyra veckor, eller tidigare om stop loss går. Pengarna går tillbaka till indexfonden.</li>
         <li><b>Sälj:</b> följ Säljråd. Sälj studsen i svaga aktier du äger, behåll vinnarna, och sälj dippköpen efter fyra veckor.</li>
-        <li><b>Börsläge risk av:</b> överväg att flytta indexdelen till sparkonto tills läget är risk på igen.</li>
+        <li><b>Börsläge risk av</b> (S&amp;P 500 eller Bitcoin): överväg att flytta den delen till sparkonto tills läget är risk på igen. En svensk indexfond behålls, eftersom börsläget inte skyddade OMXS30.</li>
         <li><b>Gör inte:</b> köp utan signal, sälj tidigt för att det känns fel, eller öka lekkassan efter några vinster.</li>
       </ol>
       <p class="hint">Förvänta dig en liten fördel som inte är bevisad. Indexfonden gör huvudjobbet. Stjärnmärk aktier för att få notiser. Detaljer och testsiffror finns under i-knapparna.</p>
@@ -791,7 +791,7 @@
     ["bigtech", "Big Tech"], ["ai", "AI"], ["semi", "Halvledare"], ["mjuk", "Mjukvara & moln"],
     ["infra", "Infrastruktur"], ["green", "Greentech"], ["energi", "Energi"], ["karn", "Kärnkraft & uran"], ["verkstad", "Verkstad & industri"],
     ["forsvar", "Försvar"], ["finans", "Finans"], ["krypto", "Kryptonära"], ["halsa", "Hälsa"],
-    ["konsument", "Konsument"], ["ravaror", "Råvaror"], ["index", "Index & ETF"]
+    ["konsument", "Konsument"], ["ravaror", "Råvaror"], ["fastighet", "Fastigheter"], ["index", "Index & ETF"]
   ];
   // Aktier och ETF:er: [symbol, namn, kategorier, etf?]. Amerikanska börser (ingår i Twelve Datas gratisnivå).
   const STOCKS = [
@@ -877,7 +877,57 @@
     ["GETI.B","Getinge","halsa"],["SOBI","Sobi","halsa"],["CAMX","Camurus","halsa"],
     ["SECT.B","Sectra","halsa,mjuk"],["BONEX","Bonesupport","halsa"],["MYCR","Mycronic","semi,verkstad"],
     ["HMS","HMS Networks","verkstad,infra"],["MILDEF","MilDef","forsvar"],["TRUE.B","Truecaller","mjuk"],
-    ["YUBICO","Yubico","mjuk"]
+    ["YUBICO","Yubico","mjuk"],
+    // Fler svenska bolag (oktober 2026), valda efter storlek på Large och Mid Cap, inte efter hur de har gått
+    ["ELUX.B","Electrolux","konsument"],
+    ["SKA.B","Skanska","infra"],
+    ["SCA.B","SCA","ravaror,green"],
+    ["HOLM.B","Holmen","ravaror"],
+    ["HUSQ.B","Husqvarna","konsument,verkstad"],
+    ["TREL.B","Trelleborg","verkstad"],
+    ["SECU.B","Securitas","konsument"],
+    ["CAST","Castellum","fastighet"],
+    ["BALD.B","Balder","fastighet"],
+    ["SAGA.B","Sagax","fastighet"],
+    ["LUND.B","Lundbergföretagen","finans"],
+    ["BEIJ.B","Beijer Ref","verkstad,green"],
+    ["INDT","Indutrade","verkstad"],
+    ["AAK","AAK","konsument"],
+    ["AXFO","Axfood","konsument"],
+    ["EKTA.B","Elekta","halsa"],
+    ["HPOL.B","Hexpol","verkstad"],
+    ["VOLCAR.B","Volvo Cars","konsument"],
+    ["ALIV.SDB","Autoliv","verkstad"],
+    ["BILL","Billerud","ravaror"],
+    ["ALLEI","Alleima","verkstad"],
+    ["LUMI","Lundin Mining","ravaror"],
+    ["FABG","Fabege","fastighet"],
+    ["PEAB.B","Peab","infra"],
+    ["NCC.B","NCC","infra"],
+    ["THULE","Thule","konsument"],
+    ["DOM","Dometic","konsument"],
+    ["WALL.B","Wallenstam","fastighet"],
+    ["WIHL","Wihlborgs","fastighet"],
+    ["HUFV.A","Hufvudstaden","fastighet"],
+    ["EPRO.B","Electrolux Professional","verkstad"],
+    ["AFRY","Afry","infra"],
+    ["LOOMIS","Loomis","finans"],
+    ["ATRLJ.B","Atrium Ljungberg","fastighet"],
+    ["EMBRAC.B","Embracer","konsument,mjuk"],
+    ["PDX","Paradox Interactive","konsument,mjuk"],
+    ["BIOA.B","BioArctic","halsa"],
+    ["VITR","Vitrolife","halsa"],
+    ["NOLA.B","Nolato","verkstad"],
+    ["LIAB","Lindab","verkstad,infra"],
+    ["MTRS","Munters","verkstad,green"],
+    ["BRAV","Bravida","infra"],
+    ["SDIP.B","Sdiptech","infra"],
+    ["VIT.B","Vitec","mjuk"],
+    ["RATO.B","Ratos","finans"],
+    ["CLAS.B","Clas Ohlson","konsument"],
+    ["ALIF.B","AddLife","halsa"],
+    ["INSTAL","Instalco","infra"],
+    ["BURE","Bure Equity","finans"]
   ];
   // Kategorier för krypto (en tillgång kan ha flera)
   const CRYPTO_CATEGORIES = [
@@ -1434,7 +1484,7 @@
     if (p && raketAtSignal(key) && (p.state === "open" || p.state === "exit"))
       return p.state === "exit" ? { lvl: "sell", txt: p.why === "stop" ? "Sälj · stop loss har gått" : "Sälj · dippköpet är klart (4 veckor)", tip: SELL_TIP.dipp }
         : { lvl: "hold", txt: `Behåll · dippköp vecka ${p.held} av ${PBW.hold}`, tip: SELL_TIP.dipp };
-    const BROAD = ["SPY", "QQQ", "IWM", "DIA", "OMXS30@XSTO"];
+    const BROAD = ["SPY", "QQQ", "IWM", "DIA"];
     const idxLike = BROAD.includes(key) || a.type === "krypto";
     if (a.etf && !idxLike) return { lvl: "none", txt: "Ingen testad säljsignal", tip: "# Läge\nIngen testad säljsignal för bransch- och råvarufonder.\n\n# Varför\nBörsläget är bara testat på breda index (S&P 500, Nasdaq 100, Russell 2000) och Bitcoin." };
     if (idxLike) {
@@ -1592,6 +1642,13 @@
   // Webbversionen: aktiedata från datafilen som den schemalagda kontrollen skriver (data/stocks.json).
   // Finns ingen datafil (t.ex. när sidan öppnas som fil) används Twelve Data som tidigare.
   let hostedAt = 0, hostedSet = null;
+  // Senaste kvartalsrapport (svenska bolag), läst av AI varje natt: nimbus/reports/latest.json
+  let REPORTS = null;
+  (async () => {
+    if (location.protocol === "file:") return;
+    try { const r = await fetch("nimbus/reports/latest.json", { cache: "no-cache" }); if (r.ok) { REPORTS = (await r.json()).reports || {}; if (state.open) renderTable(); } } catch (e) {}
+  })();
+  const reportOf = a => REPORTS && a.se ? REPORTS[a.sym.replace(/\./g, "-") + ".ST"] || null : null;
   async function loadHostedStocks(force) {
     if (location.protocol === "file:") return null;
     if (!force && hostedSet && Date.now() - hostedAt < 30 * 60000) return hostedSet;
@@ -2054,7 +2111,7 @@
   }
 
   // Börsläge: trendlinjen på veckografen (stängd vecka) för S&P 500 och Bitcoin
-  const IDX = [["SPY", "S&P 500"], ["OMXS30@XSTO", "OMXS30"], ["c:BTC", "Bitcoin"]];
+  const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]];
   function idxState(key) {
     const d = data[key], s = d && d.res && d.res.w;
     if (!s || s.cdir == null) return null;
@@ -2099,7 +2156,7 @@
     });
     const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
     const idxAmt = cap - inStocks * per;
-    rows.push(`<tr><td><span class="pname">Indexfond</span> <span class="muted small">${idxName}</span></td><td class="act hold">${ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">Resten av kapitalet. ${ix ? (ix.dir === 1 ? "Börsläge risk på." : "Börsläge risk av: kan flyttas till sparkonto tills läget vänder.") : "Börsläge saknas än för " + idxName + "."}</td><td class="num">${kr(idxAmt)}</td></tr>`);
+    rows.push(`<tr><td><span class="pname">Indexfond</span> <span class="muted small">${idxName}</span></td><td class="act hold">${m === "US" && ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">Resten av kapitalet. ${m === "SE" ? "Behålls oavsett läge: börsläget skyddade inte OMXS30 i testet." : ix ? (ix.dir === 1 ? "Börsläge risk på." : "Börsläge risk av: kan flyttas till sparkonto tills läget vänder.") : "Börsläge saknas än."}</td><td class="num">${kr(idxAmt)}</td></tr>`);
     $("planCard").innerHTML = `<div class="phead"><h4>Kontoplan ${tipBtn(PLAN_TIP)}</h4>
         <div class="seg" role="group" aria-label="Marknad för kontoplanen"><button data-plan="SE" aria-pressed="${m === "SE"}">Sverige</button><button data-plan="US" aria-pressed="${m === "US"}">USA</button></div>
         <div class="pform"><label>Kapital<input type="number" data-plan-in="capital" min="0" step="any" value="${cap}"></label><label>Lekkassa (%)<input class="short" type="number" data-plan-in="playPct" min="0" max="100" step="5" value="${playPct}"></label><label>Max affärer samtidigt<input class="short" type="number" data-plan-in="slots" min="1" max="20" step="1" value="${slots}"></label></div></div>
@@ -2309,6 +2366,13 @@
       rows.push(sigRow("er", "Nästa rapport", "neu",
         erDays == null || erDays < 0 ? "Okänt datum" : `${fmtDate(er)} · om ${erDays} ${erDays === 1 ? "dag" : "dagar"}${soon ? " · inom en vecka" : inMonth ? " · inom ett dippköp" : ""}`,
         "# Vad det är\nDatum för bolagets nästa rapport (från Yahoo, kan ändras).\n\n# Testat\nMed verkliga rapportdatum för 37 svenska bolag gick dippköp med en rapport under affären inte sämre: +3,8 % mot +0,8 % per affär, och de sämsta utfallen var inte större.\n\n# Tänk på\nEn rapport kan få kursen att öppna långt från gårdagens nivå, och då hjälper inte stop loss. Information, inte ett skäl att stå över."));
+    }
+    const lr = reportOf(a);
+    if (lr) {
+      const mg = lr.marg === "upp" ? ["pos", "rörelsemarginalen förbättrades"] : lr.marg === "ned" ? ["neg", "rörelsemarginalen försämrades"] : ["neu", "rörelsemarginalen oklar"];
+      rows.push(sigRow("lastrep", "Senaste rapport", mg[0], `${lr.d}${lr.period ? " · " + lr.period : ""} · ${mg[1]}`,
+        `# Rapporten\n${lr.sum || "Ingen sammanfattning."}${lr.oms ? `\nOmsättning: ${lr.oms}. Rörelsemarginal: ${lr.marg || "oklar"}.` : ""}\n\n# Testat 2016–2026\nI 1 010 svenska rapporter gick aktier med förbättrad rörelsemarginal i snitt cirka 2 procentenheter bättre än aktier med försämrad marginal de följande tre månaderna, 9 av 10 år. Inte statistiskt säkert, och i de senaste rapporterna var det tvärtom.\n\n# Tänk på\nInformation, inte en signal. Läst av AI från bolagets pressmeddelande, kan innehålla fel. Tonen i rapporten förutsade inte kursen och visas inte.`,
+        `<section class="card"><p class="small">${esc(lr.sum || "")}</p><p class="small"><a href="${esc(lr.url)}" target="_blank" rel="noopener">Läs rapporten hos Cision</a></p></section>`));
     }
     const newsQ = encodeURIComponent(a.type === "krypto" ? `${a.name} ${a.sym} crypto` : `${a.name} ${a.se ? "aktie" : "stock"}`);
     rows.push(`<div class="acc plain"><div class="acc-h"><span class="acc-t">Nyheter</span>${tipBtn("# Vad det är\nLänkar till de senaste nyheterna om tillgången.\n\n# Så använder du det\nLäs dem innan du köper dippen. Ett fall med en tydlig dålig nyhet bakom, som vinstvarning, utredning eller tappad kund, är något annat än ett fall utan orsak.\n\n# Tänk på\nGår inte att testa i efterhand. Det är din egen bedömning.")}<span class="acc-s"><a href="https://news.google.com/search?q=${newsQ}&hl=sv" target="_blank" rel="noopener">Senaste nyheterna</a>${a.type === "aktie" ? ` · <a href="https://finance.yahoo.com/quote/${encodeURIComponent(a.sym.replace(/\./g, "-") + (a.se ? ".ST" : ""))}/" target="_blank" rel="noopener">Yahoo Finance</a>` : ""}</span></div></div>`);
