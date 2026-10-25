@@ -3,8 +3,8 @@
 // 1. Hämtar dagliga och veckovisa kurser för alla aktier i index.html (även svenska) från
 //    Yahoo Finance och sparar dem i data/stocks.json, som webbversionen av Flipradar läser.
 // 2. Skickar notiser via ntfy:
-//    - när börsläget slår om (trendlinjen på veckografen för S&P 500, OMXS30 eller Bitcoin, stängd vecka)
-//    - när en aktie i Raketen (starkaste femtedelen på 12 månader) får köpläge i Köp dippen (månadsrekylen)
+//    - när börsläget slår om (trendlinjen på veckografen för S&P 500 eller Bitcoin, stängd vecka)
+//    - en gång i veckan (fredag kväll): Veckans plan med köp, sälj och behåll i Köp dippen för Raketen-aktier
 //    - när en bevakad aktie (watchlist.json) får köpläge eller säljläge i Köp dippen, eller Sälj studsen
 //    Flippar per tillgång ger inte längre notis: i testet sa de inget om fortsättningen.
 //
@@ -193,13 +193,13 @@ if (publish && okStocks) {
 
 // 2. Notiser
 // Gammalt format (flipp-läge per tillgång) byts mot { idx: {...}, rekyl: {...} }.
-for (const k of Object.keys(state)) if (k !== "idx" && k !== "rekyl" && k !== "studs") delete state[k];
+for (const k of Object.keys(state)) if (!["idx", "rekyl", "studs", "weekly"].includes(k)) delete state[k];
 state.idx = state.idx || {}; state.rekyl = state.rekyl || {};
 let sent = 0;
 const firstRun = !Object.keys(state.rekyl).length;
 
 // 2a. Börsläge
-const IDX = [["SPY", "S&P 500"], ["OMXS30@XSTO", "OMXS30"], ["c:BTC", "Bitcoin"]];
+const IDX = [["SPY", "S&P 500"], ["c:BTC", "Bitcoin"]]; // OMXS30 borttaget: börsläget skyddade inte i testet
 for (const [key, nm] of IDX) {
   const a = BY_KEY[key];
   if (!a) continue;
@@ -217,28 +217,39 @@ for (const [key, nm] of IDX) {
   state.idx[key] = tr.dir;
 }
 
-// 2b. Raketen-rang (52 till 4 veckor sedan, inom USA respektive Sverige), som på sidan
-const rk = {};
-for (const g of [true, false]) {
-  const L = [];
-  for (const a of ASSETS) {
-    if (a.type !== "aktie" || a.etf || !!a.se !== g || !stockData[a.key] || !stockData[a.key].w || stockData[a.key].w.length < 60) continue;
-    const b = stockData[a.key].w, n = b.length, last = E.barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2;
-    if (last - 52 < 0) continue;
-    const m = b[last - 4].c / b[last - 52].c - 1;
-    if (isFinite(m)) L.push([a.key, m]);
+// 2b. Raketen-rang (52 till 4 veckor sedan, inom USA respektive Sverige), som på sidan. off = antal veckor bakåt.
+function rankAt(off) {
+  const out = {};
+  for (const g of [true, false]) {
+    const L = [];
+    for (const a of ASSETS) {
+      if (a.type !== "aktie" || a.etf || !!a.se !== g || !stockData[a.key] || !stockData[a.key].w || stockData[a.key].w.length < 60) continue;
+      const b = stockData[a.key].w, n = b.length, last = (E.barClosed(b[n - 1].t, "w", a, Date.now()) ? n - 1 : n - 2) - off;
+      if (last - 52 < 0) continue;
+      const m = b[last - 4].c / b[last - 52].c - 1;
+      if (isFinite(m)) L.push([a.key, m]);
+    }
+    if (L.length < 10) continue;
+    L.sort((x, y) => x[1] - y[1]);
+    L.forEach(([k], i) => { out[k] = { top: i / (L.length - 1) >= 0.8, pct: i / (L.length - 1) }; });
   }
-  if (L.length < 10) continue;
-  L.sort((x, y) => x[1] - y[1]);
-  L.forEach(([k], i) => { rk[k] = i / (L.length - 1) >= 0.8; });
+  return out;
 }
+const RK = [0, 1, 2, 3, 4, 5].map(rankAt);
+const rk = Object.fromEntries(Object.entries(RK[0]).map(([k, v]) => [k, v.top]));
+const raketAt = (key, off) => { const r = RK[Math.min(5, Math.max(0, off))][key]; return !!r && r.top; };
 
-// 2c. Månadsrekyl: Raketen-aktier (alla) och bevakade aktier
+// 2c. Köp dippen (månadsrekyl): veckans plan för Raketen-aktier, och notiser för bevakade aktier
+const PLAN = { SE: { signal: [], open: [], exit: [], none: [] }, US: { signal: [], open: [], exit: [], none: [] } };
 log(`Kontrollerar månadsrekyl för ${Object.keys(stockData).length} aktier (${watchlist.length} bevakade)…`);
 for (const a of ASSETS) {
   if (a.type !== "aktie" || a.etf || !stockData[a.key] || !stockData[a.key].w || stockData[a.key].w.length < 60) continue;
   const p = E.pullbackWeekOf(stockData[a.key].w, a);
   if (!p) continue;
+  {
+    const off = p.state === "signal" ? 0 : p.state === "open" ? p.held : p.state === "exit" ? Math.round((p.closedT - p.entryT) / (7 * DAY)) + 1 : null;
+    if (off != null && raketAt(a.key, off)) PLAN[a.se ? "SE" : "US"][p.state].push({ a, p, pct: (RK[0][a.key] || {}).pct || 0 });
+  }
   const sig = p.state === "signal" ? "s" + p.closedT : p.state === "exit" ? "x" + p.entryT : "";
   const prev = state.rekyl[a.key];
   state.rekyl[a.key] = sig;
@@ -254,14 +265,39 @@ for (const a of ASSETS) {
     log("  " + title + " – " + msg); await notify(title, msg, -1); sent++;
   }
   if (firstRun || prev === undefined || prev === sig || !sig) continue;
-  if (p.state === "signal" && (raket || watched)) {
-    const title = raket ? `${a.sym}: Köp dippen` : `${a.sym}: svag dipp (inte i Raketen)`;
+  // Köp dippen i Raketen-aktier kommer i veckans plan (nedan). Här: svag dipp och sälj för bevakade aktier utanför den.
+  if (p.state === "signal" && watched && !raket) {
+    const title = `${a.sym}: svag dipp (inte i Raketen)`;
     const msg = `${a.name}. Köp ca ${fmt(p.entry)} när börsen öppnar, stop loss ${fmt(p.stop)}, sälj efter ${E.PBW.hold} veckor.`;
     log("  " + title + " – " + msg); await notify(title, msg, 1); sent++;
-  } else if (p.state === "exit" && watched) {
+  } else if (p.state === "exit" && watched && !raketAt(a.key, Math.round((p.closedT - p.entryT) / (7 * DAY)) + 1)) {
     const title = `${a.sym}: sälj dippköpet`;
     const msg = `${a.name}. ${p.why === "stop" ? "Stop loss gick." : `${E.PBW.hold} veckor har gått, sälj när börsen öppnar.`} Resultat enligt regeln ${(p.result * 100).toFixed(1).replace(".", ",")} %.`;
     log("  " + title + " – " + msg); await notify(title, msg, -1); sent++;
+  }
+}
+// 2d. Veckans plan: en notis när en ny vecka har stängt (fredag kväll), så att ordrarna kan läggas i helgen
+{
+  const spy = stockData["SPY"] && stockData["SPY"].w, A = BY_KEY["SPY"];
+  if (spy && spy.length > 2) {
+    const n = spy.length, wt = E.barClosed(spy[n - 1].t, "w", A, Date.now()) ? spy[n - 1].t : spy[n - 2].t;
+    if (state.weekly !== wt && !firstRun) {
+      const nm = x => `${x.a.name} (${x.a.sym})`;
+      const lines = [];
+      for (const [m, rubrik, open] of [["SE", "Sverige", "när Stockholmsbörsen öppnar 09.00"], ["US", "USA", "när New York öppnar 15.30 svensk tid"]]) {
+        const P = PLAN[m], buys = P.signal.sort((x, y) => y.pct - x.pct);
+        if (!buys.length && !P.exit.length && !P.open.length) continue;
+        lines.push(`${rubrik}:`);
+        buys.forEach(x => lines.push(`KÖP måndag ${open}: ${nm(x)} ca ${fmt(x.p.entry)}, lägg stop loss ${fmt(x.p.stop)} direkt.`));
+        P.exit.forEach(x => lines.push(`SÄLJ måndag: ${nm(x)}, ${x.p.why === "stop" ? "stop loss har gått" : `${E.PBW.hold} veckor har gått`} (${(x.p.result * 100).toFixed(1).replace(".", ",")} %).`));
+        P.open.forEach(x => lines.push(`Behåll: ${nm(x)}, vecka ${x.p.held} av ${E.PBW.hold}, stop loss ${fmt(x.p.stop)}.`));
+      }
+      const idx = IDX.map(([k, n2]) => state.idx[k] == null ? null : `${n2} ${state.idx[k] === 1 ? "risk på" : "risk av"}`).filter(Boolean).join(", ");
+      const msg = (lines.length ? lines.join("\n") + "\nBelopp per köp: en lika stor del av lekkassan, se Kontoplanen. Har du redan max antal affärer står du över de sista köpen." : "Inga köp eller sälj i Köp dippen den här veckan. Allt ligger kvar i indexfonden.") + (idx ? `\nBörsläge: ${idx}.` : "");
+      log("  Veckans plan –\n" + msg);
+      await notify("Veckans plan: Köp dippen", msg, 1, PLAN.SE.signal.length + PLAN.US.signal.length + PLAN.SE.exit.length + PLAN.US.exit.length ? 4 : 2); sent++;
+    }
+    state.weekly = wt;
   }
 }
 await fs.writeFile("state.json", JSON.stringify(state, null, 2) + "\n");
