@@ -213,6 +213,15 @@ async function main() {
   const missing = Object.keys(COMPANIES).filter(k => !bySym[k]);
   const topSlugs = Object.entries(state.slugsSeen).sort((a, b) => b[1] - a[1]).slice(0, 400).map(([k, v]) => `${k}:${v}`);
   wr(path.join(OUT, "summary.json"), { updated: new Date().toISOString(), lastAiError: state.lastAiError || null, lastQuota: state.lastQuota || null, modelsUsed: state.modelsUsed || null, availableModels: state.availableModels || null, totals: { rapporter: R.length, text: R.filter(r => r.fetched === true).length, ai: R.filter(r => r.ai && !r.ai.skip).length }, bySym, saknasHeltPaCision: missing, cisionBolagMedRapporter: topSlugs });
+  // Senaste lästa rapport per bolag, liten fil som Flipradar-sidan läser (nimbus/reports/latest.json)
+  const latest = {};
+  for (const r of R) {
+    if (!r.ai || r.ai.skip || !r.lastmod) continue;
+    const cur = latest[r.sym];
+    if (cur && cur.d >= r.lastmod.slice(0, 10)) continue;
+    latest[r.sym] = { d: r.lastmod.slice(0, 10), period: r.ai.period || null, marg: r.ai.rorelsemarginal || null, oms: r.ai.nettoomsattning || null, sum: r.ai.sammanfattning || null, url: r.url };
+  }
+  wr(path.join(OUT, "latest.json"), { updated: new Date().toISOString(), reports: latest });
   console.log(`Totalt ${R.length} rapporter, ${R.filter(r => r.fetched === true).length} med text, ${R.filter(r => r.ai && !r.ai.skip).length} lästa av AI. Saknas: ${missing.join(", ") || "inga"}`);
 }
 main().catch(e => { console.error(e); process.exit(1); });
