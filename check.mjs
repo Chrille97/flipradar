@@ -289,8 +289,8 @@ for (const a of ASSETS) {
         if (!buys.length && !P.exit.length && !P.open.length) continue;
         lines.push(`${rubrik}:`);
         buys.forEach(x => lines.push(`KÖP måndag ${open}: ${nm(x)} ca ${fmt(x.p.entry)}, lägg stop loss ${fmt(x.p.stop)} direkt.`));
-        P.exit.forEach(x => lines.push(`SÄLJ måndag: ${nm(x)}, ${x.p.why === "stop" ? "stop loss har gått" : `${E.PBW.hold} veckor har gått`} (${(x.p.result * 100).toFixed(1).replace(".", ",")} %).`));
-        P.open.forEach(x => lines.push(`Behåll: ${nm(x)}, vecka ${x.p.held} av ${E.PBW.hold}, stop loss ${fmt(x.p.stop)}.`));
+        P.exit.forEach(x => lines.push(`SÄLJ måndag om du köpte: ${nm(x)}, ${x.p.why === "stop" ? "stop loss har gått" : `${E.PBW.hold} veckor har gått`} (${(x.p.result * 100).toFixed(1).replace(".", ",")} %).`));
+        P.open.forEach(x => lines.push(`Behåll om du köpte: ${nm(x)}, vecka ${x.p.held} av ${E.PBW.hold}, stop loss ${fmt(x.p.stop)}.`));
       }
       const idx = IDX.map(([k, n2]) => state.idx[k] == null ? null : `${n2} ${state.idx[k] === 1 ? "risk på" : "risk av"}`).filter(Boolean).join(", ");
       const msg = (lines.length ? lines.join("\n") + "\nBelopp per köp: en lika stor del av lekkassan, se Kontoplanen. Har du redan max antal affärer står du över de sista köpen." : "Inga köp eller sälj i Köp dippen den här veckan. Allt ligger kvar i indexfonden.") + (idx ? `\nBörsläge: ${idx}.` : "");

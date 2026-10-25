@@ -129,6 +129,9 @@
   .plan th.num { text-align: right; }
   @media (max-width: 720px) { .plan table, .plan tbody, .plan tr, .plan td { display: block; } .plan thead { display: none; } .plan tr { border-top: 1px solid var(--line); padding: 6px 0; } .plan td { border: 0; padding: 2px 4px; } .plan td.opt { display: block !important; color: var(--muted); white-space: normal; } .plan td.num { text-align: left; } }
   .plan .pnote { font-size: 12px; color: var(--muted); margin: 0; }
+  .plan .btn.small { padding: 3px 10px; font-size: 12px; margin-left: 6px; }
+  .plan .linkbtn.small { font-size: 12px; margin-left: 6px; }
+  .plan tr.muted-row td { color: var(--faint); }
   .tile.idx:hover { border-color: var(--line); }
   .tile.idx .lbl { display: flex; align-items: center; gap: 8px; position: relative; }
   .idxrow { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
@@ -2127,44 +2130,93 @@
   }
   // ---------- Kontoplan: indexfond som kärna och månadsrekyl i Raketen-aktier vid sidan om ----------
   const PLAN_TIP = "# Vad den visar\nVad du ska göra den här veckan med ditt kapital.\n\n# Så fungerar den\nHuvuddelen ligger i en indexfond. Lekkassan delas lika mellan högst så många affärer som du anger. Varje köpläge får en lika stor del. Efter fyra veckor, eller om stop loss går, säljer du och pengarna går tillbaka till indexfonden.\n\n# Testat 2017–2026\nDippköp i Raketen-aktier slog att äga samma aktier med +0,8 procentenheter per affär i Sverige, efter courtage (osäkerhet −0,6 till +2,1). Ungefär +2 % av lekkassan per år, eller noll.\n\n# Tänk på\nVälj en lekkassa du klarar av att den bara följer index eller går sämre. Amerikanska aktier: valutaväxlingen tar cirka 0,5 % tur och retur.";
+  // Dina egna affärer i Köp dippen: { key: { ruleT, price, t, stop, jid } }. ruleT = veckan då regelns affär började.
+  let holdings = store.get("fr:holdings", {}) || {};
+  const saveHoldings = () => store.set("fr:holdings", holdings);
+  let showRule = false;
+  function ruleStartOf(p) { return p.state === "signal" ? (p.entryKnown ? p.liveT : p.closedT + 7 * DAY) : p.entryT; }
+  function holdingStatus(key, h) {
+    const p = pullWOf(key), a = ASSET_BY_KEY[key], d = data[key];
+    const live = p ? p.live : (d && d.d && d.d.length ? d.d[d.d.length - 1].c : h.price);
+    const weeks = Math.floor((Date.now() - h.ruleT) / (7 * DAY)) + 1;
+    let sell = null;
+    if (p && p.state === "exit" && p.entryT === h.ruleT) sell = p.why === "stop" ? "Stop loss har gått" : "Fyra veckor har gått";
+    else if (live != null && h.stop != null && live < h.stop) sell = "Kursen är under din stop loss";
+    else if (weeks > PBW.hold) sell = "Regelns fyra veckor har gått";
+    return { live, weeks: Math.max(1, Math.min(weeks, PBW.hold)), sell, sellDay: sellDayOf(h.ruleT) };
+  }
   function renderPlan() {
     const m = settings.planMkt === "US" ? "US" : "SE", slots = Math.max(1, Math.min(20, Math.round(settings.slots || 5)));
     const cap = settings.capital, playPct = Math.max(0, Math.min(100, settings.playPct == null ? 20 : settings.playPct));
     const play = cap * playPct / 100, per = play / slots;
-    const idxKey = m === "US" ? "SPY" : "OMXS30@XSTO", idxName = m === "US" ? "S&P 500" : "OMXS30", ix = idxState(idxKey);
-    const L = ASSETS.filter(a => a.type === "aktie" && !a.etf && !!a.se === (m === "SE")).map(a => ({ a, p: pullWOf(a.key) }))
-      .filter(x => x.p && x.p.state !== "none" && raketAtSignal(x.a.key));
-    const open = L.filter(x => x.p.state === "open").sort((x, y) => x.p.entryT - y.p.entryT);
-    const exits = L.filter(x => x.p.state === "exit");
+    const idxName = m === "US" ? "S&P 500" : "OMXS30", ix = idxState("SPY");
+    const inMkt = a => a && a.type === "aktie" && !a.etf && !!a.se === (m === "SE");
+    const mine = Object.entries(holdings).filter(([k]) => inMkt(ASSET_BY_KEY[k]));
+    const L = ASSETS.filter(inMkt).map(a => ({ a, p: pullWOf(a.key) })).filter(x => x.p && x.p.state !== "none" && raketAtSignal(x.a.key) && !holdings[x.a.key]);
+    const ruleOpen = L.filter(x => x.p.state === "open");
     const sigs = L.filter(x => x.p.state === "signal").sort((x, y) => (raketOf(y.a.key) || {}).pct - (raketOf(x.a.key) || {}).pct);
-    const used = Math.min(slots, open.length), free = slots - used;
-    const nm = x => `<span class="pname" data-open-asset="${esc(x.a.key)}">${esc(x.a.name)}</span> <span class="muted small">${esc(x.a.sym)}</span>`;
+    const free = Math.max(0, slots - mine.length);
+    const nmA = a => `<span class="pname" data-open-asset="${esc(a.key)}">${esc(a.name)}</span> <span class="muted small">${esc(a.sym)}</span>`;
     const kr = v => nf0.format(v) + " kr";
     const rows = [];
-    exits.forEach(x => rows.push(`<tr><td>${nm(x)}</td><td class="act sell">Sälj på måndag</td><td class="opt">${x.p.why === "stop" ? "Stop loss har gått" : "Fyra veckor har gått"}. Resultat ${fmtSigned(x.p.result * 100)}. Pengarna tillbaka till indexfonden.</td><td class="num">–</td></tr>`));
-    open.forEach((x, i) => {
-      const r = x.p.live / x.p.entry - 1, left = PBW.hold - x.p.held;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act hold">Behåll${i < slots ? "" : " (fler än max)"}</td><td class="opt">Köptes på dipp för ${x.p.held} ${x.p.held === 1 ? "vecka" : "veckor"} sedan för ${fmtPrice(x.p.entry)}. Säljs ${left <= 0 ? "nu" : `om ${left} ${left === 1 ? "vecka" : "veckor"}`}, eller om kursen går under stop loss ${fmtPrice(x.p.stop)}. Hittills <span class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</span>.</td><td class="num">${kr(per)}</td></tr>`);
+    // 1. Dina affärer
+    mine.sort((x, y) => (holdingStatus(y[0], y[1]).sell ? 1 : 0) - (holdingStatus(x[0], x[1]).sell ? 1 : 0)).forEach(([k, h]) => {
+      const a = ASSET_BY_KEY[k], st = holdingStatus(k, h), r = st.live != null ? st.live / h.price - 1 : null;
+      const res = r == null ? "" : ` Hittills <span class="${r >= 0 ? "up" : "down"}">${fmtSigned(r * 100)}</span>.`;
+      rows.push(st.sell
+        ? `<tr><td>${nmA(a)}</td><td class="act sell">Sälj på måndag</td><td class="opt">${st.sell}. Du köpte för ${fmtPrice(h.price)}.${res} Pengarna tillbaka till indexfonden. <button class="btn small" data-hold-sold="${esc(k)}">Jag har sålt</button></td><td class="num">${kr(per)}</td></tr>`
+        : `<tr><td>${nmA(a)}</td><td class="act hold">Behåll</td><td class="opt">Du köpte för ${fmtPrice(h.price)}. Vecka ${st.weeks} av ${PBW.hold}, säljs ${st.sellDay}, eller tidigare om kursen går under stop loss ${fmtPrice(h.stop)}.${res} <button class="btn small" data-hold-sold="${esc(k)}">Jag har sålt</button> <button class="linkbtn small" data-hold-undo="${esc(k)}" title="Ta bort om du klickade fel">Ångra köp</button></td><td class="num">${kr(per)}</td></tr>`);
     });
+    // 2. Nya köplägen
     sigs.forEach((x, i) => {
-      const buy = i < free;
-      const ch = x.p.live / x.p.entry - 1;
+      const buy = i < free, ch = x.p.live / x.p.entry - 1;
       const why = !buy ? "Köpläge, men du har redan max antal affärer."
         : x.p.entryKnown ? `Raketen-aktie som dippat. Köpläget gällde från måndagens öppning: regelns köpkurs ${fmtPrice(x.p.entry)}, nu ${fmtPrice(x.p.live)} (<span class="${ch >= 0 ? "up" : "down"}">${fmtSigned(ch * 100)}</span>). Stop loss ${fmtPrice(x.p.stop)}. Säljs ${sellDayOf(x.p.liveT)}. Köper du nu är det till ett annat pris än testet.`
         : `Raketen-aktie som dippat. Köp för cirka ${fmtPrice(x.p.entry)} och lägg stop loss på ${fmtPrice(x.p.stop)} (${nf2.format(x.p.stopDist / x.p.entry * 100)} % under).${erWarn(x.a, 28) ? " Rapport inom fyra veckor." : ""}`;
-      rows.push(`<tr><td>${nm(x)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? (x.p.entryKnown ? "Köpläge sedan måndag" : "Köp på måndag") : "Stå över"}</td><td class="opt">${why}</td><td class="num">${buy ? kr(per) : "–"}</td></tr>`);
+      rows.push(`<tr><td>${nmA(x.a)}</td><td class="act ${buy ? "buy" : "skip"}">${buy ? (x.p.entryKnown ? "Köpläge sedan måndag" : "Köp på måndag") : "Stå över"}</td><td class="opt">${why}${buy ? ` <button class="btn small" data-hold-buy="${esc(x.a.key)}">Jag köpte</button>` : ""}</td><td class="num">${buy ? kr(per) : "–"}</td></tr>`);
     });
-    const inStocks = Math.min(slots, open.length + Math.min(free, sigs.length));
-    const idxAmt = cap - inStocks * per;
+    // 3. Regelns pågående affärer som du inte köpt (dolda som standard)
+    if (showRule) ruleOpen.forEach(x => rows.push(`<tr class="muted-row"><td>${nmA(x.a)}</td><td class="act skip">Inte köpt</td><td class="opt">Regelns affär pågår sedan ${fmtDate(x.p.entryT)} (köpkurs ${fmtPrice(x.p.entry)}, vecka ${x.p.held} av ${PBW.hold}). Att köpa nu är otestat. <button class="linkbtn small" data-hold-buy="${esc(x.a.key)}">Jag köpte ändå</button></td><td class="num">–</td></tr>`));
+    const used = Math.min(slots, mine.length), planned = Math.min(free, sigs.length);
+    const idxAmt = cap - (used + planned) * per;
     rows.push(`<tr><td><span class="pname">Indexfond</span> <span class="muted small">${idxName}</span></td><td class="act hold">${m === "US" && ix && ix.dir === -1 ? "Överväg sparkonto" : "Behåll"}</td><td class="opt">Resten av kapitalet. ${m === "SE" ? "Behålls oavsett läge: börsläget skyddade inte OMXS30 i testet." : ix ? (ix.dir === 1 ? "Börsläge risk på." : "Börsläge risk av: kan flyttas till sparkonto tills läget vänder.") : "Börsläge saknas än."}</td><td class="num">${kr(idxAmt)}</td></tr>`);
+    const ruleNote = ruleOpen.length ? ` <button class="linkbtn small" data-rule-toggle="1">${showRule ? "Dölj" : "Visa"} ${ruleOpen.length} ${ruleOpen.length === 1 ? "affär" : "affärer"} enligt regeln som du inte köpt</button>` : "";
     $("planCard").innerHTML = `<div class="phead"><h4>Kontoplan ${tipBtn(PLAN_TIP)}</h4>
         <div class="seg" role="group" aria-label="Marknad för kontoplanen"><button data-plan="SE" aria-pressed="${m === "SE"}">Sverige</button><button data-plan="US" aria-pressed="${m === "US"}">USA</button></div>
         <div class="pform"><label>Kapital<input type="number" data-plan-in="capital" min="0" step="any" value="${cap}"></label><label>Lekkassa (%)<input class="short" type="number" data-plan-in="playPct" min="0" max="100" step="5" value="${playPct}"></label><label>Max affärer samtidigt<input class="short" type="number" data-plan-in="slots" min="1" max="20" step="1" value="${slots}"></label></div></div>
       <table><thead><tr><th>Innehav</th><th>Gör så här</th><th class="opt">Varför</th><th class="num">Belopp</th></tr></thead><tbody>${rows.join("")}</tbody></table>
-      <p class="pnote">Lekkassa ${kr(play)} av ${kr(cap)} · ${inStocks} av max ${slots} affärer används · varje affär cirka ${kr(per)}${m === "US" ? " · valutaväxlingen tar cirka 0,5 % tur och retur" : ""}. ${!open.length && !sigs.length && !exits.length ? "Inga köplägen just nu: allt ligger i indexfonden." : "Planen följer reglerna. Har du inte köpt en affär som står som Behåll kan du hoppa över den raden."}</p>`;
+      <p class="pnote">Lekkassa ${kr(play)} av ${kr(cap)} · du har ${used} av max ${slots} affärer · varje affär cirka ${kr(per)}${m === "US" ? " · valutaväxlingen tar cirka 0,5 % tur och retur" : ""}. ${!mine.length && !sigs.length ? "Inga köplägen just nu: allt ligger i indexfonden." : "Klicka på Jag köpte när du har köpt, så följer planen din affär och loggar den i handelsdagboken."}${ruleNote}</p>`;
   }
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-plan]"); if (b) { settings.planMkt = b.dataset.plan; store.set("fr:settings", settings); renderPlan(); return; }
+    const t = e.target.closest("[data-rule-toggle]"); if (t) { showRule = !showRule; renderPlan(); return; }
+    const hb = e.target.closest("[data-hold-buy]");
+    if (hb) {
+      const k = hb.dataset.holdBuy, p = pullWOf(k); if (!p) return;
+      const def = p.entryKnown || p.state === "open" ? p.live : p.entry;
+      const v = prompt(`Till vilket pris köpte du ${ASSET_BY_KEY[k].name}?`, String(+def.toPrecision(6)).replace(".", ","));
+      if (v == null) return;
+      const price = parseFloat(String(v).replace(",", ".")); if (!(price > 0)) return;
+      addJournal(k, "buy", price, Date.now(), "Köp dippen enligt kontoplanen");
+      holdings[k] = { ruleT: ruleStartOf(p), price, t: Date.now(), stop: p.stop, jid: journal.length ? journal[journal.length - 1].id : null };
+      saveHoldings(); renderPlan(); return;
+    }
+    const hs = e.target.closest("[data-hold-sold]");
+    if (hs) {
+      const k = hs.dataset.holdSold, h = holdings[k]; if (!h) return;
+      const st = holdingStatus(k, h);
+      const v = prompt(`Till vilket pris sålde du ${ASSET_BY_KEY[k].name}?`, st.live != null ? String(+st.live.toPrecision(6)).replace(".", ",") : "");
+      if (v == null) return;
+      const price = parseFloat(String(v).replace(",", ".")); if (!(price > 0)) return;
+      addJournal(k, "sell", price, Date.now(), "Sålt enligt kontoplanen");
+      delete holdings[k]; saveHoldings(); renderPlan(); return;
+    }
+    const hu = e.target.closest("[data-hold-undo]");
+    if (hu) {
+      const k = hu.dataset.holdUndo, h = holdings[k]; if (!h) return;
+      if (h.jid != null) { journal = journal.filter(j => j.id !== h.jid); saveJournal(); renderJournal(); }
+      delete holdings[k]; saveHoldings(); renderPlan(); renderTable(); return;
+    }
     const o = e.target.closest("[data-open-asset]"); if (o) openAsset(o.dataset.openAsset);
   });
   document.addEventListener("change", e => {
