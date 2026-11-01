@@ -1,13 +1,13 @@
 {
- "updated": "2026-10-31T09:56:07.356Z",
+ "updated": "2026-11-01T10:50:23.657Z",
  "reports": {
   "HEXA-B.ST": {
-   "d": "2026-07-29",
-   "period": "Q2 2026",
-   "marg": "upp",
+   "d": "2026-10-23",
+   "period": "Q3 2026",
+   "marg": "ned",
    "oms": "upp",
-   "sum": "Hexagon ökade omsättningen med 12 procents organisk tillväxt, stärkt rörelsemarginal och ett förbättrat resultat per aktie.",
-   "url": "https://news.cision.com/se/hexagon/r/hexagon-delarsrapport-1-januari---30-juni-2026,c4378184"
+   "sum": "Hexagon redovisar ökad omsättning med en organisk tillväxt på 13 procent och högre resultat per aktie för kvartalet.",
+   "url": "https://news.cision.com/se/hexagon/r/hexagon-delarsrapport-1-januari---30-september-2026,c4413835"
   },
   "LAGR-B.ST": {
    "d": "2025-05-20",
@@ -18,20 +18,20 @@
    "url": "https://news.cision.com/se/lagercrantz-group/r/lagercrantz-bokslutskommunike-2024-25,c4152520"
   },
   "SWEC-B.ST": {
-   "d": "2026-07-17",
+   "d": "2026-10-29",
+   "period": "Q3 2026",
+   "marg": "upp",
+   "oms": "upp",
+   "sum": "Sweco levererade sitt starkaste tredje kvartal någonsin med ökad omsättning, god organisk tillväxt och stärkt EBITA-marginal.",
+   "url": "https://news.cision.com/se/sweco/r/delarsrapport-januari---september-2026-sweco-ab--publ-,c4416737"
+  },
+  "ADDT-B.ST": {
+   "d": "2026-10-22",
    "period": "Q2 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Sweco ökade omsättning, rörelsemarginal och vinst per aktie under andra kvartalet, drivet av högre arvoden och förvärv.",
-   "url": "https://news.cision.com/se/sweco/r/delarsrapport-januari---juni-2026-sweco-ab--publ-,c4375561"
-  },
-  "ADDT-B.ST": {
-   "d": "2026-07-14",
-   "period": "Q1 2026",
-   "marg": "upp",
-   "oms": "upp",
-   "sum": "Omsättning och rörelseresultat ökade med stärkta marginaler, medan den organiska tillväxten var oförändrad under kvartalet.",
-   "url": "https://news.cision.com/se/addtech/r/delarsrapport-q1-1-april---30-juni-2026,c4373192"
+   "sum": "Addtech redovisar ökad omsättning och stärkt resultat för andra kvartalet, drivet av god efterfrågan och en positiv engångseffekt.",
+   "url": "https://news.cision.com/se/addtech/r/delarsrapport-q2-1-april---30-september-2026,c4408596"
   },
   "LIFCO-B.ST": {
    "d": "2023-10-20",
@@ -74,44 +74,44 @@
    "url": "https://news.cision.com/se/avanza-bank-ab--publ-/r/delarsrapport-januari---juni-2019-avanza-bank-ab--publ-,c2883910"
   },
   "GETI-B.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-21",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Getinge redovisar god organisk tillväxt, kraftigt stärkt lönsamhet samt kassaflöde och upprepar helårsprognosen.",
-   "url": "https://news.cision.com/se/getinge/r/getinges-delarsrapport-april-juni-2026--god-organisk-tillvaxt--hog-lonsamhet-och-starkt-kassaflode,c4375613"
+   "sum": "Getinge redovisar ökad organisk tillväxt, stärkt lönsamhet och upprepar sin helårsprognos för 2026.",
+   "url": "https://news.cision.com/se/getinge/r/getinges-delarsrapport-juli-september-2026--okad-lonsamhet--starkt-kassaflode-och-hogre-kundnojdhet,c4407799"
   },
   "SHB-A.ST": {
-   "d": "2026-07-15",
-   "period": "Q2 2026",
+   "d": "2026-10-21",
+   "period": "Q3 2026",
    "marg": "oklart",
    "oms": "oklart",
-   "sum": "Rörelseresultatet och resultat per aktie sjönk, men banken uppvisar stabil affärstillväxt och mycket låga kreditförluster.",
-   "url": "https://news.cision.com/se/handelsbanken/r/handelsbankens-delarsrapport-januari---juni-2026,c4374682"
+   "sum": "Stabilt kvartal för Handelsbanken med ökande affärsvolymer, god lönsamhet och fortsatt stark finansiell ställning.",
+   "url": "https://news.cision.com/se/handelsbanken/r/handelsbankens-delarsrapport-januari---september-2026,c4412589"
   },
   "ALFA.ST": {
-   "d": "2026-07-21",
-   "period": "Q2 2026",
+   "d": "2026-10-27",
+   "period": "Q3 2026",
    "marg": "ned",
    "oms": "upp",
-   "sum": "Stark orderingång och ökad omsättning i Q2, men något lägre marginal samt förväntan om något lägre efterfrågan i Q3.",
-   "url": "https://news.cision.com/se/alfa-laval/r/alfa-laval-ab--publ--delarsrapport-1-april---30-juni-2026,c4376241"
+   "sum": "Alfa Laval rapporterar stark tillväxt i orderingången för Q3, men något lägre marginaler och resultat per aktie.",
+   "url": "https://news.cision.com/se/alfa-laval/r/alfa-laval-ab--publ--kvartalsrapport-1-juli---30-september-2026,c4415428"
   },
   "SAND.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-22",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Sandvik rapporterade stark tillväxt med tvåsiffrig ökning i orderingång, intäkter och väsentligt förbättrat rörelseresultat under andra kvartalet.",
-   "url": "https://news.cision.com/se/sandvik/r/delarsrapport-andra-kvartalet-2026,c4375737"
+   "sum": "Stark rapport från Sandvik för Q3 2026 med ökande orderingång, omsättning, marginaler och resultat per aktie.",
+   "url": "https://news.cision.com/se/sandvik/r/delarsrapport-tredje-kvartalet-2026,c4413646"
   },
   "SAVE.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-22",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Nordnet levererar ett rekordresultat för andra kvartalet med kraftigt ökande intäkter, god kostnadskontroll och stark kundtillväxt.",
-   "url": "https://news.cision.com/se/nordnet/r/nordnet-ab--publ----delarsrapport-januari-juni-2026,c4375516"
+   "sum": "Nordnet levererar sitt näst bästa kvartal någonsin med ett rörelseresultat om 1 096 MSEK och god kundtillväxt.",
+   "url": "https://news.cision.com/se/nordnet/r/nordnet-ab--publ----delarsrapport-januari-september-2026,c4413494"
   },
   "INVE-B.ST": {
    "d": "2026-09-30",
@@ -122,12 +122,12 @@
    "url": "https://news.cision.com/se/investor/r/delarsrapport-januari-juni-2026,c4402905"
   },
   "TELIA.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-22",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Telia ökade intäkter och rörelseresultat under andra kvartalet med god tjänsteintäktstillväxt och upprepade utsikterna för helåret.",
-   "url": "https://news.cision.com/se/telia-company/r/telia-companys-delarsrapport-januari---juni-2026,c4375525"
+   "sum": "Telia rapporterar ökad omsättning och vinst i Q3 2026 samt höjer sin helårsprognos för EBITDA och kassaflöde.",
+   "url": "https://news.cision.com/se/telia-company/r/telia-companys-delarsrapport-januari---september-2026,c4413535"
   },
   "NDA-SE.ST": {
    "d": "2026-01-29",
@@ -146,12 +146,12 @@
    "url": "https://news.cision.com/se/tele2-ab/r/tele2-delarsrapport-for-det-tredje-kvartalet-2024,c4054264"
   },
   "SWED-A.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-22",
+   "period": "Q3 2026",
    "marg": "oklart",
-   "oms": "oklart",
-   "sum": "Swedbank visar stark volymtillväxt och avslutar historiska utredningar via DFS-uppgörelse, tyngd av extraordinära kostnader.",
-   "url": "https://news.cision.com/se/swedbank/r/swedbanks-delarsrapport-for-det-andra-kvartalet-2026,c4375556"
+   "oms": "upp",
+   "sum": "Swedbank redovisar ett starkt tredje kvartal 2026 med ett positivt affärsklimat och ökat räntenetto.",
+   "url": "https://news.cision.com/se/swedbank/r/swedbanks-delarsrapport-for-det-tredje-kvartalet-2026,c4413450"
   },
   "SKF-B.ST": {
    "d": "2025-01-31",
@@ -202,12 +202,12 @@
    "url": "https://news.cision.com/se/saab/r/saabs-bokslutskommunike-2025-rekordhog-orderingang---bygger-for-tillvaxt,c4302663"
   },
   "ESSITY-B.ST": {
-   "d": "2026-07-16",
-   "period": "Q2 2026",
+   "d": "2026-10-22",
+   "period": "Q3 2026",
    "marg": "ned",
    "oms": "upp",
-   "sum": "Essity ökade omsättningen drivet av högre volymer, men rörelsemarginal och resultat per aktie sjönk något.",
-   "url": "https://news.cision.com/se/essity/r/delarsrapport-kvartal-2-2026,c4375133"
+   "sum": "Nettoomsättningen ökade medan organisk tillväxt och resultat sjönk i en utmanande marknad. Essity avser förvärva verksamhet i Brasilien.",
+   "url": "https://news.cision.com/se/essity/r/delarsrapport-kvartal-3-2026,c4413428"
   },
   "BONEX.ST": {
    "d": "2020-07-17",
@@ -218,12 +218,12 @@
    "url": "https://news.cision.com/se/bonesupport-holding-ab/r/bonesupport-holding-ab---delarsrapport-kvartal-1,c3156361"
   },
   "EPI-A.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-28",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Stark rapport med tvåsiffrig organisk tillväxt, ökad orderingång samt förbättrad rörelsemarginal och vinst.",
-   "url": "https://news.cision.com/se/epiroc/r/epiroc-delarsrapport-kv2-2026,c4374855"
+   "sum": "Epiroc rapporterar stark tillväxt i orderingång och resultat för det tredje kvartalet 2026 med förbättrad marginal.",
+   "url": "https://news.cision.com/se/epiroc/r/epiroc-delarsrapport-kv3-2026,c4416451"
   },
   "EQT.ST": {
    "d": "2026-07-17",
@@ -234,12 +234,12 @@
    "url": "https://news.cision.com/se/eqt/r/eqt-ab--publ--halvarsrapport-2026,c4375600"
   },
   "ASSA-B.ST": {
-   "d": "2026-07-17",
-   "period": "Q2 2026",
+   "d": "2026-10-27",
+   "period": "Q3 2026",
    "marg": "upp",
    "oms": "upp",
-   "sum": "Stark rapport med accelererad organisk tillväxt, rekordhög rörelsemarginal och ett förbättrat resultat per aktie.",
-   "url": "https://news.cision.com/se/assa-abloy/r/kvartalsrapport-q2-2026,c4375614"
+   "sum": "ASSA ABLOY rapporterar ett rekordstarkt tredje kvartal med ökad omsättning, stärkt rörelsemarginal och god organisk tillväxt.",
+   "url": "https://news.cision.com/se/assa-abloy/r/kvartalsrapport-q3-2026,c4415569"
   },
   "SEB-A.ST": {
    "d": "2026-01-29",
